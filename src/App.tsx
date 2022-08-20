@@ -1,25 +1,31 @@
 import React from 'react';
-import logo from './logo.svg';
+import styled from "@emotion/styled";
+import { Route, Routes } from "react-router-dom";
+import { ROUTES } from "@src/common/constants";
+import { Column } from "@src/common/styles/Flex";
 import './App.css';
 
-function App() {
+// pages
+import Home from "@src/pages/home/Home";
+import Dashboard from "@src/pages/dashboard/Dashboard";
+
+const Root = styled(Column)`
+  width: 100%;
+  align-items: center;
+  background: #f8f8ff;
+  min-height: 100vh;
+`;
+
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Root>
+      <Routes>
+        {/* Base */}
+        <Route path={ROUTES.ROOT} element={<Home />} />
+        {/* Dashboard */}
+        <Route path={ROUTES.DASH} element={<Dashboard />} />
+      </Routes>
+    </Root>
   );
 }
 
