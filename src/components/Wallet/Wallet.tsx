@@ -1,11 +1,12 @@
-import styled from "@emotion/styled";
-import React from "react";
-import { useStores } from "@src/stores";
-import { observer } from "mobx-react-lite";
-import { Button } from "@src/UIKit/Button";
-import LoginModal from "./LoginModal";
-import LoggedInAccountInfo from "@components/Wallet/LoggedInAccountInfo";
+import styled from '@emotion/styled';
+import React from 'react';
+import { useStores } from '@src/stores';
+import { observer } from 'mobx-react-lite';
+import { Button } from '@src/UIKit/Button';
+import LoggedInAccountInfo from '@components/Wallet/LoggedInAccountInfo';
+import LoginModal from './LoginModal';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IProps {}
 
 const Root = styled.div`
@@ -22,11 +23,7 @@ const Wallet: React.FC<IProps> = () => {
   return (
     <Root>
       {address == null ? (
-        <Button
-          size="medium"
-          onClick={() => accountStore.setLoginModalOpened(true)}
-          fixed
-        >
+        <Button size="medium" onClick={() => accountStore.setLoginModalOpened(true)} fixed>
           Connect wallet
         </Button>
       ) : (

@@ -1,7 +1,8 @@
-import styled from "@emotion/styled";
-import React, { CSSProperties } from "react";
-import { usePopperTooltip } from "react-popper-tooltip";
-import { Config } from "react-popper-tooltip/dist/types";
+/* eslint-disable react/require-default-props */
+import styled from '@emotion/styled';
+import React, { CSSProperties } from 'react';
+import { usePopperTooltip } from 'react-popper-tooltip';
+import { Config } from 'react-popper-tooltip/dist/types';
 
 interface IProps {
   content: string | JSX.Element;
@@ -28,20 +29,11 @@ const Container = styled.div`
   flex-direction: column;
   width: fit-content;
 `;
-const Tooltip: React.FC<IProps> = ({
-  containerStyles,
-  children,
-  content,
-  config,
-}) => {
-  const { getTooltipProps, setTooltipRef, setTriggerRef, visible } =
-    usePopperTooltip({ ...config });
+const Tooltip: React.FC<IProps> = ({ containerStyles, children, content, config }) => {
+  const { getTooltipProps, setTooltipRef, setTriggerRef, visible } = usePopperTooltip({ ...config });
   return (
     <Container>
-      <div
-        ref={setTriggerRef}
-        style={{ cursor: "pointer", ...containerStyles }}
-      >
+      <div ref={setTriggerRef} style={{ cursor: 'pointer', ...containerStyles }}>
         {children}
       </div>
       {visible && (

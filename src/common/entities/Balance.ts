@@ -1,8 +1,9 @@
-import { IToken } from "@src/common/constants";
-import BN from "@src/common/utils/BN";
-import tokenLogos from "@src/common/constants/tokenLogos";
+/* eslint-disable no-underscore-dangle */
+import { IToken } from '@src/common/constants';
+import BN from '@src/common/utils/BN';
+import tokenLogos from '@src/common/constants/tokenLogos';
 
-export interface IAssetBalance extends Omit<IToken, "logo"> {
+export interface IAssetBalance extends Omit<IToken, 'logo'> {
   balance?: BN;
   usdnEquivalent?: BN;
   logo?: string;
@@ -10,12 +11,19 @@ export interface IAssetBalance extends Omit<IToken, "logo"> {
 
 class Balance implements IAssetBalance {
   public readonly assetId: string;
+
   public readonly name: string;
+
   public readonly symbol: string;
+
   public readonly decimals: number;
+
   private readonly _logo?: string;
+
   public readonly balance?: BN;
+
   public readonly usdnEquivalent?: BN;
+
   public readonly category?: string[];
 
   constructor(props: IAssetBalance) {
@@ -34,7 +42,7 @@ class Balance implements IAssetBalance {
   }
 
   get formatBalance() {
-    if (this.balance == null) return "—";
+    if (this.balance == null) return '—';
     const value = BN.formatUnits(this.balance ?? 0, this.decimals);
     if (value.eq(0)) return value.toFormat(2);
     return value.gt(0.01) ? value.toFormat(2) : value.toFormat(6);
@@ -42,12 +50,10 @@ class Balance implements IAssetBalance {
 
   get formatUsdnEquivalent() {
     if (this.usdnEquivalent == null) {
-      return "—";
+      return '—';
     }
     if (this.usdnEquivalent.eq(0)) return `~ 0.00 $`;
-    const v = this.usdnEquivalent.gt(0.01)
-      ? this.usdnEquivalent.toFormat(2)
-      : this.usdnEquivalent.toFormat(6);
+    const v = this.usdnEquivalent.gt(0.01) ? this.usdnEquivalent.toFormat(2) : this.usdnEquivalent.toFormat(6);
     return `~ ${v} $`;
   }
 }

@@ -1,5 +1,5 @@
-import RootStore from "@src/stores/RootStore";
-import { makeAutoObservable, reaction } from "mobx";
+import RootStore from '@src/stores/RootStore';
+import { makeAutoObservable, reaction } from 'mobx';
 
 export default class LendStore {
   public rootStore: RootStore;

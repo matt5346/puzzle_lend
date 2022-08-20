@@ -1,9 +1,10 @@
-import styled from "@emotion/styled";
-import React, { HTMLAttributes } from "react";
-import { SizedBox } from "@src/UIKit/SizedBox";
-import { Row, Column } from "@src/common/styles/Flex";
-import { ReactComponent as ArrowDownIcon } from "@src/common/assets/icons/arrowDown.svg";
-import { IToken } from "@src/common/constants";
+/* eslint-disable react/require-default-props */
+import styled from '@emotion/styled';
+import React, { HTMLAttributes } from 'react';
+import { SizedBox } from '@src/UIKit/SizedBox';
+import { Row, Column } from '@src/common/styles/Flex';
+import { ReactComponent as ArrowDownIcon } from '@src/common/assets/icons/arrowDown.svg';
+import { IToken } from '@src/common/constants';
 
 interface IProps extends HTMLAttributes<HTMLDivElement> {
   token?: IToken;
@@ -42,12 +43,7 @@ const TokenIcon = styled.img`
   color: transparent;
 `;
 
-const TokenSelect: React.FC<IProps> = ({
-  token,
-  selectable,
-  balance,
-  ...rest
-}) => {
+const TokenSelect: React.FC<IProps> = ({ token, selectable, balance, ...rest }) => {
   return (
     <Root {...rest}>
       <Row alignItems="center">
@@ -55,7 +51,7 @@ const TokenSelect: React.FC<IProps> = ({
         <SizedBox width={8} />
         <Column justifyContent="center">
           <TokenName>{token?.symbol}</TokenName>
-          <Balance>{balance ?? "—"}</Balance>
+          <Balance>{balance ?? '—'}</Balance>
         </Column>
       </Row>
       {selectable && <ArrowDownIcon />}

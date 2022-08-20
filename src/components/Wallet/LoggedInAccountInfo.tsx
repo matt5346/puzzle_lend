@@ -1,17 +1,18 @@
-import styled from "@emotion/styled";
-import React, { useState } from "react";
-import { Row } from "@src/common/styles/Flex";
-import { ReactComponent as WalletIcon } from "@src/common/assets/icons/pink-wallet.svg";
-import { SizedBox } from "@src/UIKit/SizedBox";
-import { Text } from "@src/UIKit/Text";
-import centerEllipsis from "@src/common/utils/centerEllipsis";
-import arrowIcon from "@src/common/assets/icons/arrowRightBorderless.svg";
-import * as identityImg from "identity-img";
-import { useStores } from "@src/stores";
-import { Tooltip } from "@src/UIKit/Tooltip";
-import { observer } from "mobx-react-lite";
-import WalletActionsTooltip from "./WalletActionsTooltip";
+import styled from '@emotion/styled';
+import React, { useState } from 'react';
+import { Row } from '@src/common/styles/Flex';
+import { ReactComponent as WalletIcon } from '@src/common/assets/icons/pink-wallet.svg';
+import { SizedBox } from '@src/UIKit/SizedBox';
+import { Text } from '@src/UIKit/Text';
+import centerEllipsis from '@src/common/utils/centerEllipsis';
+import arrowIcon from '@src/common/assets/icons/arrowRightBorderless.svg';
+import * as identityImg from 'identity-img';
+import { useStores } from '@src/stores';
+import { Tooltip } from '@src/UIKit/Tooltip';
+import { observer } from 'mobx-react-lite';
+import WalletActionsTooltip from './WalletActionsTooltip';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IProps {}
 
 const Root = styled(Row)`
@@ -39,7 +40,7 @@ const AddressContainer = styled.div<{ expanded: boolean }>`
   border: 1px solid #f1f2fe;
   border-radius: 10px;
   cursor: pointer;
-  background: ${({ expanded }) => (expanded ? "#f1f2fe" : "#fff")};
+  background: ${({ expanded }) => (expanded ? '#f1f2fe' : '#fff')};
 
   :hover {
     background: #f1f2fe;
@@ -55,8 +56,7 @@ const AddressContainer = styled.div<{ expanded: boolean }>`
 
   .menu-arrow {
     transition: 0.4s;
-    transform: ${({ expanded }) =>
-      expanded ? "rotate(-90deg)" : "rotate(90deg)"};
+    transform: ${({ expanded }) => (expanded ? 'rotate(-90deg)' : 'rotate(90deg)')};
   }
 `;
 
@@ -67,22 +67,18 @@ const LoggedInAccountInfo: React.FC<IProps> = () => {
   const [accountOpened, setAccountOpened] = useState<boolean>(false);
   return (
     <Root>
-      <WalletIcon
-        onClick={() => accountStore.setWalletModalOpened(true)}
-        style={{ cursor: "pointer" }}
-      />
+      <WalletIcon onClick={() => accountStore.setWalletModalOpened(true)} style={{ cursor: 'pointer' }} />
       <SizedBox width={24} />
       <Tooltip
         config={{
-          placement: "bottom-end",
-          trigger: "click",
+          placement: 'bottom-end',
+          trigger: 'click',
           onVisibleChange: setAccountOpened,
         }}
-        content={<WalletActionsTooltip address={address!} />}
-      >
+        content={<WalletActionsTooltip address={address!} />}>
         <AddressContainer expanded={accountOpened}>
           <img className="avatar" src={avatar!} alt="avatar" />
-          <Text>{centerEllipsis(address ?? "", 6)}</Text>
+          <Text>{centerEllipsis(address ?? '', 6)}</Text>
           <SizedBox width={10} />
           <img src={arrowIcon} className="menu-arrow" alt="arrow" />
         </AddressContainer>

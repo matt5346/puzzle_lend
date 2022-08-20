@@ -1,11 +1,11 @@
-import styled from "@emotion/styled";
+import styled from '@emotion/styled';
 
-type TokenIconSize = "default" | "small";
+type TokenIconSize = 'default' | 'small';
 
 const SquareTokenIcon = styled.img<{ size?: TokenIconSize }>`
   border: 1px solid #f1f2fe;
   //border-radius: 12px;
-  border-radius: ${({ size }) => (size === "small" ? "8px" : "12px")};
+  border-radius: ${({ size }) => (size === 'small' ? '8px' : '12px')};
   box-sizing: border-box;
   box-shadow: none;
   color: transparent;
@@ -13,10 +13,10 @@ const SquareTokenIcon = styled.img<{ size?: TokenIconSize }>`
   ${({ size }) =>
     (() => {
       switch (size) {
-        case "small":
-          return "width: 40px; height: 40px;";
+        case 'small':
+          return 'width: 40px; height: 40px;';
         default:
-          return "width: 56px; height: 56px;";
+          return 'width: 56px; height: 56px;';
       }
     })()}
 `;

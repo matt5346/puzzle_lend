@@ -1,12 +1,17 @@
-import styled from "@emotion/styled";
-import React, { useState } from "react";
-import { Text } from "@src/UIKit/Text";
-import { SizedBox } from "@src/UIKit/SizedBox";
-import { BigNumberInput } from "@src/UIKit/BigNumberInput";
-import { AmountInput } from "@src/UIKit/AmountInput";
-import { observer } from "mobx-react-lite";
-import BN from "@src/common/utils/BN";
-import { Row } from "@src/common/styles/Flex";
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable no-nested-ternary */
+/* eslint-disable react/require-default-props */
+import styled from '@emotion/styled';
+import React, { useState } from 'react';
+import { Text } from '@src/UIKit/Text';
+import { SizedBox } from '@src/UIKit/SizedBox';
+import { BigNumberInput } from '@src/UIKit/BigNumberInput';
+import { AmountInput } from '@src/UIKit/AmountInput';
+import { observer } from 'mobx-react-lite';
+import BN from '@src/common/utils/BN';
+import { Row } from '@src/common/styles/Flex';
 
 interface IProps {
   assetId: string;
@@ -30,7 +35,7 @@ const InputContainer = styled.div<{
   invalid?: boolean;
   readOnly?: boolean;
 }>`
-  background: ${({ focused, error }) => (focused ? "#fffff" : "#f1f2fe")};
+  background: ${({ focused, error }) => (focused ? '#fffff' : '#f1f2fe')};
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -40,25 +45,20 @@ const InputContainer = styled.div<{
   border-radius: 12px;
   width: 100%;
   position: relative;
-  cursor: ${({ readOnly }) => (readOnly ? "not-allowed" : "unset")};
+  cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'unset')};
 
   box-sizing: border-box;
 
   input {
-    cursor: ${({ readOnly }) => (readOnly ? "not-allowed" : "unset")};
+    cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'unset')};
   }
 
   border: 1px solid
-    ${({ focused, readOnly, error }) =>
-      error ? "#ED827E" : focused && !readOnly ? "#7075E9" : "#f1f2fe"};
+    ${({ focused, readOnly, error }) => (error ? '#ED827E' : focused && !readOnly ? '#7075E9' : '#f1f2fe')};
 
   :hover {
     border-color: ${({ readOnly, focused, error }) =>
-      error
-        ? "#ED827E"
-        : !readOnly && !focused
-        ? "#C6C9F4"
-        : focused ?? "#7075E9"};
+      error ? '#ED827E' : !readOnly && !focused ? '#C6C9F4' : focused ?? '#7075E9'};
   }
 `;
 const LightTokenInput: React.FC<IProps> = (props) => {
@@ -70,22 +70,12 @@ const LightTokenInput: React.FC<IProps> = (props) => {
         <Text type="secondary" size="medium">
           Amount
         </Text>
-        <Text
-          type="secondary"
-          textAlign="right"
-          style={{ cursor: "pointer" }}
-          onClick={props.onMaxClick}
-          size="medium"
-        >
+        <Text type="secondary" textAlign="right" style={{ cursor: 'pointer' }} onClick={props.onMaxClick} size="medium">
           MAX
         </Text>
       </Row>
       <SizedBox height={4} />
-      <InputContainer
-        focused={focused}
-        readOnly={!props.setAmount}
-        error={props.error}
-      >
+      <InputContainer focused={focused} readOnly={!props.setAmount} error={props.error}>
         <BigNumberInput
           renderInput={(props, ref) => (
             <AmountInput
@@ -108,12 +98,7 @@ const LightTokenInput: React.FC<IProps> = (props) => {
           placeholder="0.00"
           readOnly={!props.setAmount}
         />
-        <Text
-          style={{ whiteSpace: "nowrap" }}
-          type="secondary"
-          size="small"
-          fitContent
-        >
+        <Text style={{ whiteSpace: 'nowrap' }} type="secondary" size="small" fitContent>
           {props.usdnEquivalent}
         </Text>
       </InputContainer>

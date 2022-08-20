@@ -1,9 +1,9 @@
 import React from 'react';
-import ReactDOM from "react-dom";
-import { BrowserRouter as Router } from "react-router-dom";
-import { RootStore, storesContext } from "@src/stores";
-import { loadState, saveState } from "@src/common/utils/localStorage";
-import { autorun } from "mobx";
+import ReactDOM from 'react-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { RootStore, storesContext } from '@src/stores';
+import { loadState, saveState } from '@src/common/utils/localStorage';
+import { autorun } from 'mobx';
 import './index.css';
 import App from './App';
 

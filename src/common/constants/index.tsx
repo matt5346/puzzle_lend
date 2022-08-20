@@ -1,5 +1,5 @@
-import tokenLogos from "@src/common/constants/tokenLogos";
-import tokensList from "@src/common/constants/tokens.json";
+import tokenLogos from '@src/common/constants/tokenLogos';
+import tokensList from '@src/common/constants/tokens.json';
 
 export interface IToken {
   assetId: string;
@@ -13,9 +13,9 @@ export interface IToken {
 }
 
 export const ROUTES = {
-  HOME: "/",
-  NOT_FOUND: "/404",
-  DASHBOARD: "/dashboard",
+  HOME: '/',
+  NOT_FOUND: '/404',
+  DASHBOARD: '/dashboard',
 };
 
 export const TOKENS_LIST: Array<IToken> = Object.values(tokensList).map((t) => ({
@@ -23,5 +23,5 @@ export const TOKENS_LIST: Array<IToken> = Object.values(tokensList).map((t) => (
   logo: tokenLogos[t.symbol],
 }));
 
-export const NODE_URL = "https://nodes-puzzle.wavesnodes.com";
-export const EXPLORER_URL = "https://new.wavesexplorer.com";
+export const NODE_URL = 'https://nodes-puzzle.wavesnodes.com';
+export const EXPLORER_URL = 'https://new.wavesexplorer.com';

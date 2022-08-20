@@ -1,3 +1,3 @@
-import SendAssetModal from "./SendAssetModal";
+import SendAssetModal from './SendAssetModal';
 
 export default SendAssetModal;

@@ -1,0 +1,55 @@
+{
+    "extends": [
+        "react-app",
+        "airbnb-typescript",
+        "airbnb/hooks",
+        "plugin:@typescript-eslint/recommended",
+        "prettier",
+        "prettier/react",
+        "prettier/@typescript-eslint",
+        "plugin:prettier/recommended"
+    ],
+    "plugins": [
+        "react",
+        "@typescript-eslint",
+        "prettier"
+    ],
+    "env": {
+        "browser": true,
+        "es6": true,
+    },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true,
+        },
+        "ecmaVersion": 2017,
+        "sourceType": "module",
+        "project": "./tsconfig.json",
+    },
+    "rules": {
+        "react/prop-types": "off",
+        "no-plusplus": "off",
+        "no-console": "off",
+        "react/jsx-props-no-spreading": "off",
+        "react/no-array-index-key": "off",
+        "import/prefer-default-export": "off",
+        "@typescript-eslint/no-var-requires": "off",
+        "react/state-in-constructor": [2, "never"],
+        "@typescript-eslint/ban-ts-comment": "off",
+        "prettier/prettier": [
+            "error",
+            {
+                "endOfLine": "auto",
+            },
+        ],
+    },
+    "overrides": [
+        {
+          "files": ["*.ts", "*.tsx"],
+          "rules": {
+            "@typescript-eslint/explicit-module-boundary-types": "warn"
+          }
+        }
+    ],
+}

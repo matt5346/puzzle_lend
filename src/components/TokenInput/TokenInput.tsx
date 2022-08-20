@@ -1,14 +1,19 @@
-import styled from "@emotion/styled";
-import React, { useCallback, useEffect, useState } from "react";
-import { MaxButton } from "@src/UIKit/MaxButton";
-import { Text } from "@src/UIKit/Text";
-import { BigNumberInput } from "@src/UIKit/BigNumberInput";
-import { AmountInput } from "@src/UIKit/AmountInput";
-import Balance from "@src/common/entities/Balance";
-import BN from "@src/common/utils/BN";
-import _ from "lodash";
-import TokenSelect from "@components/TokenInput/TokenSelect";
-import { observer } from "mobx-react-lite";
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/require-default-props */
+import styled from '@emotion/styled';
+import React, { useCallback, useEffect, useState } from 'react';
+import { MaxButton } from '@src/UIKit/MaxButton';
+import { Text } from '@src/UIKit/Text';
+import { BigNumberInput } from '@src/UIKit/BigNumberInput';
+import { AmountInput } from '@src/UIKit/AmountInput';
+import Balance from '@src/common/entities/Balance';
+import BN from '@src/common/utils/BN';
+import _ from 'lodash';
+import TokenSelect from '@components/TokenInput/TokenSelect';
+import { observer } from 'mobx-react-lite';
 // import TokenSelectModal from "../TokensSelectModal";
 interface IProps {
   balances: Balance[];
@@ -49,7 +54,7 @@ const InputContainer = styled.div<{
   invalid?: boolean;
   readOnly?: boolean;
 }>`
-  background: ${({ focused }) => (focused ? "#fffff" : "#f1f2fe")};
+  background: ${({ focused }) => (focused ? '#fffff' : '#f1f2fe')};
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -59,28 +64,24 @@ const InputContainer = styled.div<{
   border-radius: 12px;
   width: 100%;
   position: relative;
-  cursor: ${({ readOnly }) => (readOnly ? "not-allowed" : "unset")};
+  cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'unset')};
 
   box-sizing: border-box;
 
   input {
-    cursor: ${({ readOnly }) => (readOnly ? "not-allowed" : "unset")};
+    cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'unset')};
   }
 
-  border: 1px solid
-    ${({ focused, readOnly }) => (focused && !readOnly ? "#7075E9" : "#f1f2fe")};
+  border: 1px solid ${({ focused, readOnly }) => (focused && !readOnly ? '#7075E9' : '#f1f2fe')};
 
   :hover {
-    border-color: ${({ readOnly, focused }) =>
-      !readOnly && !focused ? "#C6C9F4" : focused ?? "#7075E9"};
+    border-color: ${({ readOnly, focused }) => (!readOnly && !focused ? '#C6C9F4' : focused ?? '#7075E9')};
   }
 `;
 const TokenInput: React.FC<IProps> = (props) => {
   const [focused, setFocused] = useState(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const selectedAssetBalance = props.balances?.find(
-    ({ assetId }) => assetId === props.assetId
-  );
+  const selectedAssetBalance = props.balances?.find(({ assetId }) => assetId === props.assetId);
   const [amount, setAmount] = useState<BN>(props.amount);
 
   useEffect(() => {
@@ -91,7 +92,7 @@ const TokenInput: React.FC<IProps> = (props) => {
     setAmount(v);
     debounce(v);
   };
-  //eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debounce = useCallback(
     _.debounce((value: BN) => {
       props.setAmount && props.setAmount(value);
@@ -138,12 +139,7 @@ const TokenInput: React.FC<IProps> = (props) => {
           placeholder="0.00"
           readOnly={!props.setAmount}
         />
-        <Text
-          style={{ whiteSpace: "nowrap" }}
-          type="secondary"
-          size="small"
-          fitContent
-        >
+        <Text style={{ whiteSpace: 'nowrap' }} type="secondary" size="small" fitContent>
           {props.usdnEquivalent}
         </Text>
       </InputContainer>

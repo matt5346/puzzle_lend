@@ -1,13 +1,13 @@
-import styled from "@emotion/styled";
-import React from "react";
-import { Column } from "@src/common/styles/Flex";
-import { Text } from "@src/UIKit/Text";
-import { Anchor } from "@src/UIKit/Anchor";
-import Divider from "@src/common/styles/Divider";
-import copy from "copy-to-clipboard";
-import { observer } from "mobx-react-lite";
-import { useStores } from "@src/stores";
-import { EXPLORER_URL } from "@src/common/constants";
+import styled from '@emotion/styled';
+import React from 'react';
+import { Column } from '@src/common/styles/Flex';
+import { Text } from '@src/UIKit/Text';
+import { Anchor } from '@src/UIKit/Anchor';
+import Divider from '@src/common/styles/Divider';
+import copy from 'copy-to-clipboard';
+import { observer } from 'mobx-react-lite';
+import { useStores } from '@src/stores';
+import { EXPLORER_URL } from '@src/common/constants';
 
 interface IProps {
   address: string;
@@ -37,6 +37,7 @@ const WalletActionsTooltip: React.FC<IProps> = ({ address }) => {
   const { accountStore } = useStores();
 
   const handleCopyAddress = () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     address && copy(address);
     // notificationStore.notify("Your address was copied", {
     //   type: "success",
@@ -50,10 +51,7 @@ const WalletActionsTooltip: React.FC<IProps> = ({ address }) => {
       <Text onClick={handleCopyAddress} className="menu-item">
         Copy address
       </Text>
-      <Anchor
-        style={{ padding: "10px 0" }}
-        href={`${EXPLORER_URL}/address/${address}`}
-      >
+      <Anchor style={{ padding: '10px 0' }} href={`${EXPLORER_URL}/address/${address}`}>
         <Text>View in Waves Explorer</Text>
       </Anchor>
       <Divider className="divider" />

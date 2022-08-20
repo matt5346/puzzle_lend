@@ -1,14 +1,15 @@
-import styled from "@emotion/styled";
-import React, { useState } from "react";
-import puzzleLogo from "@src/common/assets/logo.svg";
-import { Column, Row } from "@src/common/styles/Flex";
-import { SizedBox } from "@src/UIKit/SizedBox";
-import Wallet from "@components/Wallet/Wallet";
-import { ROUTES } from "@src/common/constants";
-import { useLocation } from "react-router-dom";
-import { Anchor } from "@src/UIKit/Anchor";
-import { observer } from "mobx-react-lite";
+import styled from '@emotion/styled';
+import React, { useState } from 'react';
+import puzzleLogo from '@src/common/assets/logo.svg';
+import { Column, Row } from '@src/common/styles/Flex';
+import { SizedBox } from '@src/UIKit/SizedBox';
+import Wallet from '@components/Wallet/Wallet';
+import { ROUTES } from '@src/common/constants';
+import { useLocation } from 'react-router-dom';
+import { Anchor } from '@src/UIKit/Anchor';
+import { observer } from 'mobx-react-lite';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IProps {}
 
 const Root = styled(Column)`
@@ -57,10 +58,9 @@ const MenuItem = styled(Anchor)<{ selected?: boolean }>`
   font-weight: 500;
   font-size: 16px;
   line-height: 24px;
-  color: ${({ selected }) => (selected ? "#363870" : "#8082c5")};
+  color: ${({ selected }) => (selected ? '#363870' : '#8082c5')};
   box-sizing: border-box;
-  border-bottom: 4px solid
-    ${({ selected }) => (selected ? "#7075e9" : "transparent")};
+  border-bottom: 4px solid ${({ selected }) => (selected ? '#7075e9' : 'transparent')};
   height: 100%;
   margin: 0 12px;
 
@@ -79,15 +79,14 @@ const Desktop = styled.div`
   }
 `;
 
-const isRoutesEquals = (a: string, b: string) =>
-  a.replaceAll("/", "") === b.replaceAll("/", "");
+const isRoutesEquals = (a: string, b: string) => a.replaceAll('/', '') === b.replaceAll('/', '');
 
 const Header: React.FC<IProps> = () => {
   const location = useLocation();
 
   const menuItems = [
-    { name: "Home", link: ROUTES.HOME },
-    { name: "Dashboard", link: ROUTES.DASHBOARD },
+    { name: 'Home', link: ROUTES.HOME },
+    { name: 'Dashboard', link: ROUTES.DASHBOARD },
   ];
   return (
     <Root>
@@ -103,8 +102,7 @@ const Header: React.FC<IProps> = () => {
                 key={name}
                 selected={isRoutesEquals(link, location.pathname)}
                 href={link}
-                target={link !== "https://puzzlemarket.org/" ? "_self" : ""}
-              >
+                target={link !== 'https://puzzlemarket.org/' ? '_self' : ''}>
                 {name}
               </MenuItem>
             ))}

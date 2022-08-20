@@ -1,14 +1,15 @@
-import React from "react";
-import { Text } from "@src/UIKit/Text";
-import { SizedBox } from "@src/UIKit/SizedBox";
-import { Button } from "@src/UIKit/Button";
-import { Input } from "@src/UIKit/Input";
-import LightTokenInput from "@components/TokenInput/LightTokenInput";
-import { observer } from "mobx-react-lite";
-import { useSendAssetVM } from "@components/Wallet/SendAssetModal/SendAssetVM";
-import { useStores } from "@src/stores";
-import { Column, Row } from "@src/common/styles/Flex";
+import React from 'react';
+import { Text } from '@src/UIKit/Text';
+import { SizedBox } from '@src/UIKit/SizedBox';
+import { Button } from '@src/UIKit/Button';
+import { Input } from '@src/UIKit/Input';
+import LightTokenInput from '@components/TokenInput/LightTokenInput';
+import { observer } from 'mobx-react-lite';
+import { useSendAssetVM } from '@components/Wallet/SendAssetModal/SendAssetVM';
+import { useStores } from '@src/stores';
+import { Column, Row } from '@src/common/styles/Flex';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IProps {}
 
 const RecipientInfo: React.FC<IProps> = () => {
@@ -16,11 +17,7 @@ const RecipientInfo: React.FC<IProps> = () => {
   const { assetToSend } = accountStore;
   const vm = useSendAssetVM();
   return (
-    <Column
-      justifyContent="space-between"
-      mainAxisSize="stretch"
-      crossAxisSize="max"
-    >
+    <Column justifyContent="space-between" mainAxisSize="stretch" crossAxisSize="max">
       <Column crossAxisSize="max" mainAxisSize="stretch">
         <SizedBox height={16} />
         <Text size="medium" type="secondary">

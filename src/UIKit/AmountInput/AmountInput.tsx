@@ -1,5 +1,6 @@
-import React from "react";
-import styled from "@emotion/styled";
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import React from 'react';
+import styled from '@emotion/styled';
 
 const Root = styled.input`
   font-size: 20px;
@@ -16,7 +17,7 @@ const Root = styled.input`
     margin: 0;
   }
 
-  [type="number"] {
+  [type='number'] {
     -moz-appearance: textfield;
   }
 
@@ -27,22 +28,20 @@ const Root = styled.input`
 
 type TProps = React.InputHTMLAttributes<HTMLInputElement>;
 
-const AmountInput = React.forwardRef<HTMLInputElement, TProps>(
-  ({ onWheel, ...props }, ref) => (
-    <Root
-      {...props}
-      ref={ref}
-      type="number"
-      onWheel={(e) => {
-        e.target && (e.target as any).blur();
-        onWheel && onWheel(e);
-      }}
-      onBlur={props.onBlur}
-      onFocus={props.onFocus}
-    />
-  )
-);
+const AmountInput = React.forwardRef<HTMLInputElement, TProps>(({ onWheel, ...props }, ref) => (
+  <Root
+    {...props}
+    ref={ref}
+    type="number"
+    onWheel={(e) => {
+      e.target && (e.target as any).blur();
+      onWheel && onWheel(e);
+    }}
+    onBlur={props.onBlur}
+    onFocus={props.onFocus}
+  />
+));
 
-AmountInput.displayName = "AmountInput";
+AmountInput.displayName = 'AmountInput';
 
 export default AmountInput;

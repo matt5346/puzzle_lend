@@ -1,6 +1,6 @@
-import { makeAutoObservable } from "mobx";
-import AccountStore, { ISerializedAccountStore } from "@src/stores/AccountStore";
-import LendStore from "@src/stores/LendStore";
+import { makeAutoObservable } from 'mobx';
+import AccountStore, { ISerializedAccountStore } from '@src/stores/AccountStore';
+import LendStore from '@src/stores/LendStore';
 
 export interface ISerializedRootStore {
   accountStore?: ISerializedAccountStore;
@@ -8,6 +8,7 @@ export interface ISerializedRootStore {
 
 export default class RootStore {
   public accountStore: AccountStore;
+
   public lendStore: LendStore;
 
   constructor(initState?: ISerializedRootStore) {

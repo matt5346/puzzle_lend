@@ -1,12 +1,12 @@
-import React from "react";
-import Dialog from "@components/Dialog";
-import { LOGIN_TYPE } from "@src/stores/AccountStore";
-import LoginType from "./LoginType";
-import seed from "@src/common/assets/icons/seed.svg";
-import email from "@src/common/assets/icons/email.svg";
-import keeper from "@src/common/assets/icons/keeper.svg";
-import { observer } from "mobx-react-lite";
-import { useStores } from "@src/stores";
+import React from 'react';
+import Dialog from '@components/Dialog';
+import { LOGIN_TYPE } from '@src/stores/AccountStore';
+import seed from '@src/common/assets/icons/seed.svg';
+import email from '@src/common/assets/icons/email.svg';
+import keeper from '@src/common/assets/icons/keeper.svg';
+import { observer } from 'mobx-react-lite';
+import { useStores } from '@src/stores';
+import LoginType from './LoginType';
 
 interface IProps {
   onClose: () => void;
@@ -16,17 +16,17 @@ interface IProps {
 
 const loginTypes = [
   {
-    title: "Waves Exchange Email",
+    title: 'Waves Exchange Email',
     icon: email,
     type: LOGIN_TYPE.SIGNER_EMAIL,
   },
   {
-    title: "Waves Exchange Seed",
+    title: 'Waves Exchange Seed',
     icon: seed,
     type: LOGIN_TYPE.SIGNER_SEED,
   },
   {
-    title: "Waves Keeper",
+    title: 'Waves Keeper',
     icon: keeper,
     type: LOGIN_TYPE.KEEPER,
   },
