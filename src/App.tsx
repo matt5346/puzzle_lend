@@ -1,8 +1,10 @@
 import React from 'react';
 import styled from "@emotion/styled";
+import { observer } from "mobx-react-lite";
 import { Route, Routes } from "react-router-dom";
 import { ROUTES } from "@src/common/constants";
 import { Column } from "@src/common/styles/Flex";
+import Header from "@components/Header";
 import './App.css';
 
 // pages
@@ -19,14 +21,16 @@ const Root = styled(Column)`
 const App: React.FC = () => {
   return (
     <Root>
+      <Header />
       <Routes>
         {/* Base */}
-        <Route path={ROUTES.ROOT} element={<Home />} />
+        <Route path={ROUTES.HOME} element={<Home />} />
         {/* Dashboard */}
-        <Route path={ROUTES.DASH} element={<Dashboard />} />
+        <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
       </Routes>
     </Root>
   );
 }
 
-export default App;
+export default observer(App);
+

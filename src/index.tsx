@@ -1,18 +1,28 @@
 import React from 'react';
 import ReactDOM from "react-dom";
 import { BrowserRouter as Router } from "react-router-dom";
+import { RootStore, storesContext } from "@src/stores";
+import { loadState, saveState } from "@src/common/utils/localStorage";
+import { autorun } from "mobx";
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
 
-ReactDOM.render(
-  <Router>
-    <App />
-  </Router>,
-  document.getElementById('root')
+const initState = loadState();
+
+const mobxStore = new RootStore(initState);
+autorun(
+  () => {
+    console.dir(mobxStore);
+    saveState(mobxStore.serialize());
+  },
+  { delay: 1000 }
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+ReactDOM.render(
+  <storesContext.Provider value={mobxStore}>
+    <Router>
+      <App />
+    </Router>
+  </storesContext.Provider>,
+  document.getElementById('root')
+);
