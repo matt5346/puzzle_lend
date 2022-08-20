@@ -1,9 +1,8 @@
-### working nodes for starting app via npm:
- - 14.15.0
- - 12.9.0
+### preffered node version for starting app via npm:
+ - 16.15.0
 
 ### START
-- npm run start
+- yarn start or npm run start
 
 ### BUILD
-- npm run build
+- yarn build or npm run build

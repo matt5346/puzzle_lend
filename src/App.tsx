@@ -14,8 +14,9 @@ import Dashboard from '@src/pages/dashboard/Dashboard';
 const Root = styled(Column)`
   width: 100%;
   align-items: center;
-  background: #f8f8ff;
+  background: #120d18;
   min-height: 100vh;
+  color: #fff;
 `;
 
 const App: React.FC = () => {

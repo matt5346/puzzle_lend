@@ -16,16 +16,16 @@
     ],
     "env": {
         "browser": true,
-        "es6": true,
+        "es6": true
     },
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaFeatures": {
-            "jsx": true,
+            "jsx": true
         },
         "ecmaVersion": 2017,
         "sourceType": "module",
-        "project": "./tsconfig.json",
+        "project": "./tsconfig.json"
     },
     "rules": {
         "react/prop-types": "off",
@@ -40,9 +40,9 @@
         "prettier/prettier": [
             "error",
             {
-                "endOfLine": "auto",
-            },
-        ],
+                "endOfLine": "auto"
+            }
+        ]
     },
     "overrides": [
         {
@@ -51,5 +51,5 @@
             "@typescript-eslint/explicit-module-boundary-types": "warn"
           }
         }
-    ],
+    ]
 }
