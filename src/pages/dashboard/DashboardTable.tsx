@@ -107,7 +107,7 @@ const DashboardTable: React.FC<IProps> = () => {
       <Card style={{ padding: 0, overflow: 'auto', maxWidth: 'calc(100vw - 32px)' }} justifyContent="center">
         <GridTable
           style={{ width: 'fit-content', minWidth: '100%' }}
-          desktopTemplate="3fr 1fr 1fr 1fr"
+          desktopTemplate="2fr 1fr 1fr 1fr"
           mobileTemplate="2fr 1fr">
           <div className="gridTitle">
             <div>Token name</div>

@@ -48,9 +48,15 @@ const DesktopTokenTableRow: React.FC<IProps> = ({ token, handleWatchListChange, 
       </Row>
       <Text>$ {rate?.gte(0.0001) ? rate?.toFormat(4) : rate?.toFormat(8)}</Text>
       {vol24 != null ? <Text>$ {vol24.toFormat(2)}</Text> : <Text>-</Text>}
-      <Button onClick={() => navigate(`/trade?asset1=${token.assetId}`)} size="medium" kind="secondary">
-        Trade
-      </Button>
+      <Row justifyContent="center">
+        <Button onClick={() => navigate(`/trade?asset1=${token.assetId}`)} size="medium" kind="secondary">
+          Supply
+        </Button>
+        <SizedBox width={18} />
+        <Button onClick={() => navigate(`/trade?asset1=${token.assetId}`)} size="medium" kind="secondary">
+          Borrow
+        </Button>
+      </Row>
     </Root>
   );
 };

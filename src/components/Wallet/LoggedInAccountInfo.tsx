@@ -78,7 +78,7 @@ const LoggedInAccountInfo: React.FC<IProps> = () => {
         content={<WalletActionsTooltip address={address!} />}>
         <AddressContainer expanded={accountOpened}>
           <img className="avatar" src={avatar!} alt="avatar" />
-          <Text>{centerEllipsis(address ?? '', 6)}</Text>
+          <Text type="secondary">{centerEllipsis(address ?? '', 6)}</Text>
           <SizedBox width={10} />
           <img src={arrowIcon} className="menu-arrow" alt="arrow" />
         </AddressContainer>
