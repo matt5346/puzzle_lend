@@ -38,7 +38,7 @@ const Text = styled.p<{
         case 'purple300':
           return 'color: #C6C9F4;';
         default:
-          return 'color: #363870;';
+          return 'color: #fff;';
       }
     })()}
   ${({ ellipsis }) =>

@@ -1,15 +1,16 @@
-import styled from "@emotion/styled";
-import React, { useState } from "react";
-import { Column, Row } from "@src/common/styles/Flex";
-import { observer } from "mobx-react-lite";
-import { Scrollbar } from "@src/UIKit/Scrollbar";
-import { SizedBox } from "@src/UIKit/SizedBox";
-import { useWalletVM } from "@components/Wallet/WalletModal/WalletVM";
-import { Tabs } from "@src/UIKit/Tabs";
-import AssetsBalances from "@components/Wallet/WalletModal/AssetsBalances";
-import NFTs from "@components/Wallet/WalletModal/NFTs";
-import Investments from "./Investments";
+import styled from '@emotion/styled';
+import React, { useState } from 'react';
+import { Column, Row } from '@src/common/styles/Flex';
+import { observer } from 'mobx-react-lite';
+import { Scrollbar } from '@src/UIKit/Scrollbar';
+import { SizedBox } from '@src/UIKit/SizedBox';
+import { useWalletVM } from '@components/Wallet/WalletModal/WalletVM';
+import { Tabs } from '@src/UIKit/Tabs';
+import AssetsBalances from '@components/Wallet/WalletModal/AssetsBalances';
+import NFTs from '@components/Wallet/WalletModal/NFTs';
+import Investments from './Investments';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IProps {}
 
 const Root = styled(Column)`
@@ -34,12 +35,10 @@ const ListWrapper = styled.div<{ headerExpanded: boolean }>`
   display: flex;
   flex-direction: column;
   transition: 0.4s;
-  height: ${({ headerExpanded }) =>
-    headerExpanded ? "calc(100vh - 212px)" : "calc(100vh - 96px)"};
+  height: ${({ headerExpanded }) => (headerExpanded ? 'calc(100vh - 212px)' : 'calc(100vh - 96px)')};
 
   @media (min-width: 560px) {
-    height: ${({ headerExpanded }) =>
-      headerExpanded ? "calc(560px - 212px)" : "calc(560px - 96px)"};
+    height: ${({ headerExpanded }) => (headerExpanded ? 'calc(560px - 212px)' : 'calc(560px - 96px)')};
   }
 `;
 
@@ -53,10 +52,10 @@ const WalletModalBody: React.FC<IProps> = () => {
     <Root>
       <TabsWrapper>
         <Tabs
-          tabs={[{ name: "Assets" }, { name: "Investments" }, { name: "NFTs" }]}
+          tabs={[{ name: 'Assets' }, { name: 'Investments' }, { name: 'NFTs' }]}
           activeTab={activeTab}
           setActive={(v) => setActiveTab(v)}
-          style={{ justifyContent: "space-evenly", paddingTop: 16 }}
+          style={{ justifyContent: 'space-evenly', paddingTop: 16 }}
           tabStyle={{ flex: 1, marginRight: 0 }}
         />
       </TabsWrapper>

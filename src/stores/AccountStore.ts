@@ -15,6 +15,8 @@ import Balance from '@src/common/entities/Balance';
 import { getCurrentBrowser } from '@src/common/utils/getCurrentBrowser';
 import BN from '@src/common/utils/BN';
 import { nodeInteraction, waitForTx } from '@waves/waves-transactions';
+import nodeService from '@src/common/services/nodeService';
+
 // import nodeService from "@src/services/nodeService";
 
 export enum LOGIN_TYPE {
@@ -63,7 +65,7 @@ class AccountStore {
       this.setAddress(initState.address);
     }
     Promise.all([this.checkScriptedAccount(), this.updateAccountAssets()]);
-    setInterval(this.updateAccountAssets, 10 * 1000);
+    // setInterval(this.updateAccountAssets, 1000000 * 1000);
     reaction(
       () => this.address,
       () => Promise.all([this.checkScriptedAccount(), this.updateAccountAssets()])
@@ -223,22 +225,19 @@ class AccountStore {
     if (!force && this.assetsBalancesLoading) return;
     this.setAssetsBalancesLoading(true);
 
-    // const address = this.address;
-    // const data = await nodeService.getAddressBalances(address);
-    // const assetBalances = TOKENS_LIST.map((asset) => {
-    //   const t = data.find(({ assetId }) => asset.assetId === assetId);
-    //   const balance = new BN(t != null ? t.balance : 0);
-    //   const rate =
-    //     this.rootStore.poolsStore.usdnRate(asset.assetId, 1) ?? BN.ZERO;
-    //   const usdnEquivalent = rate
-    //     ? rate.times(BN.formatUnits(balance, asset.decimals))
-    //     : BN.ZERO;
-    //   return new Balance({ balance, usdnEquivalent, ...asset });
-    // });
-    // const newAddress = this.address;
-    // if (address !== newAddress) return;
+    const { address } = this;
+    const data = await nodeService.getAddressBalances(address);
+    const assetBalances = TOKENS_LIST.map((asset) => {
+      const t = data.find(({ assetId }) => asset.assetId === assetId);
+      const balance = new BN(t != null ? t.balance : 0);
+      const rate = this.rootStore.poolsStore.usdnRate(asset.assetId, 1) ?? BN.ZERO;
+      const usdnEquivalent = rate ? rate.times(BN.formatUnits(balance, asset.decimals)) : BN.ZERO;
+      return new Balance({ balance, usdnEquivalent, ...asset });
+    });
+    const newAddress = this.address;
+    if (address !== newAddress) return;
 
-    // this.setAssetBalances(assetBalances);
+    this.setAssetBalances(assetBalances);
     this.setAssetsBalancesLoading(false);
   };
 

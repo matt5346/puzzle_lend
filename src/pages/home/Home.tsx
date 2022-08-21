@@ -4,7 +4,7 @@ import logo from '@src/logo.svg';
 const Home: React.FC = () => {
   return (
     <div className="App">
-      <h1>Home</h1>
+      <h1>PuzzleLand</h1>
     </div>
   );
 };

@@ -1,16 +1,18 @@
-import styled from "@emotion/styled";
-import React from "react";
-import { SizedBox } from "@src/UIKit/SizedBox";
-import { Column } from "@src/common/styles/Flex";
-import { Text } from "@src/UIKit/Text";
-import { useStores } from "@src/stores";
-import { ReactComponent as Copy } from "@src/assets/icons/copy.svg";
-import { ReactComponent as Link } from "@src/assets/icons/whiteLink.svg";
-import { ReactComponent as Disconnect } from "@src/assets/icons/disconnect.svg";
-import { observer } from "mobx-react-lite";
-import { useWalletVM } from "@components/Wallet/WalletModal/WalletVM";
-import { EXPLORER_URL } from "@src/common/constants";
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import styled from '@emotion/styled';
+import React from 'react';
+import { SizedBox } from '@src/UIKit/SizedBox';
+import { Column } from '@src/common/styles/Flex';
+import { Text } from '@src/UIKit/Text';
+import { useStores } from '@src/stores';
+import { ReactComponent as Copy } from '@src/common/assets/icons/copy.svg';
+import { ReactComponent as Link } from '@src/common/assets/icons/whiteLink.svg';
+import { ReactComponent as Disconnect } from '@src/common/assets/icons/disconnect.svg';
+import { observer } from 'mobx-react-lite';
+import { useWalletVM } from '@components/Wallet/WalletModal/WalletVM';
+import { EXPLORER_URL } from '@src/common/constants';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IProps {}
 
 const Root = styled(Column)<{ headerExpanded: boolean }>`
@@ -21,9 +23,9 @@ const Root = styled(Column)<{ headerExpanded: boolean }>`
   overflow: hidden;
   padding: 0 24px;
   box-sizing: border-box;
-  height: ${({ headerExpanded }) => (headerExpanded ? "212px" : "0px")};
+  height: ${({ headerExpanded }) => (headerExpanded ? '212px' : '0px')};
   @media (min-width: 560px) {
-    height: ${({ headerExpanded }) => (headerExpanded ? "212px" : "0px")};
+    height: ${({ headerExpanded }) => (headerExpanded ? '212px' : '0px')};
   }
 `;
 const Actions = styled.div`
@@ -56,18 +58,17 @@ const WalletModalHeader: React.FC<IProps> = () => {
   const action = [
     {
       icon: <Copy className="img" />,
-      text: "Copy address",
+      text: 'Copy address',
       onClick: vm.handleCopyAddress,
     },
     {
       icon: <Link className="img" />,
-      text: "View on Explorer",
-      onClick: () =>
-        window.open(`${EXPLORER_URL}/address/${address}`, "_blank"),
+      text: 'View on Explorer',
+      onClick: () => window.open(`${EXPLORER_URL}/address/${address}`, '_blank'),
     },
     {
       icon: <Disconnect className="img" />,
-      text: "Disconnect",
+      text: 'Disconnect',
       onClick: vm.handleLogOut,
     },
   ];

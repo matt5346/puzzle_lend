@@ -1,15 +1,16 @@
-import styled from "@emotion/styled";
-import Skeleton from "react-loading-skeleton";
-import React from "react";
-import { observer } from "mobx-react-lite";
-import { Text } from "@src/UIKit/Text";
-import { useStores } from "@src/stores";
-import { Button } from "@src/UIKit/Button";
-import { SizedBox } from "@src/UIKit/SizedBox";
-import { Column } from "@src/common/styles/Flex";
-import { Anchor } from "@src/UIKit/Anchor";
-import { ReactComponent as Pics } from "@src/common/assets/icons/picsUnion.svg";
+import styled from '@emotion/styled';
+import Skeleton from 'react-loading-skeleton';
+import React from 'react';
+import { observer } from 'mobx-react-lite';
+import { Text } from '@src/UIKit/Text';
+import { useStores } from '@src/stores';
+import { Button } from '@src/UIKit/Button';
+import { SizedBox } from '@src/UIKit/SizedBox';
+import { Column } from '@src/common/styles/Flex';
+import { Anchor } from '@src/UIKit/Anchor';
+import { ReactComponent as Pics } from '@src/common/assets/icons/picsUnion.svg';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IProps {}
 
 const Root = styled.div`

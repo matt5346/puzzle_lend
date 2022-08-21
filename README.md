@@ -1,4 +1,4 @@
-### preffered node version for starting app via npm:
+### preffered node version:
  - 16.15.0
 
 ### START

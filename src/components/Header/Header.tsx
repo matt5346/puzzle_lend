@@ -5,7 +5,7 @@ import { Column, Row } from '@src/common/styles/Flex';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import Wallet from '@components/Wallet/Wallet';
 import { ROUTES } from '@src/common/constants';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { Anchor } from '@src/UIKit/Anchor';
 import { observer } from 'mobx-react-lite';
 
@@ -53,17 +53,20 @@ const TopMenu = styled.header`
   }
 `;
 
-const MenuItem = styled(Anchor)<{ selected?: boolean }>`
+const MenuItem = styled.div<{ selected?: boolean }>`
   display: flex;
   align-items: center;
   font-weight: 500;
   font-size: 16px;
   line-height: 24px;
-  color: ${({ selected }) => (selected ? '#fff' : '#c0c3ff')};
   box-sizing: border-box;
   border-bottom: 4px solid ${({ selected }) => (selected ? '#fff' : 'transparent')};
   height: 100%;
   margin: 0 12px;
+
+  a {
+    color: ${({ selected }) => (selected ? '#fff' : '#c0c3ff')};
+  }
 
   &:hover {
     border-bottom: 4px solid #c6c9f4;
@@ -99,12 +102,8 @@ const Header: React.FC<IProps> = () => {
           <Desktop>
             <SizedBox width={54} />
             {menuItems.map(({ name, link }) => (
-              <MenuItem
-                key={name}
-                selected={isRoutesEquals(link, location.pathname)}
-                href={link}
-                target={link !== 'https://puzzlemarket.org/' ? '_self' : ''}>
-                {name}
+              <MenuItem key={name} selected={isRoutesEquals(link, location.pathname)}>
+                <Link to={link}>{name}</Link>
               </MenuItem>
             ))}
           </Desktop>
