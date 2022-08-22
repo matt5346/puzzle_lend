@@ -42,7 +42,7 @@ const Root = styled.div<{ withClickLogic?: boolean }>`
 const DefaultIcon = styled.div`
   width: 40px;
   height: 40px;
-  color: #f1f2fe;
+  color: #000;
   border: 1px solid #f1f2fe;
   border-radius: 8px;
 `;
@@ -62,10 +62,10 @@ const InvestRow: React.FC<IProps> = ({
         {logo ? <SquareTokenIcon size="small" src={logo} /> : <DefaultIcon />}
         <SizedBox width={8} />
         <Column>
-          <Text weight={500} size="medium">
+          <Text weight={500} size="medium" type="primary">
             {topLeftInfo}
           </Text>
-          <Text size="medium" type="secondary">
+          <Text size="medium" type="primary">
             {bottomLeftInfo}&nbsp;
             {rateChange != null &&
               !rateChange.eq(0) &&
@@ -78,10 +78,10 @@ const InvestRow: React.FC<IProps> = ({
         </Column>
       </Row>
       <Column alignItems="flex-end">
-        <Text weight={500} size="medium" style={{ whiteSpace: 'nowrap' }} textAlign="right">
+        <Text weight={500} size="medium" style={{ whiteSpace: 'nowrap' }} type="primary" textAlign="right">
           {topRightInfo}
         </Text>
-        <Text style={{ whiteSpace: 'nowrap' }} textAlign="right" type="secondary" size="small">
+        <Text style={{ whiteSpace: 'nowrap' }} textAlign="right" type="primary" size="small">
           {bottomRightInfo}
         </Text>
       </Column>

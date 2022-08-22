@@ -55,7 +55,7 @@ const AssetsBalances: React.FC<IProps> = () => {
         <Column justifyContent="center" alignItems="center" crossAxisSize="max">
           <SizedBox height={16} />
           <NotFoundIcon />
-          <Text type="secondary" size="medium" textAlign="center">
+          <Text type="primary" size="medium" textAlign="center">
             You don’t have any assets on your wallet.
             <br />
             Buy WAVES on Waves Exchange to start trading.

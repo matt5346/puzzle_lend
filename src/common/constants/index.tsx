@@ -50,6 +50,7 @@ export const CONTRACT_ADDRESSES = {
   nfts: '3PFQjjDMiZKQZdu5JqTHD7HwgSXyp9Rw9By',
   createArtefacts: '3PFkgvC9y6zHy64zEAscKKgaNY3yipiLqbW',
   boost: '3PAeY7RgwuNUZNscGqahqJxFTFDkh7fbNwJ',
+  ltv1: '3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT',
 };
 
 export const ROUTES = {

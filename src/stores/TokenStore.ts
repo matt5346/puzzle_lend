@@ -38,7 +38,7 @@ export default class TokenStore {
 
   private setStatistics = (v: Array<TTokenStatistics>) => (this.statistics = v);
 
-  get statisticsByAssetId() {
+  get statisticsByAssetId(): Record<string, TTokenStatistics> {
     return this.statistics.reduce(
       (acc, stats) => ({ ...acc, [stats.assetId]: stats }),
       {} as Record<string, TTokenStatistics>

@@ -26,7 +26,7 @@ const Text = styled.p<{
         case 'primary':
           return 'color: #363870;';
         case 'secondary':
-          return 'color: #8082C5;';
+          return 'color: #000;';
         case 'blue500':
           return 'color: #7075E9;';
         case 'light':

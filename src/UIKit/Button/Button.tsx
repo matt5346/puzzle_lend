@@ -13,14 +13,14 @@ const Button = styled.button<{
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
-  background: ${({ kind }) => (kind === 'secondary' ? '#fff' : '#7075e9')};
-  border: 1px solid ${({ kind }) => (kind === 'secondary' ? '#F1F2FE' : '#7075e9')};
-  border-radius: 12px;
+  background: ${({ kind }) => (kind === 'secondary' ? '#7075e9' : '#fff')};
+  border: 1px solid ${({ kind }) => (kind === 'secondary' ? '#7075e9' : '#F1F2FE')};
+  border-radius: 2px;
   box-shadow: none;
   font-weight: 500;
   font-size: 16px;
   line-height: 24px;
-  color: ${({ kind }) => (kind === 'secondary' ? '#7075E9' : '#ffffff')};
+  color: ${({ kind }) => (kind === 'secondary' ? '#fff' : '#7075E9')};
   width: ${({ fixed }) => (fixed ? '100%' : 'fit-content')};
   transition: 0.4s;
   ${({ size }) =>
@@ -37,15 +37,15 @@ const Button = styled.button<{
 
   :hover {
     cursor: pointer;
-    background: ${({ kind }) => (kind === 'secondary' ? '#F1F2FE' : '#6563dd')};
-    border: 1px solid ${({ kind }) => (kind === 'secondary' ? '#F1F2FE' : '#6563dd')};
-    color: ${({ kind }) => kind === 'secondary' && '#6563DD'};
+    background: ${({ kind }) => (kind === 'secondary' ? '#6563dd' : '#F1F2FE')};
+    border: 1px solid ${({ kind }) => (kind === 'secondary' ? '#6563dd' : '#F1F2FE')};
+    color: ${({ kind }) => kind === 'secondary' && '#F1F2FE'};
   }
 
   :disabled {
     opacity: ${({ kind }) => (kind === 'secondary' ? 0.4 : 1)};
-    background: ${({ kind }) => (kind === 'secondary' ? '#fff' : '#c6c9f4')};
-    border: 1px solid ${({ kind }) => (kind === 'secondary' ? '#F1F2FE' : '#c6c9f4')};
+    background: ${({ kind }) => (kind === 'secondary' ? '#c6c9f4' : '#fff')};
+    border: 1px solid ${({ kind }) => (kind === 'secondary' ? '#c6c9f4' : '#F1F2FE')};
     cursor: not-allowed;
   }
 `;

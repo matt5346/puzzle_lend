@@ -1,6 +1,7 @@
 /* eslint-disable react/require-default-props */
 import styled from '@emotion/styled';
 import React, { useRef } from 'react';
+import { observer } from 'mobx-react-lite';
 import { useNavigate } from 'react-router-dom';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import { Text } from '@src/UIKit/Text';
@@ -15,7 +16,7 @@ interface IProps {
   token: IToken;
   rate?: BN;
   vol24?: BN;
-  handleWatchListChange: (assetId: string) => void;
+  handleSupplyAssetClick: (assetId: string) => void;
 }
 
 const Root = styled.div`
@@ -28,7 +29,7 @@ const Fav = styled.img`
   cursor: pointer;
 `;
 
-const DesktopTokenTableRow: React.FC<IProps> = ({ token, handleWatchListChange, rate, vol24 }) => {
+const DesktopTokenTableRow: React.FC<IProps> = ({ token, handleSupplyAssetClick, rate, vol24 }) => {
   const navigate = useNavigate();
   return (
     <Root className="gridRow">
@@ -49,7 +50,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({ token, handleWatchListChange, 
       <Text>$ {rate?.gte(0.0001) ? rate?.toFormat(4) : rate?.toFormat(8)}</Text>
       {vol24 != null ? <Text>$ {vol24.toFormat(2)}</Text> : <Text>-</Text>}
       <Row justifyContent="center">
-        <Button onClick={() => navigate(`/trade?asset1=${token.assetId}`)} size="medium" kind="secondary">
+        <Button onClick={() => handleSupplyAssetClick(token.assetId)} size="medium" kind="secondary">
           Supply
         </Button>
         <SizedBox width={18} />
@@ -60,4 +61,5 @@ const DesktopTokenTableRow: React.FC<IProps> = ({ token, handleWatchListChange, 
     </Root>
   );
 };
-export default DesktopTokenTableRow;
+
+export default observer(DesktopTokenTableRow);

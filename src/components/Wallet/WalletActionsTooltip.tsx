@@ -48,14 +48,14 @@ const WalletActionsTooltip: React.FC<IProps> = ({ address }) => {
 
   return (
     <Root>
-      <Text onClick={handleCopyAddress} className="menu-item">
+      <Text type="secondary" onClick={handleCopyAddress} className="menu-item">
         Copy address
       </Text>
       <Anchor style={{ padding: '10px 0' }} href={`${EXPLORER_URL}/address/${address}`}>
-        <Text>View in Waves Explorer</Text>
+        <Text type="secondary">View in Waves Explorer</Text>
       </Anchor>
       <Divider className="divider" />
-      <Text onClick={handleLogout} className="menu-item">
+      <Text type="secondary" onClick={handleLogout} className="menu-item">
         Disconnect
       </Text>
     </Root>

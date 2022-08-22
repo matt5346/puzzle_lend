@@ -6,7 +6,7 @@ import BN from '@src/common/utils/BN';
 export interface IBigNumberInputProps {
   className?: string;
   decimals: number;
-  value: BN;
+  value: BN | void;
   onChange: (value: BN) => void;
   renderInput?: (
     props: React.HTMLProps<HTMLInputElement>,
@@ -73,6 +73,7 @@ const BigNumberInput: React.FC<IBigNumberInputProps> = ({
   }, [autofocus, inputRef.current]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('onChange');
     // eslint-disable-next-line @typescript-eslint/no-shadow
     let { value } = event.currentTarget;
 

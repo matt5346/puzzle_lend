@@ -17,6 +17,12 @@ const Root = styled.button`
   box-shadow: none;
   background: transparent;
   margin-right: 10px;
+  cursor: pointer;
+
+  &:hover {
+    background: #7075e9;
+    color: #fff;
+  }
 `;
 
 const MaxButton: React.FC<IProps> = ({ ...rest }) => {

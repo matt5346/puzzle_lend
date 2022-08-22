@@ -52,6 +52,7 @@ const TableTitle: React.FC<{
 );
 
 const DashboardTable: React.FC<IProps> = () => {
+  const { lendStore } = useStores();
   const [filteredTokens, setFilteredTokens] = useState<IToken[]>([]);
   const vm = useExploreVM();
 
@@ -68,21 +69,10 @@ const DashboardTable: React.FC<IProps> = () => {
     }
   };
 
-  const handleWatchListChange = (assetId: string) => {
-    const tokenStatus = tokenStore.watchList.includes(assetId);
-    if (tokenStatus) {
-      tokenStore.removeFromWatchList(assetId);
-      // notificationStore.notify(watchListText, {
-      //   type: 'info',
-      //   title: `${TOKENS_BY_ASSET_ID[assetId].symbol} has been removed to the watchlist`,
-      // });
-    } else {
-      tokenStore.addToWatchList(assetId);
-      // notificationStore.notify(watchListText, {
-      //   type: 'success',
-      //   title: `${TOKENS_BY_ASSET_ID[assetId].symbol} has been added to the watchlist`,
-      // });
-    }
+  const handleSupplyAssetClick = (assetId: string) => {
+    console.log(assetId, 'asset id');
+    console.log(lendStore, 'lendStore id');
+    lendStore.setDashboardModalOpened(true, assetId);
   };
   console.log(vm, 'VMMMM');
 
@@ -136,7 +126,7 @@ const DashboardTable: React.FC<IProps> = () => {
                 vol24={stats?.volume24}
                 key={t.assetId}
                 rate={stats.currentPrice}
-                handleWatchListChange={handleWatchListChange}
+                handleSupplyAssetClick={handleSupplyAssetClick}
               />
             );
           })}

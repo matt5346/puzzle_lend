@@ -4,6 +4,7 @@ import { useVM } from '@src/hooks/useVM';
 import { makeAutoObservable } from 'mobx';
 import { RootStore, useStores } from '@src/stores';
 import { TOKENS_LIST } from '@src/common/constants';
+import BN from '@src/common/utils/BN';
 
 const ctx = React.createContext<ExploreVM | null>(null);
 

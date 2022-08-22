@@ -23,7 +23,7 @@ interface IProps
 
 const Root = styled.div<{ focused?: boolean; error?: boolean }>`
   width: 100%;
-  background: ${({ focused }) => (focused ? '#fffff' : '#f1f2fe')};
+  background: ${({ focused }) => (focused ? '#fffff' : '#fff')};
   border: 1px solid ${({ focused, error }) => (error ? '#ED827E' : focused ? '#7075E9' : '#f1f2fe')};
 
   :hover {
