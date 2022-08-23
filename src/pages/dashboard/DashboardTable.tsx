@@ -105,7 +105,7 @@ const DashboardTable: React.FC<IProps> = () => {
               Price
             </TableTitle>
             <TableTitle onClick={() => selectSort('volume')} mode={sortMode} sort={sort === 'volume'}>
-              Volume (24h)
+              Total supply
             </TableTitle>
           </div>
           {filteredTokens.length === 0 && (
@@ -120,12 +120,14 @@ const DashboardTable: React.FC<IProps> = () => {
           )}
           {filteredTokens.map((t) => {
             const stats = tokenStore.statisticsByAssetId[t.assetId];
+            console.log(stats, 'STATS');
             return (
               <DesktopTokenTableRow
                 token={t}
                 vol24={stats?.volume24}
                 key={t.assetId}
                 rate={stats.currentPrice}
+                totalLendSupply={stats.totalLendSupply}
                 handleSupplyAssetClick={handleSupplyAssetClick}
               />
             );

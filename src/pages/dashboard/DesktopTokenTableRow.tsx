@@ -16,6 +16,7 @@ interface IProps {
   token: IToken;
   rate?: BN;
   vol24?: BN;
+  totalLendSupply?: BN;
   handleSupplyAssetClick: (assetId: string) => void;
 }
 
@@ -29,7 +30,7 @@ const Fav = styled.img`
   cursor: pointer;
 `;
 
-const DesktopTokenTableRow: React.FC<IProps> = ({ token, handleSupplyAssetClick, rate, vol24 }) => {
+const DesktopTokenTableRow: React.FC<IProps> = ({ token, handleSupplyAssetClick, totalLendSupply, rate, vol24 }) => {
   const navigate = useNavigate();
   return (
     <Root className="gridRow">
@@ -48,13 +49,13 @@ const DesktopTokenTableRow: React.FC<IProps> = ({ token, handleSupplyAssetClick,
         </Row>
       </Row>
       <Text>$ {rate?.gte(0.0001) ? rate?.toFormat(4) : rate?.toFormat(8)}</Text>
-      {vol24 != null ? <Text>$ {vol24.toFormat(2)}</Text> : <Text>-</Text>}
+      {totalLendSupply != null ? <Text>$ {totalLendSupply.toFormat(3)}</Text> : <Text>-</Text>}
       <Row justifyContent="center">
         <Button onClick={() => handleSupplyAssetClick(token.assetId)} size="medium" kind="secondary">
           Supply
         </Button>
         <SizedBox width={18} />
-        <Button onClick={() => navigate(`/trade?asset1=${token.assetId}`)} size="medium" kind="secondary">
+        <Button onClick={() => handleSupplyAssetClick(token.assetId)} size="medium" kind="secondary">
           Borrow
         </Button>
       </Row>

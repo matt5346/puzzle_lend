@@ -68,10 +68,10 @@ const WalletModalBody: React.FC<IProps> = () => {
         <SizedBox height={8} />
         {activeTab === 0 && (
           <SupplyAssets
-            decimals={lendStore.choosenToken.decimals}
+            decimals={lendStore.choosenToken?.decimals}
             amount={vm.supplyAmount}
             setAmount={vm.setSupplyAmount}
-            assetId={lendStore.choosenToken.assetId}
+            assetId={lendStore.choosenToken?.assetId}
             onMaxClick={amountMaxClickFunc}
             onSubmit={vm.submitSupply}
           />

@@ -22,8 +22,33 @@ const wavesCapService = {
       params.append('assetIds[]=', assetsId[i]);
     }
     const url = `https://wavescap.com/api/assets-info.php?${params.toString()}`;
+
+    const assetsData = await Promise.all(
+      assetsId.map(async (itemId) => {
+        // todo: pass pools
+        const urlSupply = `https://nodes.wavesnodes.com/addresses/data/3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT?key=total_supplied_${itemId}&key=setup_roi`;
+        const response = await axios.get(urlSupply);
+        return response.data;
+      })
+    );
+
     const response = await axios.get(url);
-    return response.data.assets != null ? response.data.assets.filter((v: any) => v != null) : [];
+
+    const fullAssetsData = response.data.assets.map((item: any) => {
+      const itemData = {
+        ...item,
+        total_lend_supply: 0,
+      };
+
+      assetsData.forEach((assetPoolData) => {
+        const poolValue = assetPoolData.find((pool: any) => `total_supplied_${item.id}` === pool.key);
+        if (poolValue) itemData.total_lend_supply = poolValue.value;
+      });
+
+      return itemData;
+    });
+    console.log(fullAssetsData, 'fullAsset');
+    return fullAssetsData != null ? fullAssetsData.filter((v: any) => v != null) : [];
   },
   getAllAssetsStats: async (): Promise<IAssetResponse[]> => {
     const response = await axios.get('https://wavescap.com/api/assets.json');

@@ -30,7 +30,7 @@ const Icon = styled.img`
 const LoginType: React.FC<IProps> = ({ title, icon, type, ...rest }) => {
   return (
     <Root {...rest} disable={rest.onClick == null}>
-      <Text size="medium" weight={500}>
+      <Text type="primary" size="medium" weight={500}>
         {title}
       </Text>
       <Icon src={icon} alt={type} />

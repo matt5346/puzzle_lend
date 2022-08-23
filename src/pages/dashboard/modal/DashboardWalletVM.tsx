@@ -69,7 +69,10 @@ class DashboardWalletVM {
       .catch((e) => {
         console.log(e, '---e');
       })
-      .then(() => accountStore.updateAccountAssets(true));
+      .then(() => {
+        accountStore.updateAccountAssets(true);
+        lendStore.setDashboardModalOpened(false, '');
+      });
   };
 
   handleCopyAddress = () => {
