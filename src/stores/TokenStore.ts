@@ -15,6 +15,8 @@ export type TTokenStatistics = {
   decimals: number;
   name: string;
   symbol: string;
+  setupLtv: string;
+  setupRoi: string;
   totalSupply: BN;
   totalLendSupply: BN;
   circulatingSupply: BN;
@@ -81,13 +83,14 @@ export default class TokenStore {
       const formatChange24HUsd = change24HUsd?.times(change24H?.gte(0) ? 1 : -1).toFormat(2);
       const formatChange24H = change24H?.times(change24H?.gte(0) ? 1 : -1).toFormat(2);
       const changeStr = `${changePrefix} $${formatChange24HUsd} (${formatChange24H}%)`;
-      console.log(details.total_lend_supply, 'total_lend_supply');
       return {
         assetId: details.id,
         decimals,
         name: details.name,
         symbol: details.shortcode,
         totalSupply,
+        setupLtv: details.setup_ltv,
+        setupRoi: details.setup_roi,
         totalLendSupply: BN.formatUnits(details.total_lend_supply, decimals),
         circulatingSupply: BN.formatUnits(details.circulating, decimals),
         change24H,

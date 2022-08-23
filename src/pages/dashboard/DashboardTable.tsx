@@ -56,11 +56,11 @@ const DashboardTable: React.FC<IProps> = () => {
   const [filteredTokens, setFilteredTokens] = useState<IToken[]>([]);
   const vm = useExploreVM();
 
-  const [sort, setSort] = useState<'price' | 'change' | 'volume'>('change');
+  const [sort, setSort] = useState<'price' | 'supply' | 'ltv'>('price');
   const [sortMode, setSortMode] = useState<'descending' | 'ascending'>('descending');
   const { tokenStore, accountStore } = useStores();
 
-  const selectSort = (v: 'price' | 'change' | 'volume') => {
+  const selectSort = (v: 'price' | 'supply' | 'ltv') => {
     if (sort === v) {
       setSortMode(sortMode === 'ascending' ? 'descending' : 'ascending');
     } else {
@@ -97,15 +97,21 @@ const DashboardTable: React.FC<IProps> = () => {
       <Card style={{ padding: 0, overflow: 'auto', maxWidth: 'calc(100vw - 32px)' }} justifyContent="center">
         <GridTable
           style={{ width: 'fit-content', minWidth: '100%' }}
-          desktopTemplate="2fr 1fr 1fr 1fr"
+          desktopTemplate="2fr 1fr 1fr 1fr 1fr 2fr"
           mobileTemplate="2fr 1fr">
           <div className="gridTitle">
             <div>Token name</div>
             <TableTitle onClick={() => selectSort('price')} mode={sortMode} sort={sort === 'price'}>
               Price
             </TableTitle>
-            <TableTitle onClick={() => selectSort('volume')} mode={sortMode} sort={sort === 'volume'}>
+            <TableTitle onClick={() => selectSort('supply')} mode={sortMode} sort={sort === 'supply'}>
               Total supply
+            </TableTitle>
+            <TableTitle onClick={() => selectSort('ltv')} mode={sortMode} sort={sort === 'ltv'}>
+              LTV
+            </TableTitle>
+            <TableTitle onClick={() => selectSort('ltv')} mode={sortMode} sort={sort === 'ltv'}>
+              ROI
             </TableTitle>
           </div>
           {filteredTokens.length === 0 && (
@@ -127,6 +133,8 @@ const DashboardTable: React.FC<IProps> = () => {
                 vol24={stats?.volume24}
                 key={t.assetId}
                 rate={stats.currentPrice}
+                setupRoi={stats.setupRoi}
+                setupLtv={stats.setupLtv}
                 totalLendSupply={stats.totalLendSupply}
                 handleSupplyAssetClick={handleSupplyAssetClick}
               />

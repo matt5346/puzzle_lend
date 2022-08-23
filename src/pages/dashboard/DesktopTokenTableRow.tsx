@@ -16,6 +16,8 @@ interface IProps {
   token: IToken;
   rate?: BN;
   vol24?: BN;
+  setupLtv?: string;
+  setupRoi?: string;
   totalLendSupply?: BN;
   handleSupplyAssetClick: (assetId: string) => void;
 }
@@ -30,7 +32,15 @@ const Fav = styled.img`
   cursor: pointer;
 `;
 
-const DesktopTokenTableRow: React.FC<IProps> = ({ token, handleSupplyAssetClick, totalLendSupply, rate, vol24 }) => {
+const DesktopTokenTableRow: React.FC<IProps> = ({
+  vol24,
+  token,
+  handleSupplyAssetClick,
+  totalLendSupply,
+  rate,
+  setupLtv,
+  setupRoi,
+}) => {
   const navigate = useNavigate();
   return (
     <Root className="gridRow">
@@ -50,6 +60,8 @@ const DesktopTokenTableRow: React.FC<IProps> = ({ token, handleSupplyAssetClick,
       </Row>
       <Text>$ {rate?.gte(0.0001) ? rate?.toFormat(4) : rate?.toFormat(8)}</Text>
       {totalLendSupply != null ? <Text>$ {totalLendSupply.toFormat(3)}</Text> : <Text>-</Text>}
+      {setupLtv != null ? <Text>{setupLtv}</Text> : <Text>-</Text>}
+      {setupRoi != null ? <Text>{setupRoi}</Text> : <Text>-</Text>}
       <Row justifyContent="center">
         <Button onClick={() => handleSupplyAssetClick(token.assetId)} size="medium" kind="secondary">
           Supply

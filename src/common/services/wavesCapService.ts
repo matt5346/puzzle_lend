@@ -26,8 +26,9 @@ const wavesCapService = {
     const assetsData = await Promise.all(
       assetsId.map(async (itemId) => {
         // todo: pass pools
-        const urlSupply = `https://nodes.wavesnodes.com/addresses/data/3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT?key=total_supplied_${itemId}&key=setup_roi`;
+        const urlSupply = `https://nodes.wavesnodes.com/addresses/data/3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT?key=total_supplied_${itemId}&key=setup_roi&key=setup_ltvs&key=setup_roi&key=setup_tokens`;
         const response = await axios.get(urlSupply);
+        console.log(response, 'SUUPLY');
         return response.data;
       })
     );
@@ -38,11 +39,28 @@ const wavesCapService = {
       const itemData = {
         ...item,
         total_lend_supply: 0,
+        setup_ltv: 0,
+        setup_roi: 0,
       };
 
       assetsData.forEach((assetPoolData) => {
+        console.log(assetPoolData, 'assetPoolData');
         const poolValue = assetPoolData.find((pool: any) => `total_supplied_${item.id}` === pool.key);
+        const ltv = assetPoolData.find((pool: any) => pool.key === 'setup_ltvs')?.value?.split(',');
+        const setupTokens = assetPoolData.find((pool: any) => pool.key === 'setup_tokens')?.value?.split(',');
+
+        setupTokens.forEach((token_id: any, key: any) => {
+          if (itemData.id === token_id) itemData.setup_ltv = `${ltv[key] / 10000}%`;
+        });
+
+        assetPoolData.forEach((pool: any) => {
+          if (pool.key === 'setup_roi') {
+            itemData.setup_roi = `${pool.value / 10000}%`;
+          }
+        });
+
         if (poolValue) itemData.total_lend_supply = poolValue.value;
+        if (ltv) itemData.setup_ltvs = `${(Number(ltv[0]) / Number(ltv[1])) * 100}%`;
       });
 
       return itemData;
