@@ -13,9 +13,10 @@ const Dashboard: React.FC = () => {
     <ExploreVMProvider>
       <Container>
         <DashboardModal
-          onClose={() => lendStore.setDashboardModalOpened(false, '')}
+          onClose={() => lendStore.setDashboardModalOpened(false, '', 0)}
           visible={lendStore.dashboardModalOpened}
         />
+
         <DashboardTable />
       </Container>
     </ExploreVMProvider>

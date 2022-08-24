@@ -1,6 +1,5 @@
 /* eslint-disable react/require-default-props */
 /* eslint-disable react/destructuring-assignment */
-/* eslint-disable no-nested-ternary */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState, useEffect, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
@@ -8,6 +7,7 @@ import styled from '@emotion/styled';
 import { Button } from '@src/UIKit/Button';
 import { MaxButton } from '@src/UIKit/MaxButton';
 import { useStores } from '@src/stores';
+import InputContainer from '@src/common/styles/InputContainer';
 import { BigNumberInput } from '@src/UIKit/BigNumberInput';
 import { AmountInput } from '@src/UIKit/AmountInput';
 import BN from '@src/common/utils/BN';
@@ -39,41 +39,7 @@ const Footer = styled.div`
   margin-top: auto;
 `;
 
-const InputContainer = styled.div<{
-  focused?: boolean;
-  error?: boolean;
-  invalid?: boolean;
-  readOnly?: boolean;
-}>`
-  background: ${({ focused, error }) => (focused ? '#ffffff' : '#ffffff')};
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding: 16px;
-  height: 48px;
-  border-radius: 12px;
-  width: 100%;
-  position: relative;
-  cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'unset')};
-
-  box-sizing: border-box;
-
-  input {
-    cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'unset')};
-  }
-
-  border: 1px solid
-    ${({ focused, readOnly, error }) => (error ? '#ED827E' : focused && !readOnly ? '#7075E9' : '#f1f2fe')};
-
-  :hover {
-    border-color: ${({ readOnly, focused, error }) =>
-      error ? '#ED827E' : !readOnly && !focused ? '#C6C9F4' : focused ?? '#7075E9'};
-  }
-`;
-
-const SupplyAssets: React.FC<IProps> = (props) => {
-  // const { accountStore, poolsStore, stakeStore } = useStores();
+const BorrowAssets: React.FC<IProps> = (props) => {
   const [focused, setFocused] = useState(false);
   const { lendStore } = useStores();
   const [amount, setAmount] = useState<BN>(props.amount);
@@ -135,10 +101,10 @@ const SupplyAssets: React.FC<IProps> = (props) => {
           Cancel
         </Button>
         <Button onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId)} size="large" kind="secondary">
-          Supply
+          Borrow
         </Button>
       </Footer>
     </Root>
   );
 };
-export default observer(SupplyAssets);
+export default observer(BorrowAssets);

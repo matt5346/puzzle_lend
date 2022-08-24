@@ -35,6 +35,8 @@ export default class LendStore {
 
   dashboardModalOpened = false;
 
+  dashboardModalStep = 0;
+
   choosenToken: TTokenStatistics = {
     assetId: '',
     decimals: 0,
@@ -52,11 +54,16 @@ export default class LendStore {
     changeStr: '',
   };
 
-  @action.bound setDashboardModalOpened = (state: boolean, id: string) => {
+  @action.bound setModalStep = (step: number) => {
+    this.dashboardModalStep = step;
+  };
+
+  @action.bound setDashboardModalOpened = (state: boolean, id: string, step: number) => {
     const { tokenStore } = this.rootStore;
 
     this.dashboardModalOpened = state;
     const token = tokenStore.statisticsByAssetId[id];
+    this.dashboardModalStep = step;
     this.choosenToken = token;
   };
 }

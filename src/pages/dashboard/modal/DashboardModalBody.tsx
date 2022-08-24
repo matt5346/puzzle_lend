@@ -8,7 +8,7 @@ import { SizedBox } from '@src/UIKit/SizedBox';
 import { DashboardWalletUseVM } from '@src/pages/dashboard/modal/DashboardWalletVM';
 import { Tabs } from '@src/UIKit/Tabs';
 import SupplyAssets from '@src/pages/dashboard/modal/SupplyAssets';
-import WithdrawAssets from '@src/pages/dashboard/modal/WithdrawAssets';
+import BorrowAssets from '@src/pages/dashboard/modal/BorrowAssets';
 import BN from '@src/common/utils/BN';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -42,12 +42,17 @@ const ListWrapper = styled.div<{ headerExpanded: boolean }>`
 const WalletModalBody: React.FC<IProps> = () => {
   const vm = DashboardWalletUseVM();
   const { lendStore } = vm.rootStore;
-  const [activeTab, setActiveTab] = useState<number>(0);
 
-  const amountMaxClickFunc = () => {
+  const supplyMaxClickFunc = () => {
     const getAssetData = vm.balances.find((tokenData) => tokenData.assetId === lendStore.choosenToken.assetId);
 
     if (getAssetData) vm.setSupplyAmount(getAssetData.balance!);
+  };
+
+  const borrowMaxClickFunc = () => {
+    const getAssetData = vm.balances.find((tokenData) => tokenData.assetId === lendStore.choosenToken.assetId);
+
+    if (getAssetData) vm.setBorrowAmount(getAssetData.balance!);
   };
 
   console.log(vm, 'ASSETS vm');
@@ -57,26 +62,37 @@ const WalletModalBody: React.FC<IProps> = () => {
     <Root>
       <TabsWrapper>
         <Tabs
-          tabs={[{ name: 'Supply assets' }, { name: 'Withdraw assets' }]}
-          activeTab={activeTab}
-          setActive={(v) => setActiveTab(v)}
+          tabs={[{ name: 'Supply assets' }, { name: 'Borrow assets' }]}
+          activeTab={lendStore.dashboardModalStep}
+          setActive={(v) => lendStore.setModalStep(v)}
           style={{ justifyContent: 'space-evenly', paddingTop: 16 }}
           tabStyle={{ flex: 1, marginRight: 0 }}
         />
       </TabsWrapper>
       <ListWrapper headerExpanded={vm.headerExpanded}>
         <SizedBox height={8} />
-        {activeTab === 0 && (
+        {lendStore.dashboardModalStep === 0 && (
           <SupplyAssets
             decimals={lendStore.choosenToken?.decimals}
             amount={vm.supplyAmount}
             setAmount={vm.setSupplyAmount}
             assetId={lendStore.choosenToken?.assetId}
-            onMaxClick={amountMaxClickFunc}
+            onMaxClick={supplyMaxClickFunc}
             onSubmit={vm.submitSupply}
+            onClose={vm.onCloseModal}
           />
         )}
-        {activeTab === 1 && <WithdrawAssets />}
+        {lendStore.dashboardModalStep === 1 && (
+          <BorrowAssets
+            decimals={lendStore.choosenToken?.decimals}
+            amount={vm.borrowAmount}
+            setAmount={vm.setBorrowAmount}
+            assetId={lendStore.choosenToken?.assetId}
+            onMaxClick={borrowMaxClickFunc}
+            onSubmit={vm.submitBorrow}
+            onClose={vm.onCloseModal}
+          />
+        )}
         <SizedBox height={64} width={1} />
       </ListWrapper>
     </Root>

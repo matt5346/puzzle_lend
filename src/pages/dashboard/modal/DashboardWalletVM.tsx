@@ -31,7 +31,11 @@ class DashboardWalletVM {
 
   supplyAmount: BN = BN.ZERO;
 
+  borrowAmount: BN = BN.ZERO;
+
   @action.bound setSupplyAmount = (amount: BN) => (this.supplyAmount = amount);
+
+  @action.bound setBorrowAmount = (amount: BN) => (this.borrowAmount = amount);
 
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
@@ -44,6 +48,40 @@ class DashboardWalletVM {
     // reaction(() => this.rootStore.accountStore?.address, this.getAssetsStats);
     setInterval(this.getAssetsStats, 15 * 1000);
   }
+
+  onCloseModal = () => {
+    console.log('CLOSE');
+    const { lendStore } = this.rootStore;
+    lendStore.setDashboardModalOpened(false, '', 0);
+  };
+
+  submitBorrow = async (amount: any, assetId: any) => {
+    const { accountStore, lendStore } = this.rootStore;
+    console.log(amount.toString(), assetId, 'token');
+
+    await accountStore
+      .invoke({
+        dApp: CONTRACT_ADDRESSES.ltv1,
+        payment: [],
+        call: {
+          function: 'borrow',
+          args: [
+            { type: 'string', value: assetId },
+            { type: 'integer', value: amount },
+          ],
+        },
+      })
+      .then((txId) => {
+        console.log(txId, '---tx');
+      })
+      .catch((e) => {
+        console.log(e, '---e');
+      })
+      .then(() => {
+        accountStore.updateAccountAssets(true);
+        lendStore.setDashboardModalOpened(false, '', 0);
+      });
+  };
 
   submitSupply = async (amount: any, assetId: any) => {
     const { accountStore, lendStore } = this.rootStore;
@@ -71,7 +109,7 @@ class DashboardWalletVM {
       })
       .then(() => {
         accountStore.updateAccountAssets(true);
-        lendStore.setDashboardModalOpened(false, '');
+        lendStore.setDashboardModalOpened(false, '', 0);
       });
   };
 

@@ -69,17 +69,12 @@ const DashboardTable: React.FC<IProps> = () => {
     }
   };
 
-  const handleSupplyAssetClick = (assetId: string) => {
-    console.log(assetId, 'asset id');
-    console.log(lendStore, 'lendStore id');
-    lendStore.setDashboardModalOpened(true, assetId);
+  const handleSupplyAssetClick = (assetId: string, step: number) => {
+    lendStore.setDashboardModalOpened(true, assetId, step);
   };
-  console.log(vm, 'VMMMM');
 
   useMemo(() => {
-    console.log(vm.assetsWithStats, 'VMMMM');
     const data = vm.assetsWithStats;
-    console.log(data, 'data');
     setFilteredTokens(data);
   }, [
     accountStore.assetBalances,
@@ -97,7 +92,7 @@ const DashboardTable: React.FC<IProps> = () => {
       <Card style={{ padding: 0, overflow: 'auto', maxWidth: 'calc(100vw - 32px)' }} justifyContent="center">
         <GridTable
           style={{ width: 'fit-content', minWidth: '100%' }}
-          desktopTemplate="2fr 1fr 1fr 1fr 1fr 2fr"
+          desktopTemplate="2fr 1fr 1fr 1fr 1fr 1fr 1fr 2fr"
           mobileTemplate="2fr 1fr">
           <div className="gridTitle">
             <div>Token name</div>
@@ -106,6 +101,12 @@ const DashboardTable: React.FC<IProps> = () => {
             </TableTitle>
             <TableTitle onClick={() => selectSort('supply')} mode={sortMode} sort={sort === 'supply'}>
               Total supply
+            </TableTitle>
+            <TableTitle onClick={() => selectSort('supply')} mode={sortMode} sort={sort === 'supply'}>
+              My supply
+            </TableTitle>
+            <TableTitle onClick={() => selectSort('supply')} mode={sortMode} sort={sort === 'supply'}>
+              Me borrowed
             </TableTitle>
             <TableTitle onClick={() => selectSort('ltv')} mode={sortMode} sort={sort === 'ltv'}>
               LTV
@@ -118,7 +119,7 @@ const DashboardTable: React.FC<IProps> = () => {
             <Column justifyContent="center" alignItems="center" crossAxisSize="max">
               <SizedBox height={24} />
               <NotFoundIcon style={{ marginBottom: 24 }} />
-              <Text type="secondary" className="text" textAlign="center">
+              <Text className="text" textAlign="center">
                 Unfortunately, there are no tokens that fit your filters.
               </Text>
               <SizedBox height={24} />
@@ -135,6 +136,8 @@ const DashboardTable: React.FC<IProps> = () => {
                 rate={stats.currentPrice}
                 setupRoi={stats.setupRoi}
                 setupLtv={stats.setupLtv}
+                selfSupply={stats.selfSupply}
+                selfBorrow={stats.selfBorrow}
                 totalLendSupply={stats.totalLendSupply}
                 handleSupplyAssetClick={handleSupplyAssetClick}
               />

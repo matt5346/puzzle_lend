@@ -19,7 +19,9 @@ interface IProps {
   setupLtv?: string;
   setupRoi?: string;
   totalLendSupply?: BN;
-  handleSupplyAssetClick: (assetId: string) => void;
+  selfSupply?: BN;
+  selfBorrow?: BN;
+  handleSupplyAssetClick: (assetId: string, step: number) => void;
 }
 
 const Root = styled.div`
@@ -40,6 +42,8 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
   rate,
   setupLtv,
   setupRoi,
+  selfSupply,
+  selfBorrow,
 }) => {
   const navigate = useNavigate();
   return (
@@ -53,21 +57,20 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
             {token.name}
           </Text>
           <SizedBox width={18} />
-          <Text nowrap type="purple300" fitContent>
-            {token.symbol}
-          </Text>
         </Row>
       </Row>
       <Text>$ {rate?.gte(0.0001) ? rate?.toFormat(4) : rate?.toFormat(8)}</Text>
       {totalLendSupply != null ? <Text>$ {totalLendSupply.toFormat(3)}</Text> : <Text>-</Text>}
+      {selfSupply != null ? <Text>$ {selfSupply.toFormat(3)}</Text> : <Text>-</Text>}
+      {selfBorrow != null ? <Text>$ {selfBorrow.toFormat(3)}</Text> : <Text>-</Text>}
       {setupLtv != null ? <Text>{setupLtv}</Text> : <Text>-</Text>}
       {setupRoi != null ? <Text>{setupRoi}</Text> : <Text>-</Text>}
       <Row justifyContent="center">
-        <Button onClick={() => handleSupplyAssetClick(token.assetId)} size="medium" kind="secondary">
+        <Button onClick={() => handleSupplyAssetClick(token.assetId, 0)} size="medium" kind="secondary">
           Supply
         </Button>
         <SizedBox width={18} />
-        <Button onClick={() => handleSupplyAssetClick(token.assetId)} size="medium" kind="secondary">
+        <Button onClick={() => handleSupplyAssetClick(token.assetId, 1)} size="medium" kind="secondary">
           Borrow
         </Button>
       </Row>

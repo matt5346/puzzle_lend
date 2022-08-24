@@ -17,6 +17,8 @@ export type TTokenStatistics = {
   symbol: string;
   setupLtv: string;
   setupRoi: string;
+  selfSupply: BN;
+  selfBorrow: BN;
   totalSupply: BN;
   totalLendSupply: BN;
   circulatingSupply: BN;
@@ -58,9 +60,9 @@ export default class TokenStore {
   };
 
   private syncTokenStatistics = async () => {
-    // const { notificationStore } = this.rootStore;
+    const { accountStore } = this.rootStore;
     const assets = TOKENS_LIST.map(({ assetId }) => assetId);
-    const stats = await wavesCapService.getAssetsStats(assets).catch((e) => {
+    const stats = await wavesCapService.getAssetsStats(assets, accountStore.address!).catch((e) => {
       // notificationStore.notify(e.message ?? e.toString(), {
       //   type: 'error',
       // });
@@ -91,6 +93,8 @@ export default class TokenStore {
         totalSupply,
         setupLtv: details.setup_ltv,
         setupRoi: details.setup_roi,
+        selfSupply: BN.formatUnits(details.self_supply, decimals),
+        selfBorrow: BN.formatUnits(details.self_borrowed, decimals),
         totalLendSupply: BN.formatUnits(details.total_lend_supply, decimals),
         circulatingSupply: BN.formatUnits(details.circulating, decimals),
         change24H,
