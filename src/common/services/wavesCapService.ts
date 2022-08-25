@@ -26,14 +26,20 @@ const wavesCapService = {
     const url = `https://wavescap.com/api/assets-info.php?${params.toString()}`;
     const response = await axios.get(url);
 
-    const tokensRatesUrl = 'http://nodes.wavesnodes.com/utils/script/evaluate/3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT';
-    const tokensRates = await axios(tokensRatesUrl, {
-      method: 'POST',
-      headers: { 'Content-type': 'application/json' },
-      data: {
-        expr: 'calculateTokenRates(false)',
-      },
-    });
+    let tokensRates: any = {};
+
+    try {
+      const tokensRatesUrl = 'http://nodes.wavesnodes.com/utils/script/evaluate/3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT';
+      tokensRates = await axios(tokensRatesUrl, {
+        method: 'POST',
+        headers: { 'Content-type': 'application/json' },
+        data: {
+          expr: 'calculateTokenRates(false)',
+        },
+      });
+    } catch (err) {
+      console.log(err, 'ERR');
+    }
 
     // eslint-disable-next-line no-underscore-dangle
     const tokensRatesArr: string[] = tokensRates?.data?.result?.value?._2?.value.split(',');
@@ -86,12 +92,15 @@ const wavesCapService = {
         setupTokens.forEach((token_id: any, key: any) => {
           if (itemData.id === token_id) {
             itemData.setup_ltv = `${ltv[key] / 10 ** 6}%`;
-            const rates = tokensRatesArr[key];
-            const splittedRates = rates.split('|');
-            console.log(splittedRates, 'splittedRates');
 
-            itemData.supply_rate = (Number(splittedRates[0]!) / 10 ** 16).toFixed(8);
-            itemData.borrow_rate = (Number(splittedRates[1]!) / 10 ** 16).toFixed(8);
+            if (tokensRatesArr && tokensRatesArr.length) {
+              const rates = tokensRatesArr[key];
+              const splittedRates = rates.split('|');
+              console.log(splittedRates, 'splittedRates');
+
+              itemData.supply_rate = (Number(splittedRates[0]!) / 10 ** 16).toFixed(8);
+              itemData.borrow_rate = (Number(splittedRates[1]!) / 10 ** 16).toFixed(8);
+            }
           }
         });
 
