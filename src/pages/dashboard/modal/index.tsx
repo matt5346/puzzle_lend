@@ -10,7 +10,11 @@ import { DashboardWalletVMProvider } from '@src/pages/dashboard/modal/DashboardW
 import { observer } from 'mobx-react-lite';
 import './wallet.css';
 
-type IProps = IDialogPropTypes;
+type IProps = {
+  filteredTokens: any;
+  onClose: () => void;
+  visible: boolean;
+};
 
 const Root = styled.div`
   display: flex;
@@ -20,7 +24,7 @@ const Root = styled.div`
   width: 100%;
 `;
 
-const DashboardModal: React.FC<IProps> = ({ ...rest }) => (
+const DashboardModal: React.FC<IProps> = ({ filteredTokens, ...rest }) => (
   <RcDialog
     wrapClassName="dashboard-dialog"
     closeIcon={<CloseIcon style={{ marginTop: 8 }} />}
@@ -32,7 +36,7 @@ const DashboardModal: React.FC<IProps> = ({ ...rest }) => (
       <Root>
         <SizedBox height={48} />
         <SizedBox height={56} />
-        <DashboardModalBody />
+        <DashboardModalBody filteredTokens={filteredTokens} />
       </Root>
     </DashboardWalletVMProvider>
   </RcDialog>

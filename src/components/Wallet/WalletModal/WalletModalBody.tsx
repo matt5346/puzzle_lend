@@ -52,7 +52,7 @@ const WalletModalBody: React.FC<IProps> = () => {
     <Root>
       <TabsWrapper>
         <Tabs
-          tabs={[{ name: 'Assets' }, { name: 'Investments' }, { name: 'NFTs' }]}
+          tabs={[{ name: 'Assets' }, { name: 'Supply' }, { name: 'Borrow' }]}
           activeTab={activeTab}
           setActive={(v) => setActiveTab(v)}
           style={{ justifyContent: 'space-evenly', paddingTop: 16 }}

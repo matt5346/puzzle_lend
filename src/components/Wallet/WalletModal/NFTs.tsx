@@ -50,7 +50,7 @@ const NFTs: React.FC<IProps> = () => {
 
   return (
     <Root>
-      <h2>nfts</h2>
+      <h2>Borroowed</h2>
     </Root>
   );
 };

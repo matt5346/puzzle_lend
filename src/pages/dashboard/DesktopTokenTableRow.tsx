@@ -17,10 +17,9 @@ interface IProps {
   rate?: BN;
   vol24?: BN;
   setupLtv?: string;
-  setupRoi?: string;
+  setupBorrowAPR?: string;
+  setupSupplyAPY?: string;
   totalLendSupply?: BN;
-  selfSupply?: BN;
-  selfBorrow?: BN;
   handleSupplyAssetClick: (assetId: string, step: number) => void;
 }
 
@@ -41,9 +40,8 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
   totalLendSupply,
   rate,
   setupLtv,
-  setupRoi,
-  selfSupply,
-  selfBorrow,
+  setupBorrowAPR,
+  setupSupplyAPY,
 }) => {
   const navigate = useNavigate();
   return (
@@ -61,10 +59,9 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
       </Row>
       <Text>$ {rate?.gte(0.0001) ? rate?.toFormat(4) : rate?.toFormat(8)}</Text>
       {totalLendSupply != null ? <Text>$ {totalLendSupply.toFormat(3)}</Text> : <Text>-</Text>}
-      {selfSupply != null ? <Text>$ {selfSupply.toFormat(3)}</Text> : <Text>-</Text>}
-      {selfBorrow != null ? <Text>$ {selfBorrow.toFormat(3)}</Text> : <Text>-</Text>}
       {setupLtv != null ? <Text>{setupLtv}</Text> : <Text>-</Text>}
-      {setupRoi != null ? <Text>{setupRoi}</Text> : <Text>-</Text>}
+      {setupBorrowAPR != null ? <Text>{setupBorrowAPR}%</Text> : <Text>-</Text>}
+      {setupSupplyAPY != null ? <Text>{setupSupplyAPY}%</Text> : <Text>-</Text>}
       <Row justifyContent="center">
         <Button onClick={() => handleSupplyAssetClick(token.assetId, 0)} size="medium" kind="secondary">
           Supply

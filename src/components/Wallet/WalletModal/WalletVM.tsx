@@ -9,7 +9,7 @@ import { LOGIN_TYPE } from '@src/stores/AccountStore';
 import centerEllipsis from '@src/common/utils/centerEllipsis';
 import BN from '@src/common/utils/BN';
 import wavesCapService from '@src/common/services/wavesCapService';
-import { ROUTES, TOKENS_LIST } from '@src/common/constants';
+import { ROUTES, TOKENS_LIST, IToken } from '@src/common/constants';
 
 const ctx = React.createContext<WalletVM | null>(null);
 
@@ -25,9 +25,13 @@ class WalletVM {
   // tokenToSend: Balance | null = null;
   // public setTokenToSend = (v: Balance) => (this.tokenToSend = v);
 
-  assetsStats: Record<string, BN> | null = null;
+  balanceAssetsStats: Record<string, BN> | null = null;
 
-  public setAssetsStats = (v: Record<string, BN>) => (this.assetsStats = v);
+  public setBalanceAssetsStats = (v: Record<string, BN>) => (this.balanceAssetsStats = v);
+
+  assetsStats: IToken[] | [] = [];
+
+  public setAssetsStats = (v: IToken[]) => (this.assetsStats = v);
 
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
@@ -90,6 +94,13 @@ class WalletVM {
 
   getAssetsStats = async () => {
     if (this.balances.length === 0) return;
+    const { statisticsByAssetId } = this.rootStore.tokenStore;
+    const data = TOKENS_LIST.filter(({ assetId }) => Object.keys(statisticsByAssetId).includes(assetId));
+    this.setAssetsStats(data);
+  };
+
+  getBalanceAssetsStats = async () => {
+    if (this.balances.length === 0) return;
     const topAssets = this.balances.slice(0, 10).reduce<string[]>((acc, v) => [...acc, v.assetId], []);
     const responses = await wavesCapService.getAssetsStats(topAssets);
     const assetInfo = responses.reduce<Record<string, BN>>((acc, value) => {
@@ -99,7 +110,7 @@ class WalletVM {
       const rate = lastPrice.div(firstPrice).minus(1).times(100);
       return { ...acc, [value.id]: rate };
     }, {});
-    this.setAssetsStats(assetInfo);
+    this.setBalanceAssetsStats(assetInfo);
   };
 }
 

@@ -16,11 +16,14 @@ export type TTokenStatistics = {
   name: string;
   symbol: string;
   setupLtv: string;
-  setupRoi: string;
+  setupBorrowAPR: string;
+  setupSupplyAPY: string;
   selfSupply: BN;
   selfBorrow: BN;
+  selfSupplyRate: string;
   totalSupply: BN;
-  totalLendSupply: BN;
+  totalPoolSupply: BN;
+  totalPoolBorrow: BN;
   circulatingSupply: BN;
   totalBurned: BN;
   fullyDilutedMC: BN;
@@ -92,10 +95,13 @@ export default class TokenStore {
         symbol: details.shortcode,
         totalSupply,
         setupLtv: details.setup_ltv,
-        setupRoi: details.setup_roi,
+        setupBorrowAPR: details.setup_borrow_apr,
+        setupSupplyAPY: details.setup_supply_apy,
         selfSupply: BN.formatUnits(details.self_supply, decimals),
         selfBorrow: BN.formatUnits(details.self_borrowed, decimals),
-        totalLendSupply: BN.formatUnits(details.total_lend_supply, decimals),
+        selfSupplyRate: details.supply_rate,
+        totalPoolBorrow: BN.formatUnits(details.total_borrow, decimals),
+        totalPoolSupply: BN.formatUnits(details.total_supply, decimals),
         circulatingSupply: BN.formatUnits(details.circulating, decimals),
         change24H,
         change24HUsd,

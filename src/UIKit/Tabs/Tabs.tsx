@@ -11,6 +11,7 @@ type ITab = {
 interface IProps {
   tabs: ITab[];
   activeTab: number;
+  textColor?: string;
   setActive: (index: number) => void;
   style?: CSSProperties;
   tabStyle?: CSSProperties;
@@ -37,12 +38,12 @@ const Tab = styled.div<{ active?: boolean }>`
   }
 }
 `;
-const Tabs: React.FC<IProps> = ({ tabs, activeTab, setActive, style, tabStyle }) => {
+const Tabs: React.FC<IProps> = ({ tabs, activeTab, setActive, style, tabStyle, textColor }) => {
   return (
     <Root style={style}>
       {tabs.map(({ additionalInfo, name }, index) => (
         <Tab key={index} active={index === activeTab} onClick={() => setActive(index)} style={tabStyle}>
-          <Text weight={500}>
+          <Text type={textColor === 'white' ? 'light' : 'secondary'} weight={500}>
             {name}
             {additionalInfo != null && additionalInfo !== 0 && (
               <span style={{ color: '#8082C5', marginLeft: 10 }}>{additionalInfo}</span>

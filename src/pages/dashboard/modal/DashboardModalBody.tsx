@@ -12,7 +12,9 @@ import BorrowAssets from '@src/pages/dashboard/modal/BorrowAssets';
 import BN from '@src/common/utils/BN';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface IProps {}
+interface IProps {
+  filteredTokens: any;
+}
 
 const Root = styled(Column)`
   width: 100%;
@@ -67,6 +69,7 @@ const WalletModalBody: React.FC<IProps> = () => {
           setActive={(v) => lendStore.setModalStep(v)}
           style={{ justifyContent: 'space-evenly', paddingTop: 16 }}
           tabStyle={{ flex: 1, marginRight: 0 }}
+          textColor="white"
         />
       </TabsWrapper>
       <ListWrapper headerExpanded={vm.headerExpanded}>

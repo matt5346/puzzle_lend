@@ -15,6 +15,7 @@ import { ReactComponent as SortDownIcon } from '@src/common/assets/icons/sortDow
 import { ReactComponent as NotFoundIcon } from '@src/common/assets/icons/notFound.svg';
 import DesktopTokenTableRow from '@src/pages/dashboard/DesktopTokenTableRow';
 import { useExploreVM } from '@src/pages/dashboard/DashboardVm';
+import DashboardModal from '@src/pages/dashboard/modal';
 
 // for some time
 export enum TokenCategoriesEnum {
@@ -56,11 +57,11 @@ const DashboardTable: React.FC<IProps> = () => {
   const [filteredTokens, setFilteredTokens] = useState<IToken[]>([]);
   const vm = useExploreVM();
 
-  const [sort, setSort] = useState<'price' | 'supply' | 'ltv'>('price');
+  const [sort, setSort] = useState<'price' | 'supply' | 'ltv' | 'borrowapr'>('price');
   const [sortMode, setSortMode] = useState<'descending' | 'ascending'>('descending');
   const { tokenStore, accountStore } = useStores();
 
-  const selectSort = (v: 'price' | 'supply' | 'ltv') => {
+  const selectSort = (v: 'price' | 'supply' | 'ltv' | 'borrowapr') => {
     if (sort === v) {
       setSortMode(sortMode === 'ascending' ? 'descending' : 'ascending');
     } else {
@@ -92,7 +93,7 @@ const DashboardTable: React.FC<IProps> = () => {
       <Card style={{ padding: 0, overflow: 'auto', maxWidth: 'calc(100vw - 32px)' }} justifyContent="center">
         <GridTable
           style={{ width: 'fit-content', minWidth: '100%' }}
-          desktopTemplate="2fr 1fr 1fr 1fr 1fr 1fr 1fr 2fr"
+          desktopTemplate="2fr 1fr 1fr 1fr 1fr 1fr 2fr"
           mobileTemplate="2fr 1fr">
           <div className="gridTitle">
             <div>Token name</div>
@@ -102,17 +103,14 @@ const DashboardTable: React.FC<IProps> = () => {
             <TableTitle onClick={() => selectSort('supply')} mode={sortMode} sort={sort === 'supply'}>
               Total supply
             </TableTitle>
-            <TableTitle onClick={() => selectSort('supply')} mode={sortMode} sort={sort === 'supply'}>
-              My supply
-            </TableTitle>
-            <TableTitle onClick={() => selectSort('supply')} mode={sortMode} sort={sort === 'supply'}>
-              Me borrowed
-            </TableTitle>
             <TableTitle onClick={() => selectSort('ltv')} mode={sortMode} sort={sort === 'ltv'}>
               LTV
             </TableTitle>
             <TableTitle onClick={() => selectSort('ltv')} mode={sortMode} sort={sort === 'ltv'}>
-              ROI
+              Supply APY
+            </TableTitle>
+            <TableTitle onClick={() => selectSort('borrowapr')} mode={sortMode} sort={sort === 'borrowapr'}>
+              Borrow APR
             </TableTitle>
           </div>
           {filteredTokens.length === 0 && (
@@ -134,17 +132,21 @@ const DashboardTable: React.FC<IProps> = () => {
                 vol24={stats?.volume24}
                 key={t.assetId}
                 rate={stats.currentPrice}
-                setupRoi={stats.setupRoi}
+                setupBorrowAPR={stats.setupBorrowAPR}
+                setupSupplyAPY={stats.setupSupplyAPY}
                 setupLtv={stats.setupLtv}
-                selfSupply={stats.selfSupply}
-                selfBorrow={stats.selfBorrow}
-                totalLendSupply={stats.totalLendSupply}
+                totalLendSupply={stats.totalPoolSupply}
                 handleSupplyAssetClick={handleSupplyAssetClick}
               />
             );
           })}
         </GridTable>
       </Card>
+      <DashboardModal
+        filteredTokens={filteredTokens}
+        onClose={() => lendStore.setDashboardModalOpened(false, '', 0)}
+        visible={lendStore.dashboardModalOpened}
+      />
     </Root>
   );
 };
