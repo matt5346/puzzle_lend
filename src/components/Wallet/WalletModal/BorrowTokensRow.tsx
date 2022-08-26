@@ -3,7 +3,10 @@ import styled from '@emotion/styled';
 import BN from '@src/common/utils/BN';
 import React, { HTMLAttributes } from 'react';
 import { Column, Row } from '@src/common/styles/Flex';
+import SquareTokenIcon from '@src/common/styles/SquareTokenIcon';
+import { SizedBox } from '@src/UIKit/SizedBox';
 import { Text } from '@src/UIKit/Text';
+import Skeleton from 'react-loading-skeleton';
 import tokenLogos from '@src/common/constants/tokenLogos';
 import { IToken } from '@src/common/constants';
 import RoundTokenIcon from '@src/common/styles/RoundTokenIcon';
@@ -13,9 +16,8 @@ interface IProps extends HTMLAttributes<HTMLDivElement> {
   rate?: BN;
   vol24?: BN;
   setupLtv?: string;
-  setupSupplyAPY?: string;
-  selfSupply: BN;
-  supplyRate?: string;
+  selfBorrow?: BN;
+  setupBorrowAPR?: string;
   rateChange?: BN | null;
 }
 
@@ -40,22 +42,21 @@ const Root = styled.div<{ withClickLogic?: boolean }>`
     color: #ed827e;
   }
 `;
-
-const SupplyTokensRow: React.FC<IProps> = ({ vol24, token, rate, setupSupplyAPY, selfSupply, ...rest }) => {
+const SupplyTokensRow: React.FC<IProps> = ({ vol24, token, rate, selfBorrow, setupBorrowAPR, ...rest }) => {
   return (
     <Root {...rest}>
       <RoundTokenIcon src={tokenLogos[token.symbol]} />
       <Column>
         <Text type="primary" className="text" textAlign="center">
-          Supply APY
+          Borrow APR
         </Text>
-        {setupSupplyAPY != null ? <Text type="primary">{setupSupplyAPY}%</Text> : <Text>-</Text>}
+        {setupBorrowAPR != null ? <Text type="primary">{setupBorrowAPR}%</Text> : <Text>-</Text>}
       </Column>
       <Column>
         <Text type="primary" className="text" textAlign="center">
-          My Supply
+          To be repaid
         </Text>
-        {selfSupply != null ? <Text type="primary">{selfSupply.toFormat(7)}$</Text> : <Text>-</Text>}
+        {selfBorrow != null ? <Text type="primary">{selfBorrow.toFormat(3)}$</Text> : <Text>-</Text>}
       </Column>
     </Root>
   );

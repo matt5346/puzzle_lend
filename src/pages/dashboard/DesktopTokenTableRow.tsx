@@ -58,10 +58,10 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
         </Row>
       </Row>
       <Text>$ {rate?.gte(0.0001) ? rate?.toFormat(4) : rate?.toFormat(8)}</Text>
-      {totalLendSupply != null ? <Text>$ {totalLendSupply.toFormat(3)}</Text> : <Text>-</Text>}
+      {totalLendSupply != null ? <Text>$ {totalLendSupply.toFormat(9)}</Text> : <Text>-</Text>}
       {setupLtv != null ? <Text>{setupLtv}</Text> : <Text>-</Text>}
-      {setupBorrowAPR != null ? <Text>{setupBorrowAPR}%</Text> : <Text>-</Text>}
       {setupSupplyAPY != null ? <Text>{setupSupplyAPY}%</Text> : <Text>-</Text>}
+      {setupBorrowAPR != null ? <Text>{setupBorrowAPR}%</Text> : <Text>-</Text>}
       <Row justifyContent="center">
         <Button onClick={() => handleSupplyAssetClick(token.assetId, 0)} size="medium" kind="secondary">
           Supply

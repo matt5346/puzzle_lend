@@ -40,9 +40,13 @@ export default class TokenStore {
 
   initialized = false;
 
+  statistics: Array<TTokenStatistics> = [];
+
+  netAPY = 0;
+
   private setInitialized = (v: boolean) => (this.initialized = v);
 
-  statistics: Array<TTokenStatistics> = [];
+  private setNetAPY = (v: number) => (this.netAPY = v);
 
   private setStatistics = (v: Array<TTokenStatistics>) => (this.statistics = v);
 
@@ -72,6 +76,14 @@ export default class TokenStore {
       console.log(e, 'getAssetsStats');
       return [];
     });
+
+    // count net apy
+    let suppliedAmount = 0;
+    let borrowedAmount = 0;
+    let baseAmount = 0;
+    // const base =
+    // const net_apy =
+
     const statistics = stats.map((details: any) => {
       const asset = TOKENS_BY_ASSET_ID[details.id] ?? details.precision;
       const { decimals } = asset;
@@ -88,6 +100,12 @@ export default class TokenStore {
       const formatChange24HUsd = change24HUsd?.times(change24H?.gte(0) ? 1 : -1).toFormat(2);
       const formatChange24H = change24H?.times(change24H?.gte(0) ? 1 : -1).toFormat(2);
       const changeStr = `${changePrefix} $${formatChange24HUsd} (${formatChange24H}%)`;
+
+      // net APY
+      suppliedAmount += (details.self_supply / 10 ** 8) * details.setup_supply_apy;
+      borrowedAmount += (details.self_borrowed / 10 ** 8) * details.setup_borrow_apr;
+      baseAmount += details.self_supply / 10 ** 8;
+
       return {
         assetId: details.id,
         decimals,
@@ -113,6 +131,11 @@ export default class TokenStore {
         volume24: new BN(details['24h_vol_usd-n']),
       };
     });
+
+    const netAPY: number = (suppliedAmount - borrowedAmount) / baseAmount;
+    console.log(netAPY, 'netapy');
+
+    this.setNetAPY(netAPY);
     this.setStatistics(statistics);
   };
 

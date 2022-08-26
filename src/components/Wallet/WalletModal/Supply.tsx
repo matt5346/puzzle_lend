@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 // import InvestRow, { InvestRowSkeleton } from "@src/components/InvestRow";
 import { useWalletVM } from '@components/Wallet/WalletModal/WalletVM';
@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 import Skeleton from 'react-loading-skeleton';
 import { ROUTES } from '@src/common/constants';
 import { ReactComponent as NotFoundIcon } from '@src/common/assets/icons/notFound.svg';
-import SupplyTokensRow from './SupplyTokensRow';
+import SupplyTokensRow from '@src/components/Wallet/WalletModal/SupplyTokensRow';
 
 const Root = styled.div`
   display: flex;
@@ -20,12 +20,23 @@ const Root = styled.div`
   min-height: 400px;
 `;
 
-const Investments: React.FC = () => {
+const Supply: React.FC = () => {
   const { tokenStore } = useStores();
   const vm = useWalletVM();
+
   return (
     <Root>
       <Column justifyContent="center" alignItems="center" crossAxisSize="max">
+        <SizedBox height={12} />
+        <Row justifyContent="space-around">
+          <Text fitContent size="big" type="primary" className="text" textAlign="center">
+            Net APY
+          </Text>
+          <Text fitContent size="big" type="primary" className="text" textAlign="center">
+            {tokenStore.netAPY ? tokenStore.netAPY.toFixed(2) : 0}%
+          </Text>
+        </Row>
+        <SizedBox height={12} />
         {vm.assetsStats.length === 0 && (
           <Row>
             <SizedBox height={24} />
@@ -38,14 +49,13 @@ const Investments: React.FC = () => {
         )}
         {vm.assetsStats.map((t) => {
           const stats = tokenStore.statisticsByAssetId[t.assetId];
-          console.log(stats, 'STATS');
           return (
             <SupplyTokensRow
               token={t}
               vol24={stats?.volume24}
               key={t.assetId}
               rate={stats.currentPrice}
-              selfBorrow={stats.selfBorrow}
+              setupSupplyAPY={stats.setupSupplyAPY}
               selfSupply={stats.selfSupply}
               setupLtv={stats.setupLtv}
               supplyRate={stats.selfSupplyRate}
@@ -56,4 +66,4 @@ const Investments: React.FC = () => {
     </Root>
   );
 };
-export default observer(Investments);
+export default observer(Supply);

@@ -7,8 +7,8 @@ import { SizedBox } from '@src/UIKit/SizedBox';
 import { useWalletVM } from '@components/Wallet/WalletModal/WalletVM';
 import { Tabs } from '@src/UIKit/Tabs';
 import AssetsBalances from '@components/Wallet/WalletModal/AssetsBalances';
-import NFTs from '@components/Wallet/WalletModal/NFTs';
-import Investments from './Investments';
+import Borrow from '@src/components/Wallet/WalletModal/Borrow';
+import Supply from '@src/components/Wallet/WalletModal/Supply';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IProps {}
@@ -63,8 +63,8 @@ const WalletModalBody: React.FC<IProps> = () => {
         <ListWrapper headerExpanded={vm.headerExpanded}>
           <SizedBox height={8} />
           {activeTab === 0 && <AssetsBalances />}
-          {activeTab === 1 && <Investments />}
-          {activeTab === 2 && <NFTs />}
+          {activeTab === 1 && <Supply />}
+          {activeTab === 2 && <Borrow />}
           <SizedBox height={64} width={1} />
         </ListWrapper>
       </Scrollbar>
