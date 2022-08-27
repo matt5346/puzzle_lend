@@ -11,10 +11,10 @@ const GridTable = styled.div<{
     font-weight: normal;
     font-size: 14px;
     line-height: 20px;
-    color: #fff;
+    color: #8082c5;
     padding: 14px 16px;
     box-sizing: border-box;
-    border-bottom: 1px solid #2b2037;
+    border-bottom: 1px solid #f1f2fe;
     margin-bottom: 8px;
     @media (min-width: 880px) {
       grid-template-columns: ${({ desktopTemplate }) => desktopTemplate ?? '6fr 2fr 1fr'};
@@ -31,11 +31,11 @@ const GridTable = styled.div<{
     font-weight: normal;
     font-size: 14px;
     line-height: 20px;
-    color: #fff;
+    color: #8082c5;
     box-sizing: border-box;
     margin: 0 16px;
     padding: 16px 0;
-    border-bottom: 1px solid #2b2037;
+    border-bottom: 1px solid #f1f2fe;
     @media (min-width: 880px) {
       grid-template-columns: ${({ desktopTemplate }) => desktopTemplate ?? '6fr 2fr 1fr'};
       margin: 0 24px;

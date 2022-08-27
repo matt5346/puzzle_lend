@@ -44,7 +44,7 @@ const TableTitle: React.FC<{
     style={{
       userSelect: 'none',
       cursor: 'pointer',
-      ...(sort ? { color: '#fff' } : {}),
+      ...(sort ? { color: '#363870' } : {}),
     }}>
     <div>{children}</div>
     {sort && mode === 'descending' && <SortDownIcon style={{ marginLeft: 8 }} />}

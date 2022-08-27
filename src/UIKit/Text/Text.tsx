@@ -26,7 +26,7 @@ const Text = styled.p<{
         case 'primary':
           return 'color: #363870;';
         case 'secondary':
-          return 'color: #000;';
+          return 'color: #8082C5;';
         case 'blue500':
           return 'color: #7075E9;';
         case 'light':
@@ -38,7 +38,7 @@ const Text = styled.p<{
         case 'purple300':
           return 'color: #C6C9F4;';
         default:
-          return 'color: #fff;';
+          return 'color: #363870;';
       }
     })()}
   ${({ ellipsis }) =>

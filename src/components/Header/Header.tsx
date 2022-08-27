@@ -14,7 +14,7 @@ interface IProps {}
 
 const Root = styled(Column)`
   width: 100%;
-  background: #120c18;
+  background: #fff;
   align-items: center;
   z-index: 102;
   box-shadow: 0 8px 56px rgba(54, 56, 112, 0.16);
@@ -38,8 +38,7 @@ const TopMenu = styled.header`
     height: 80px;
   }
   box-sizing: border-box;
-  background: #120c18;
-  color: #fff;
+  background: #ffffff;
 
   .logo {
     height: 30px;
@@ -53,20 +52,17 @@ const TopMenu = styled.header`
   }
 `;
 
-const MenuItem = styled.div<{ selected?: boolean }>`
+const MenuItem = styled(Anchor)<{ selected?: boolean }>`
   display: flex;
   align-items: center;
   font-weight: 500;
   font-size: 16px;
   line-height: 24px;
+  color: ${({ selected }) => (selected ? '#363870' : '#8082c5')};
   box-sizing: border-box;
-  border-bottom: 4px solid ${({ selected }) => (selected ? '#fff' : 'transparent')};
+  border-bottom: 4px solid ${({ selected }) => (selected ? '#7075e9' : 'transparent')};
   height: 100%;
   margin: 0 12px;
-
-  a {
-    color: ${({ selected }) => (selected ? '#fff' : '#c0c3ff')};
-  }
 
   &:hover {
     border-bottom: 4px solid #c6c9f4;

@@ -72,7 +72,7 @@ const InputContainer = styled.div<{
     cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'unset')};
   }
 
-  border: 1px solid ${({ focused, readOnly }) => (focused && !readOnly ? '#7075E9' : '#f1f2fe')};
+  border: 1px solid ${({ focused, readOnly }) => (focused && !readOnly ? '#7075E9' : '#b7bcf8')};
 
   :hover {
     border-color: ${({ readOnly, focused }) => (!readOnly && !focused ? '#C6C9F4' : focused ?? '#7075E9')};

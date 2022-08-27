@@ -99,7 +99,7 @@ const wavesCapService = {
 
         setupTokens.forEach((token_id: any, key: any) => {
           if (itemData.id === token_id) {
-            itemData.setup_ltv = `${ltv[key] / 10 ** 6}%`;
+            itemData.setup_ltv = ltv[key] / 10 ** 6;
 
             if (tokensRatesArr && tokensRatesArr.length) {
               const rates = tokensRatesArr[key];

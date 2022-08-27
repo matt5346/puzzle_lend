@@ -19,7 +19,7 @@ interface IProps {
 const Root = styled(Column)`
   width: 100%;
   box-sizing: border-box;
-  background: #1d2431;
+  background: #fff;
 
   & > * {
     width: 100%;
@@ -28,7 +28,7 @@ const Root = styled(Column)`
 
 const TabsWrapper = styled(Row)`
   border-radius: 16px 16px 0px 0px;
-  background: #1d2431;
+  background: #fff;
   height: 56px;
   margin-top: -56px;
 `;
@@ -69,7 +69,6 @@ const WalletModalBody: React.FC<IProps> = () => {
           setActive={(v) => lendStore.setModalStep(v)}
           style={{ justifyContent: 'space-evenly', paddingTop: 16 }}
           tabStyle={{ flex: 1, marginRight: 0 }}
-          textColor="white"
         />
       </TabsWrapper>
       <ListWrapper headerExpanded={vm.headerExpanded}>

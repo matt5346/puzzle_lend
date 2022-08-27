@@ -81,6 +81,8 @@ export default class TokenStore {
     let suppliedAmount = 0;
     let borrowedAmount = 0;
     let baseAmount = 0;
+    let borrowCapacity = 0;
+    let borrowCapacityUsed = 0;
     // const base =
     // const net_apy =
 
@@ -105,6 +107,18 @@ export default class TokenStore {
       suppliedAmount += (details.self_supply / 10 ** 8) * details.setup_supply_apy;
       borrowedAmount += (details.self_borrowed / 10 ** 8) * details.setup_borrow_apr;
       baseAmount += details.self_supply / 10 ** 8;
+
+      console.log(
+        details.self_borrowed,
+        details.setup_ltv,
+        suppliedAmount,
+        'details.self_borrowed, details.setup_ltv, suppliedAmount'
+      );
+
+      if (details.self_borrowed > 0) {
+        borrowCapacity += (details.setup_ltv / 100) * 1 * suppliedAmount * Number(details.data?.['firstPrice_usd-n']);
+        borrowCapacityUsed += (borrowedAmount * Number(details.data?.['firstPrice_usd-n'])) / (details.setup_ltv / 100);
+      }
 
       return {
         assetId: details.id,
@@ -131,9 +145,11 @@ export default class TokenStore {
         volume24: new BN(details['24h_vol_usd-n']),
       };
     });
+    console.log(borrowCapacity, borrowCapacityUsed, 'borrowCapacity borrowCapacityUsed');
 
     const netAPY: number = (suppliedAmount - borrowedAmount) / baseAmount;
-    console.log(netAPY, 'netapy');
+    const accountHealth: number = 1 - borrowCapacityUsed / borrowCapacity;
+    console.log(netAPY, accountHealth, 'netapy accountHealth');
 
     this.setNetAPY(netAPY);
     this.setStatistics(statistics);

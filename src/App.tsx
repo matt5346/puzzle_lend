@@ -25,9 +25,9 @@ import './App.css';
 const Root = styled(Column)`
   width: 100%;
   align-items: center;
-  background: #120d18;
+  background: #f8f8ff;
   min-height: 100vh;
-  color: #fff;
+  color: #000;
 `;
 
 const App: React.FC = () => {

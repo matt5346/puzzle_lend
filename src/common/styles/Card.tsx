@@ -17,7 +17,7 @@ const Card = styled.div<{
   max-width: ${({ maxWidth }) => `${maxWidth}px` ?? '100%'};
   ${({ bordered }) => bordered && `border: 1px solid #F1F2FE;`};
   width: 100%;
-  border: 1px solid #2b2037;
+  border: 1px solid #f1f2fe;
   border-radius: 16px;
   box-sizing: border-box;
   padding: ${({ paddingMobile }) => paddingMobile ?? '16px'};
@@ -29,7 +29,7 @@ const Card = styled.div<{
         case 'dark':
           return 'background: #7075E9;';
         default:
-          return 'background: #120d18;';
+          return 'background: #ffffff;';
       }
     })()};
   @media (min-width: 560px) {
