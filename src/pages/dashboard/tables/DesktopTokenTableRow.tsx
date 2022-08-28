@@ -15,6 +15,9 @@ import BN from '@src/common/utils/BN';
 interface IProps {
   token: IToken;
   rate?: BN;
+  selfSupply?: BN;
+  selfBorrow?: BN;
+  dailyIncome?: string;
   setupLtv?: string;
   setupBorrowAPR?: string;
   setupSupplyAPY?: string;
@@ -27,16 +30,14 @@ const Root = styled.div`
   display: flex;
   align-items: center;
 `;
-const Fav = styled.img`
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-`;
 
 const DesktopTokenTableRow: React.FC<IProps> = ({
   rate,
   token,
   handleSupplyAssetClick,
+  selfBorrow,
+  selfSupply,
+  dailyIncome,
   totalSupply,
   totalBorrow,
   setupLtv,
@@ -57,19 +58,32 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
           <SizedBox width={18} />
         </Row>
       </Row>
-      {setupLtv != null ? <Text>{setupLtv}%</Text> : <Text>-</Text>}
-      {totalSupply != null ? <Text>$ {totalSupply.toFormat(7)}</Text> : <Text>-</Text>}
-      {setupSupplyAPY != null ? <Text>{Number(setupSupplyAPY).toFixed(2)}%</Text> : <Text>-</Text>}
-      {totalBorrow != null ? <Text>$ {totalBorrow.toFormat(7)}</Text> : <Text>-</Text>}
-      {setupBorrowAPR != null ? <Text>{setupBorrowAPR}%</Text> : <Text>-</Text>}
+      {selfSupply != null ? <Text>{selfSupply.toFormat(7)}</Text> : null}
+      {setupLtv != null ? <Text>{setupLtv}%</Text> : null}
+      {totalSupply != null ? <Text>$ {totalSupply.toFormat(7)}</Text> : null}
+      {setupSupplyAPY != null ? <Text>{Number(setupSupplyAPY).toFixed(2)}%</Text> : null}
+      {dailyIncome != null ? <Text>{dailyIncome}</Text> : null}
+      {totalBorrow != null ? <Text>$ {totalBorrow.toFormat(7)}</Text> : null}
+      {setupBorrowAPR != null ? <Text>{setupBorrowAPR}%</Text> : null}
+      {selfBorrow != null ? <Text>{selfBorrow.toFormat(7)}</Text> : null}
       <Row justifyContent="center">
-        <Button onClick={() => handleSupplyAssetClick(token.assetId, 0)} size="medium" kind="secondary">
-          Details
-        </Button>
-        {/* <SizedBox width={18} />
-        <Button onClick={() => handleSupplyAssetClick(token.assetId, 1)} size="medium" kind="secondary">
-          Borrow
-        </Button> */}
+        {selfSupply ? (
+          <Button onClick={() => handleSupplyAssetClick(token.assetId, 0)} size="medium" kind="secondary">
+            Supply
+          </Button>
+        ) : null}
+
+        {selfBorrow ? (
+          <Button onClick={() => handleSupplyAssetClick(token.assetId, 1)} size="medium" kind="secondary">
+            Borrow
+          </Button>
+        ) : null}
+
+        {totalSupply ? (
+          <Button onClick={() => handleSupplyAssetClick(token.assetId, 0)} size="medium" kind="secondary">
+            Details
+          </Button>
+        ) : null}
       </Row>
     </Root>
   );

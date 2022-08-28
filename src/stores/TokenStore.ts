@@ -96,8 +96,8 @@ export default class TokenStore {
     let borrowedAmountCurrent = 0;
 
     let baseAmount = 0;
-    let borrowCapacity = 0;
-    let borrowCapacityUsed = 0;
+    const borrowCapacity = 0;
+    const borrowCapacityUsed = 0;
     // const base =
     // const net_apy =
 
@@ -135,10 +135,25 @@ export default class TokenStore {
         'details.self_borrowed, details.setup_ltv, suppliedAmount'
       );
 
+      // count USER HEALTH
+      // case for DIFFERENT assets pairs as usdc/waves pool
+      // currently invalid, cause all pools in same pairs
+
+      // if (details.self_borrowed > 0) {
+      //   borrowCapacity += (details.setup_ltv / 100) * 1 * supplyAmountApy * Number(details.data?.['firstPrice_usd-n']);
+      //   borrowCapacityUsed +=
+      //     (borrowedAmountApr * Number(details.data?.['firstPrice_usd-n'])) / (details.setup_ltv / 100);
+      // }
+
       if (details.self_borrowed > 0) {
-        borrowCapacity += (details.setup_ltv / 100) * 1 * supplyAmountApy * Number(details.data?.['firstPrice_usd-n']);
-        borrowCapacityUsed +=
-          (borrowedAmountApr * Number(details.data?.['firstPrice_usd-n'])) / (details.setup_ltv / 100);
+        console.log(
+          details.self_supply,
+          details.setup_ltv,
+          details.self_borrowed,
+          '(details.self_supply * details.setup_ltv) / details.self_borrowed'
+        );
+        const health = (details.self_supply * (details.setup_ltv / 100)) / details.self_borrowed;
+        console.log(health, 'HEALTH');
       }
 
       return {

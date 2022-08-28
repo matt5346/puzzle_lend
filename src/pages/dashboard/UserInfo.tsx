@@ -24,6 +24,22 @@ const ButtonWrap = styled.div`
   text-align: center;
 `;
 
+const HealthWrap = styled.div`
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translate(-50%);
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid green;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+`;
+
 const IconWrap = styled.div`
   display: flex;
   justify-content: space-between;
@@ -45,10 +61,26 @@ const UserInfo: React.FC<IProps> = () => {
   console.log(tokenStore, 'tokenStore-----');
 
   return (
-    <Card style={{ padding: '16px', overflow: 'auto', maxWidth: '315px' }} justifyContent="center">
+    <Card
+      style={{
+        padding: '16px',
+        overflow: 'visible',
+        maxWidth: '315px',
+        position: 'relative',
+      }}
+      justifyContent="center">
       <Text margin="0 0 10px 0" type="primary" weight={500} size="medium-2">
         Account
       </Text>
+      <HealthWrap>
+        <Text type="primary">100%</Text>
+        <Text type="secondary" size="small">
+          Account
+        </Text>
+        <Text type="secondary" size="small">
+          Health
+        </Text>
+      </HealthWrap>
       <Divider />
       <Row justifyContent="space-between">
         <Text fitContent margin="0 0 10px 0" type="secondary" size="medium-2">
