@@ -37,9 +37,7 @@ const App: React.FC = () => {
       <Header />
       <Routes>
         {/* Base */}
-        <Route path={ROUTES.HOME} element={<Home />} />
-        {/* Dashboard */}
-        <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
+        <Route path={ROUTES.HOME} element={<Dashboard />} />
       </Routes>
       <WalletModal onClose={() => accountStore.setWalletModalOpened(false)} visible={accountStore.walletModalOpened} />
     </Root>

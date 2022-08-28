@@ -8,18 +8,18 @@ import { Text } from '@src/UIKit/Text';
 import { Button } from '@src/UIKit/Button';
 import { IToken } from '@src/common/constants';
 import tokenLogos from '@src/common/constants/tokenLogos';
-import RoundTokenIcon from '@src/common/styles/RoundTokenIcon';
+import SquareTokenIcon from '@src/common/styles/SquareTokenIcon';
 import { Row } from '@src/common/styles/Flex';
 import BN from '@src/common/utils/BN';
 
 interface IProps {
   token: IToken;
   rate?: BN;
-  vol24?: BN;
   setupLtv?: string;
   setupBorrowAPR?: string;
   setupSupplyAPY?: string;
-  totalLendSupply?: BN;
+  totalSupply?: BN;
+  totalBorrow?: BN;
   handleSupplyAssetClick: (assetId: string, step: number) => void;
 }
 
@@ -34,11 +34,11 @@ const Fav = styled.img`
 `;
 
 const DesktopTokenTableRow: React.FC<IProps> = ({
-  vol24,
+  rate,
   token,
   handleSupplyAssetClick,
-  totalLendSupply,
-  rate,
+  totalSupply,
+  totalBorrow,
   setupLtv,
   setupBorrowAPR,
   setupSupplyAPY,
@@ -49,27 +49,28 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
       <Row>
         <SizedBox width={18} />
         <Row onClick={() => navigate(`/explore/token/${token.assetId}`)} style={{ cursor: 'pointer' }}>
-          <RoundTokenIcon src={tokenLogos[token.symbol]} />
+          <SquareTokenIcon src={tokenLogos[token.symbol]} />
           <SizedBox width={18} />
           <Text nowrap weight={500} fitContent>
             {token.name}
+            <Text>$ {rate?.gte(0.0001) ? rate?.toFormat(4) : rate?.toFormat(8)}</Text>
           </Text>
           <SizedBox width={18} />
         </Row>
       </Row>
-      <Text>$ {rate?.gte(0.0001) ? rate?.toFormat(4) : rate?.toFormat(8)}</Text>
-      {totalLendSupply != null ? <Text>$ {totalLendSupply.toFormat(9)}</Text> : <Text>-</Text>}
-      {setupLtv != null ? <Text>{setupLtv}</Text> : <Text>-</Text>}
+      {setupLtv != null ? <Text>{setupLtv}%</Text> : <Text>-</Text>}
+      {totalSupply != null ? <Text>$ {totalSupply.toFormat(7)}</Text> : <Text>-</Text>}
       {setupSupplyAPY != null ? <Text>{setupSupplyAPY}%</Text> : <Text>-</Text>}
+      {totalBorrow != null ? <Text>$ {totalBorrow.toFormat(7)}</Text> : <Text>-</Text>}
       {setupBorrowAPR != null ? <Text>{setupBorrowAPR}%</Text> : <Text>-</Text>}
       <Row justifyContent="center">
         <Button onClick={() => handleSupplyAssetClick(token.assetId, 0)} size="medium" kind="secondary">
-          Supply
+          Details
         </Button>
-        <SizedBox width={18} />
+        {/* <SizedBox width={18} />
         <Button onClick={() => handleSupplyAssetClick(token.assetId, 1)} size="medium" kind="secondary">
           Borrow
-        </Button>
+        </Button> */}
       </Row>
     </Root>
   );

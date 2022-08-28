@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 
 type TTextType = 'primary' | 'secondary' | 'light' | 'blue500' | 'error' | 'success' | 'purple300';
-type TTextSize = 'small' | 'medium' | 'large' | 'big';
+type TTextSize = 'small' | 'medium' | 'medium-2' | 'large' | 'big';
 type TTextAlign = 'center' | 'left' | 'right' | 'justify' | 'end';
 
 const Text = styled.p<{
@@ -12,9 +12,10 @@ const Text = styled.p<{
   nowrap?: boolean;
   crossed?: boolean;
   ellipsis?: number;
+  margin?: string;
   textAlign?: TTextAlign;
 }>`
-  margin: 0;
+  margin: ${({ margin }) => margin || '0'};
   width: ${({ fitContent }) => (fitContent ? 'fit-content' : '100%')};
   font-weight: ${({ weight }) => weight ?? 400};
   white-space: ${({ nowrap }) => (nowrap ? 'nowrap' : 'unset')};
@@ -50,6 +51,8 @@ const Text = styled.p<{
           return 'font-size: 12px; line-height: 16px;';
         case 'medium':
           return 'font-size: 14px; line-height: 20px;';
+        case 'medium-2':
+          return 'font-size: 16px; line-height: 24px;';
         case 'big':
           return 'font-size: 24px; line-height: 32px;';
         case 'large':

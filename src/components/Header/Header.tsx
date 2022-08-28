@@ -84,10 +84,7 @@ const isRoutesEquals = (a: string, b: string) => a.replaceAll('/', '') === b.rep
 const Header: React.FC<IProps> = () => {
   const location = useLocation();
 
-  const menuItems = [
-    { name: 'Home', link: ROUTES.HOME },
-    { name: 'Dashboard', link: ROUTES.DASHBOARD },
-  ];
+  const menuItems = [{ name: 'Dashboard', link: ROUTES.HOME }];
   return (
     <Root>
       <TopMenu>

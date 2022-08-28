@@ -6,18 +6,18 @@ import { RootStore, useStores } from '@src/stores';
 import { TOKENS_LIST } from '@src/common/constants';
 import BN from '@src/common/utils/BN';
 
-const ctx = React.createContext<ExploreVM | null>(null);
+const ctx = React.createContext<DashboardVM | null>(null);
 
-export const ExploreVMProvider: React.FC = ({ children }) => {
+export const DashboardVMProvider: React.FC = ({ children }) => {
   const rootStore = useStores();
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
-  const store = useMemo(() => new ExploreVM(rootStore), [rootStore]);
+  const store = useMemo(() => new DashboardVM(rootStore), [rootStore]);
   return <ctx.Provider value={store}>{children}</ctx.Provider>;
 };
 
-export const useExploreVM = () => useVM(ctx);
+export const useDashboardVM = () => useVM(ctx);
 
-class ExploreVM {
+class DashboardVM {
   public rootStore: RootStore;
 
   tokenNameFilter = '';

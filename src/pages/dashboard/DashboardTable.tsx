@@ -14,7 +14,7 @@ import { IToken } from '@src/common/constants';
 import { ReactComponent as SortDownIcon } from '@src/common/assets/icons/sortDown.svg';
 import { ReactComponent as NotFoundIcon } from '@src/common/assets/icons/notFound.svg';
 import DesktopTokenTableRow from '@src/pages/dashboard/DesktopTokenTableRow';
-import { useExploreVM } from '@src/pages/dashboard/DashboardVm';
+import { useDashboardVM } from '@src/pages/dashboard/DashboardVm';
 import DashboardModal from '@src/pages/dashboard/modal';
 
 // for some time
@@ -55,13 +55,13 @@ const TableTitle: React.FC<{
 const DashboardTable: React.FC<IProps> = () => {
   const { lendStore } = useStores();
   const [filteredTokens, setFilteredTokens] = useState<IToken[]>([]);
-  const vm = useExploreVM();
+  const vm = useDashboardVM();
 
-  const [sort, setSort] = useState<'price' | 'supply' | 'ltv' | 'borrowapr'>('price');
+  const [sort, setSort] = useState<'supplyapy' | 'supply' | 'borrow' | 'ltv' | 'borrowapr'>('supplyapy');
   const [sortMode, setSortMode] = useState<'descending' | 'ascending'>('descending');
   const { tokenStore, accountStore } = useStores();
 
-  const selectSort = (v: 'price' | 'supply' | 'ltv' | 'borrowapr') => {
+  const selectSort = (v: 'supplyapy' | 'supply' | 'borrow' | 'ltv' | 'borrowapr') => {
     if (sort === v) {
       setSortMode(sortMode === 'ascending' ? 'descending' : 'ascending');
     } else {
@@ -90,24 +90,25 @@ const DashboardTable: React.FC<IProps> = () => {
 
   return (
     <Root>
+      <Text margin="0 0 10px 0">All assets</Text>
       <Card style={{ padding: 0, overflow: 'auto', maxWidth: 'calc(100vw - 32px)' }} justifyContent="center">
         <GridTable
           style={{ width: 'fit-content', minWidth: '100%' }}
-          desktopTemplate="2fr 1fr 1.5fr 1fr 1fr 1fr 2fr"
+          desktopTemplate="2fr 0.5fr 1fr 1fr 1fr 1fr 1fr"
           mobileTemplate="2fr 1fr">
           <div className="gridTitle">
-            <div>Token name</div>
-            <TableTitle onClick={() => selectSort('price')} mode={sortMode} sort={sort === 'price'}>
-              Price
+            <div>Asset</div>
+            <TableTitle onClick={() => selectSort('ltv')} mode={sortMode} sort={sort === 'ltv'}>
+              LTV
             </TableTitle>
             <TableTitle onClick={() => selectSort('supply')} mode={sortMode} sort={sort === 'supply'}>
               Total supply
             </TableTitle>
-            <TableTitle onClick={() => selectSort('ltv')} mode={sortMode} sort={sort === 'ltv'}>
-              LTV
-            </TableTitle>
-            <TableTitle onClick={() => selectSort('ltv')} mode={sortMode} sort={sort === 'ltv'}>
+            <TableTitle onClick={() => selectSort('supplyapy')} mode={sortMode} sort={sort === 'supplyapy'}>
               Supply APY
+            </TableTitle>
+            <TableTitle onClick={() => selectSort('borrow')} mode={sortMode} sort={sort === 'borrow'}>
+              Total borrow
             </TableTitle>
             <TableTitle onClick={() => selectSort('borrowapr')} mode={sortMode} sort={sort === 'borrowapr'}>
               Borrow APR
@@ -129,13 +130,13 @@ const DashboardTable: React.FC<IProps> = () => {
             return (
               <DesktopTokenTableRow
                 token={t}
-                vol24={stats?.volume24}
                 key={t.assetId}
                 rate={stats.currentPrice}
                 setupBorrowAPR={stats.setupBorrowAPR}
                 setupSupplyAPY={stats.setupSupplyAPY}
                 setupLtv={stats.setupLtv}
-                totalLendSupply={stats.totalPoolSupply}
+                totalSupply={stats.totalPoolSupply}
+                totalBorrow={stats.totalPoolBorrow}
                 handleSupplyAssetClick={handleSupplyAssetClick}
               />
             );

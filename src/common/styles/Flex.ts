@@ -5,11 +5,13 @@ export interface IFlexProps {
   alignItems?: 'start' | 'end' | 'center' | 'inherit' | 'unset' | 'flex-end' | 'flex-start' | 'baseline';
   crossAxisSize?: 'min' | 'max';
   mainAxisSize?: 'fit-content' | 'stretch';
+  margin?: string;
 }
 
 export const Row = styled.div<IFlexProps>`
   display: flex;
   flex-direction: row;
+  margin: ${({ margin }) => margin || '0'};
 
   justify-content: ${({ justifyContent }) => justifyContent ?? 'start'};
   align-items: ${({ alignItems }) => alignItems ?? 'start'};
