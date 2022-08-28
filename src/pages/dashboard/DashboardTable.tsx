@@ -31,6 +31,7 @@ interface IProps {}
 const Root = styled.div`
   display: flex;
   flex-direction: column;
+  width: 100%;
 `;
 
 const TableTitle: React.FC<{
@@ -91,7 +92,7 @@ const DashboardTable: React.FC<IProps> = () => {
   return (
     <Root>
       <Text margin="0 0 10px 0">All assets</Text>
-      <Card style={{ padding: 0, overflow: 'auto', maxWidth: 'calc(100vw - 32px)' }} justifyContent="center">
+      <Card style={{ padding: 0, overflow: 'auto' }} justifyContent="center">
         <GridTable
           style={{ width: 'fit-content', minWidth: '100%' }}
           desktopTemplate="2fr 0.5fr 1fr 1fr 1fr 1fr 1fr"

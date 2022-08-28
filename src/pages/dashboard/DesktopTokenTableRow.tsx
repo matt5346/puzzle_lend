@@ -47,7 +47,6 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
   return (
     <Root className="gridRow">
       <Row>
-        <SizedBox width={18} />
         <Row onClick={() => navigate(`/explore/token/${token.assetId}`)} style={{ cursor: 'pointer' }}>
           <SquareTokenIcon src={tokenLogos[token.symbol]} />
           <SizedBox width={18} />
@@ -60,7 +59,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
       </Row>
       {setupLtv != null ? <Text>{setupLtv}%</Text> : <Text>-</Text>}
       {totalSupply != null ? <Text>$ {totalSupply.toFormat(7)}</Text> : <Text>-</Text>}
-      {setupSupplyAPY != null ? <Text>{setupSupplyAPY}%</Text> : <Text>-</Text>}
+      {setupSupplyAPY != null ? <Text>{Number(setupSupplyAPY).toFixed(2)}%</Text> : <Text>-</Text>}
       {totalBorrow != null ? <Text>$ {totalBorrow.toFormat(7)}</Text> : <Text>-</Text>}
       {setupBorrowAPR != null ? <Text>{setupBorrowAPR}%</Text> : <Text>-</Text>}
       <Row justifyContent="center">

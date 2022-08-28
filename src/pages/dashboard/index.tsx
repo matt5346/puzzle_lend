@@ -41,11 +41,11 @@ const Dashboard: React.FC = () => {
             fastecst growing platform on Waves
           </Text>
         </SubTitleWrap>
-        <Row>
-          <Column>
+        <Row justifyContent="space-between">
+          <Column crossAxisSize="max">
             <DashboardTable />
           </Column>
-          <SizedBox width={20} />
+          <SizedBox width={40} />
           <Column>
             <SizedBox height={34} />
             <UserInfo />
