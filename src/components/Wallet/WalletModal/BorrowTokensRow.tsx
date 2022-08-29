@@ -43,6 +43,10 @@ const Root = styled.div<{ withClickLogic?: boolean }>`
   }
 `;
 const SupplyTokensRow: React.FC<IProps> = ({ vol24, token, rate, selfBorrow, setupBorrowAPR, ...rest }) => {
+  const formatVal = (val: BN, decimal: number) => {
+    return BN.formatUnits(val, decimal).toSignificant(6).toString();
+  };
+
   return (
     <Root {...rest}>
       <RoundTokenIcon src={tokenLogos[token.symbol]} />
@@ -56,7 +60,7 @@ const SupplyTokensRow: React.FC<IProps> = ({ vol24, token, rate, selfBorrow, set
         <Text type="primary" className="text" textAlign="center">
           To be repaid
         </Text>
-        {selfBorrow != null ? <Text type="primary">{selfBorrow.toFormat(3)}$</Text> : <Text>-</Text>}
+        {selfBorrow != null ? <Text type="primary">{formatVal(selfBorrow, token.decimals)}$</Text> : <Text>-</Text>}
       </Column>
     </Root>
   );

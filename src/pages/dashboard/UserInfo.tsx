@@ -2,13 +2,9 @@
 import styled from '@emotion/styled';
 import React, { useRef } from 'react';
 import { observer } from 'mobx-react-lite';
-import { SizedBox } from '@src/UIKit/SizedBox';
 import { Row, Column } from '@src/common/styles/Flex';
 import { Text } from '@src/UIKit/Text';
-import { Button } from '@src/UIKit/Button';
-import { ReactComponent as RepayIcon } from '@src/common/assets/icons/repay.svg';
-import { ReactComponent as WithdrawIcon } from '@src/common/assets/icons/withdraw.svg';
-import { ReactComponent as SupplyIcon } from '@src/common/assets/icons/supply.svg';
+import { PercentageCircleBar } from '@src/UIKit/PercentageCircleBar';
 import { ReactComponent as Divider } from '@src/common/assets/icons/divider.svg';
 import { ReactComponent as LineDivider } from '@src/common/assets/icons/line_divider.svg';
 import Card from '@src/common/styles/Card';
@@ -32,7 +28,6 @@ const HealthWrap = styled.div`
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  border: 3px solid green;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -73,13 +68,19 @@ const UserInfo: React.FC<IProps> = () => {
         Account
       </Text>
       <HealthWrap>
-        <Text type="primary">100%</Text>
+        {/* <Text type="primary">{+tokenStore.userHealth.toFixed(2) * 100}%</Text>
         <Text type="secondary" size="small">
           Account
         </Text>
         <Text type="secondary" size="small">
           Health
-        </Text>
+        </Text> */}
+        <PercentageCircleBar
+          size={250}
+          strokeWidth={10}
+          percentage={+tokenStore.userHealth.toFixed(2) * 100}
+          color="purple"
+        />
       </HealthWrap>
       <Divider />
       <Row justifyContent="space-between">
@@ -116,26 +117,6 @@ const UserInfo: React.FC<IProps> = () => {
         )}
       </Row>
       <LineDivider />
-      <Row margin="14px 0 0 0" justifyContent="space-between">
-        <ButtonWrap onClick={() => null}>
-          <IconWrap>
-            <RepayIcon />
-          </IconWrap>
-          <Text margin="10px 0 0 0">Repay</Text>
-        </ButtonWrap>
-        <ButtonWrap onClick={() => null}>
-          <IconWrap>
-            <WithdrawIcon />
-          </IconWrap>
-          <Text margin="10px 0 0 0">Supply</Text>
-        </ButtonWrap>
-        <ButtonWrap onClick={() => null}>
-          <IconWrap>
-            <SupplyIcon />
-          </IconWrap>
-          <Text margin="10px 0 0 0">Withdraw</Text>
-        </ButtonWrap>
-      </Row>
     </Card>
   );
 };

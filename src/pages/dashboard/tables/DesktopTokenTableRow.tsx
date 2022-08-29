@@ -45,6 +45,10 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
   setupSupplyAPY,
 }) => {
   const navigate = useNavigate();
+  const formatVal = (val: BN, decimal: number) => {
+    return BN.formatUnits(val, decimal).toSignificant(6).toString();
+  };
+
   return (
     <Root className="gridRow">
       <Row>
@@ -58,33 +62,46 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
           <SizedBox width={18} />
         </Row>
       </Row>
-      {selfSupply != null ? <Text>{selfSupply.toFormat(7)}</Text> : null}
+      {selfSupply != null ? <Text>{formatVal(selfSupply, token.decimals)}</Text> : null}
       {setupLtv != null ? <Text>{setupLtv}%</Text> : null}
       {totalSupply != null ? <Text>$ {totalSupply.toFormat(7)}</Text> : null}
       {setupSupplyAPY != null ? <Text>{Number(setupSupplyAPY).toFixed(2)}%</Text> : null}
       {dailyIncome != null ? <Text>{dailyIncome}</Text> : null}
       {totalBorrow != null ? <Text>$ {totalBorrow.toFormat(7)}</Text> : null}
       {setupBorrowAPR != null ? <Text>{setupBorrowAPR}%</Text> : null}
-      {selfBorrow != null ? <Text>{selfBorrow.toFormat(7)}</Text> : null}
-      <Row justifyContent="center">
-        {selfSupply ? (
+      {selfBorrow != null ? <Text>{formatVal(selfBorrow, token.decimals)}</Text> : null}
+
+      {selfSupply ? (
+        <Row justifyContent="center">
           <Button onClick={() => handleSupplyAssetClick(token.assetId, 0)} size="medium" kind="secondary">
             Supply
           </Button>
-        ) : null}
-
-        {selfBorrow ? (
+          <SizedBox width={12} />
           <Button onClick={() => handleSupplyAssetClick(token.assetId, 1)} size="medium" kind="secondary">
+            Withdraw
+          </Button>
+        </Row>
+      ) : null}
+
+      {selfBorrow ? (
+        <Row justifyContent="center">
+          <Button onClick={() => handleSupplyAssetClick(token.assetId, 2)} size="medium" kind="secondary">
             Borrow
           </Button>
-        ) : null}
+          <SizedBox width={12} />
+          <Button onClick={() => handleSupplyAssetClick(token.assetId, 3)} size="medium" kind="secondary">
+            Repay
+          </Button>
+        </Row>
+      ) : null}
 
-        {totalSupply ? (
+      {totalSupply ? (
+        <Row justifyContent="center">
           <Button onClick={() => handleSupplyAssetClick(token.assetId, 0)} size="medium" kind="secondary">
             Details
           </Button>
-        ) : null}
-      </Row>
+        </Row>
+      ) : null}
     </Root>
   );
 };

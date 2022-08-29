@@ -44,6 +44,8 @@ export default class TokenStore {
 
   netAPY = 0;
 
+  userHealth = 0;
+
   supplyUserTotal = 0;
 
   borrowUserTotal = 0;
@@ -51,6 +53,8 @@ export default class TokenStore {
   private setInitialized = (v: boolean) => (this.initialized = v);
 
   private setNetAPY = (v: number) => (this.netAPY = v);
+
+  private setUserHealth = (v: number) => (this.userHealth = v);
 
   private setSupplyBorrow = (s: number, b: number) => {
     this.supplyUserTotal = s;
@@ -96,8 +100,8 @@ export default class TokenStore {
     let borrowedAmountCurrent = 0;
 
     let baseAmount = 0;
-    const borrowCapacity = 0;
-    const borrowCapacityUsed = 0;
+    let borrowCapacity = 0;
+    let borrowCapacityUsed = 0;
     // const base =
     // const net_apy =
 
@@ -120,13 +124,14 @@ export default class TokenStore {
       const changeStr = `${changePrefix} $${formatChange24HUsd} (${formatChange24H}%)`;
 
       // net APY
-      supplyAmountApy += (details.self_supply / 10 ** 8) * details.setup_supply_apy;
-      borrowedAmountApr += (details.self_borrowed / 10 ** 8) * details.setup_borrow_apr;
-      baseAmount += details.self_supply / 10 ** 8;
+      supplyAmountApy += (details.self_supply / 10 ** details.precision) * details.setup_supply_apy;
+      borrowedAmountApr += (details.self_borrowed / 10 ** details.precision) * details.setup_borrow_apr;
+      baseAmount += details.self_supply / 10 ** details.precision;
 
       // count balance supply/borrow
-      supplyAmountCurrent += (details.self_supply / 10 ** 8) * details.supply_rate;
-      borrowedAmountCurrent += (details.self_borrowed / 10 ** 8) * details.borrow_rate;
+      console.log(details.self_supply, details.self_borrowed, 'TEEEEST');
+      supplyAmountCurrent += (details.self_supply / 10 ** details.precision) * details.supply_rate;
+      borrowedAmountCurrent += (details.self_borrowed / 10 ** details.precision) * details.borrow_rate;
 
       console.log(
         details.self_borrowed,
@@ -136,7 +141,7 @@ export default class TokenStore {
       );
 
       // count USER HEALTH
-      // case for DIFFERENT assets pairs as usdc/waves pool
+      // NEXT COMMENTED case for DIFFERENT assets pairs as usdc/waves pool
       // currently invalid, cause all pools in same pairs
 
       // if (details.self_borrowed > 0) {
@@ -145,6 +150,7 @@ export default class TokenStore {
       //     (borrowedAmountApr * Number(details.data?.['firstPrice_usd-n'])) / (details.setup_ltv / 100);
       // }
 
+      // count USER HEALTH for SAME ASSETS
       if (details.self_borrowed > 0) {
         console.log(
           details.self_supply,
@@ -152,8 +158,8 @@ export default class TokenStore {
           details.self_borrowed,
           '(details.self_supply * details.setup_ltv) / details.self_borrowed'
         );
-        const health = (details.self_supply * (details.setup_ltv / 100)) / details.self_borrowed;
-        console.log(health, 'HEALTH');
+        borrowCapacity += details.self_supply * (details.setup_ltv / 100) * Number(details.data?.['firstPrice_usd-n']);
+        borrowCapacityUsed += details.self_borrowed * Number(details.data?.['firstPrice_usd-n']);
       }
 
       return {
@@ -165,8 +171,8 @@ export default class TokenStore {
         setupLtv: details.setup_ltv,
         setupBorrowAPR: details.setup_borrow_apr,
         setupSupplyAPY: details.setup_supply_apy,
-        selfSupply: BN.formatUnits(details.self_supply, decimals),
-        selfBorrow: BN.formatUnits(details.self_borrowed, decimals),
+        selfSupply: BN.formatUnits(details.self_supply, 0),
+        selfBorrow: BN.formatUnits(details.self_borrowed, 0),
         selfSupplyRate: details.supply_rate,
         totalPoolBorrow: BN.formatUnits(details.total_borrow, decimals),
         totalPoolSupply: BN.formatUnits(details.total_supply, decimals),
@@ -184,11 +190,12 @@ export default class TokenStore {
     console.log(borrowCapacity, borrowCapacityUsed, 'borrowCapacity borrowCapacityUsed');
 
     const netAPY: number = (supplyAmountApy - borrowedAmountApr) / baseAmount;
-    const accountHealth: number = 1 - borrowCapacityUsed / borrowCapacity;
+    const accountHealth: number = borrowCapacity / borrowCapacityUsed;
     console.log(netAPY, accountHealth, 'netapy accountHealth');
 
     this.setNetAPY(netAPY);
     this.setSupplyBorrow(supplyAmountCurrent, borrowedAmountCurrent);
+    this.setUserHealth(accountHealth);
     this.setStatistics(statistics);
   };
 

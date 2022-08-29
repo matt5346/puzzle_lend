@@ -21,10 +21,12 @@ interface IProps {
   decimals: number;
   amount: BN;
   assetName: string;
+  totalSupply: BN;
   userBalance?: BN;
-  setupSupplyAPY?: string;
+  setupBorrowAPR?: string;
+  selfBorrow: BN;
   setAmount?: (amount: BN) => void;
-  onMaxClick?: () => void;
+  onMaxClick?: (amount?: BN) => void;
   onClose?: () => void;
   onSubmit?: (amount: BN, assetId: string) => void;
   usdnEquivalent?: string;
@@ -78,10 +80,9 @@ const InputContainer = styled.div<{
   }
 `;
 
-const SupplyAssets: React.FC<IProps> = (props) => {
+const BorrowAssets: React.FC<IProps> = (props) => {
   // const { accountStore, poolsStore, stakeStore } = useStores();
   const [focused, setFocused] = useState(false);
-  const { lendStore } = useStores();
   const [amount, setAmount] = useState<BN>(props.amount);
 
   useEffect(() => {
@@ -102,6 +103,10 @@ const SupplyAssets: React.FC<IProps> = (props) => {
     debounce(v);
   };
 
+  const formatVal = (val: BN, decimal: number) => {
+    return BN.formatUnits(val, decimal).toSignificant(6).toString();
+  };
+
   return (
     <Root>
       <InputContainer focused={focused} readOnly={!props.setAmount} error={props.error}>
@@ -109,7 +114,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
           <MaxButton
             onClick={() => {
               setFocused(true);
-              props.onMaxClick && props.onMaxClick();
+              props.onMaxClick && props.onMaxClick(props.selfBorrow);
             }}
           />
         )}
@@ -152,13 +157,22 @@ const SupplyAssets: React.FC<IProps> = (props) => {
       <SizedBox height={24} />
       <Row justifyContent="space-between">
         <Text size="medium" type="secondary" fitContent>
-          Supply APY
+          Borrow APR
         </Text>
         <Text size="medium" fitContent>
-          {props.setupSupplyAPY}%
+          {props.setupBorrowAPR}%
         </Text>
       </Row>
-      <SizedBox height={14} />
+      <SizedBox height={12} />
+      <Row justifyContent="space-between">
+        <Text size="medium" type="secondary" fitContent>
+          Borrowed
+        </Text>
+        <Text size="medium" fitContent>
+          {formatVal(props.selfBorrow, props.decimals)}
+        </Text>
+      </Row>
+      <SizedBox height={12} />
       <Row justifyContent="space-between">
         <Text size="medium" type="secondary" fitContent>
           Transaction fee
@@ -169,10 +183,10 @@ const SupplyAssets: React.FC<IProps> = (props) => {
       </Row>
       <Footer>
         <Button fixed onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId)} size="large">
-          Supply
+          Repay
         </Button>
       </Footer>
     </Root>
   );
 };
-export default observer(SupplyAssets);
+export default observer(BorrowAssets);

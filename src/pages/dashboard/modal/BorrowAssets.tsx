@@ -1,15 +1,18 @@
 /* eslint-disable react/require-default-props */
 /* eslint-disable react/destructuring-assignment */
+/* eslint-disable no-nested-ternary */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState, useEffect, useCallback } from 'react';
+import { SizedBox } from '@src/UIKit/SizedBox';
 import { observer } from 'mobx-react-lite';
 import styled from '@emotion/styled';
+import { Text } from '@src/UIKit/Text';
 import { Button } from '@src/UIKit/Button';
 import { MaxButton } from '@src/UIKit/MaxButton';
 import { useStores } from '@src/stores';
-import InputContainer from '@src/common/styles/InputContainer';
 import { BigNumberInput } from '@src/UIKit/BigNumberInput';
 import { AmountInput } from '@src/UIKit/AmountInput';
+import { Row } from '@src/common/styles/Flex';
 import BN from '@src/common/utils/BN';
 import _ from 'lodash';
 
@@ -17,8 +20,14 @@ interface IProps {
   assetId: string;
   decimals: number;
   amount: BN;
+  assetName: string;
+  totalSupply: BN;
+  userBalance?: BN;
+  setupLtv: string;
+  setupBorrowAPR?: string;
+  selfBorrow: BN;
   setAmount?: (amount: BN) => void;
-  onMaxClick?: () => void;
+  onMaxClick?: (amount?: BN) => void;
   onClose?: () => void;
   onSubmit?: (amount: BN, assetId: string) => void;
   usdnEquivalent?: string;
@@ -28,7 +37,7 @@ interface IProps {
 const Root = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 400px;
+  min-height: 300px;
   padding: 10px 20px;
 `;
 
@@ -39,9 +48,42 @@ const Footer = styled.div`
   margin-top: auto;
 `;
 
+const InputContainer = styled.div<{
+  focused?: boolean;
+  error?: boolean;
+  invalid?: boolean;
+  readOnly?: boolean;
+}>`
+  background: ${({ focused, error }) => (focused ? '#ffffff' : '#F1F2FE')};
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  height: 56px;
+  border-radius: 12px;
+  width: 100%;
+  position: relative;
+  cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'unset')};
+
+  box-sizing: border-box;
+
+  input {
+    cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'unset')};
+  }
+
+  border: 1px solid
+    ${({ focused, readOnly, error }) => (error ? '#ED827E' : focused && !readOnly ? '#7075E9' : '#f1f2fe')};
+
+  :hover {
+    border-color: ${({ readOnly, focused, error }) =>
+      error ? '#ED827E' : !readOnly && !focused ? '#C6C9F4' : focused ?? '#7075E9'};
+  }
+`;
+
 const BorrowAssets: React.FC<IProps> = (props) => {
+  // const { accountStore, poolsStore, stakeStore } = useStores();
   const [focused, setFocused] = useState(false);
-  const { lendStore } = useStores();
   const [amount, setAmount] = useState<BN>(props.amount);
 
   useEffect(() => {
@@ -62,6 +104,10 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     debounce(v);
   };
 
+  const formatVal = (val: BN, decimal: number) => {
+    return BN.formatUnits(val, decimal).toSignificant(6).toString();
+  };
+
   return (
     <Root>
       <InputContainer focused={focused} readOnly={!props.setAmount} error={props.error}>
@@ -69,7 +115,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           <MaxButton
             onClick={() => {
               setFocused(true);
-              props.onMaxClick && props.onMaxClick();
+              props.onMaxClick && props.onMaxClick(props.selfBorrow);
             }}
           />
         )}
@@ -96,12 +142,58 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           readOnly={!props.setAmount}
         />
       </InputContainer>
+      <SizedBox height={8} />
+      <Row justifyContent="space-between">
+        <Text size="medium" type="secondary" fitContent>
+          Wallet Balance
+        </Text>
+        <Text size="medium" fitContent>
+          {BN.formatUnits(props.userBalance ? props.userBalance : BN.ZERO, props.decimals)
+            .toSignificant(6)
+            .toString()}
+          <>&nbsp;</>
+          {props.assetName}
+        </Text>
+      </Row>
+      <SizedBox height={24} />
+      <Row justifyContent="space-between">
+        <Text size="medium" type="secondary" fitContent>
+          Borrow APR
+        </Text>
+        <Text size="medium" fitContent>
+          {props.setupBorrowAPR}%
+        </Text>
+      </Row>
+      <SizedBox height={12} />
+      <Row justifyContent="space-between">
+        <Text size="medium" type="secondary" fitContent>
+          LTV
+        </Text>
+        <Text size="medium" fitContent>
+          {props.setupLtv}%
+        </Text>
+      </Row>
+      <SizedBox height={12} />
+      <Row justifyContent="space-between">
+        <Text size="medium" type="secondary" fitContent>
+          Borrowed
+        </Text>
+        <Text size="medium" fitContent>
+          {formatVal(props.selfBorrow, props.decimals)}
+        </Text>
+      </Row>
+      <SizedBox height={12} />
+      <Row justifyContent="space-between">
+        <Text size="medium" type="secondary" fitContent>
+          Transaction fee
+        </Text>
+        <Text size="medium" fitContent>
+          0,005 WAVES
+        </Text>
+      </Row>
       <Footer>
-        <Button onClick={() => props.onClose && props.onClose()} size="large" kind="primary">
-          Cancel
-        </Button>
-        <Button onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId)} size="large" kind="secondary">
-          Borrow
+        <Button fixed onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId)} size="large">
+          Withdraw
         </Button>
       </Footer>
     </Root>

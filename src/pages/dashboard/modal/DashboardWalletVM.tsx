@@ -33,9 +33,19 @@ class DashboardWalletVM {
 
   borrowAmount: BN = BN.ZERO;
 
-  @action.bound setSupplyAmount = (amount: BN) => (this.supplyAmount = amount);
+  repayAmount: BN = BN.ZERO;
+
+  withdrawAmount: BN = BN.ZERO;
+
+  @action.bound setSupplyAmount = (amount: BN) => {
+    this.supplyAmount = amount;
+  };
 
   @action.bound setBorrowAmount = (amount: BN) => (this.borrowAmount = amount);
+
+  @action.bound setRepayAmount = (amount: BN) => (this.repayAmount = amount);
+
+  @action.bound setWithdrawAmount = (amount: BN) => (this.withdrawAmount = amount);
 
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
@@ -52,7 +62,7 @@ class DashboardWalletVM {
   onCloseModal = () => {
     console.log('CLOSE');
     const { lendStore } = this.rootStore;
-    lendStore.setDashboardModalOpened(false, '', 0);
+    lendStore.setDashboardModalOpened(false, '', lendStore.dashboardModalStep);
   };
 
   submitBorrow = async (amount: any, assetId: any) => {
@@ -99,6 +109,62 @@ class DashboardWalletVM {
         call: {
           function: 'supply',
           args: [],
+        },
+      })
+      .then((txId) => {
+        console.log(txId, '---tx');
+      })
+      .catch((e) => {
+        console.log(e, '---e');
+      })
+      .then(() => {
+        accountStore.updateAccountAssets(true);
+        lendStore.setDashboardModalOpened(false, '', 0);
+      });
+  };
+
+  submitWithdraw = async (amount: any, assetId: any) => {
+    const { accountStore, lendStore } = this.rootStore;
+    console.log(amount.toString(), assetId, 'token');
+
+    await accountStore
+      .invoke({
+        dApp: CONTRACT_ADDRESSES.ltv1,
+        payment: [],
+        call: {
+          function: 'withdraw',
+          args: [
+            { type: 'string', value: assetId },
+            { type: 'integer', value: amount },
+          ],
+        },
+      })
+      .then((txId) => {
+        console.log(txId, '---tx');
+      })
+      .catch((e) => {
+        console.log(e, '---e');
+      })
+      .then(() => {
+        accountStore.updateAccountAssets(true);
+        lendStore.setDashboardModalOpened(false, '', 0);
+      });
+  };
+
+  submitRepay = async (amount: any, assetId: any) => {
+    const { accountStore, lendStore } = this.rootStore;
+    console.log(amount.toString(), assetId, 'token');
+
+    await accountStore
+      .invoke({
+        dApp: CONTRACT_ADDRESSES.ltv1,
+        payment: [],
+        call: {
+          function: 'repay',
+          args: [
+            { type: 'string', value: assetId },
+            { type: 'integer', value: amount },
+          ],
         },
       })
       .then((txId) => {

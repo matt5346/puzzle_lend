@@ -17,8 +17,8 @@
 
 @media (min-width: 560px) {
     .dashboard-dialog .rc-dialog {
-        width: 574px;
-        height: 560px;
+        width: 425px;
+        height: 438px;
     }
 
     .ps--active-x > .ps__rail-x, .ps--active-y > .ps__rail-y {
@@ -29,7 +29,7 @@
 
 .dashboard-dialog .rc-dialog-content {
     border-radius: 0;
-    background: #7075E9;;
+    background: #fff;;
     border: 0;
     box-shadow: 0px 8px 56px rgba(54, 56, 112, 0.16);
     overflow: hidden;
@@ -38,9 +38,9 @@
 
 @media (min-width: 560px) {
     .dashboard-dialog .rc-dialog-content {
-        border-radius: 4px;
-        width: 574px;
-        height: 560px;
+        border-radius: 16px;
+        width: 425px;
+        height: 438px;
     }
 
     .dashboard-dialog .rc-dialog-content .ps__rail-x {

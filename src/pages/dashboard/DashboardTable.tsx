@@ -96,7 +96,7 @@ const DashboardTable: React.FC<IProps> = () => {
       <AllAssetsTable filteredTokens={filteredTokens} handleSupplyAssetClick={handleSupplyAssetClick} />
       <DashboardModal
         filteredTokens={filteredTokens}
-        onClose={() => lendStore.setDashboardModalOpened(false, '', 0)}
+        onClose={() => lendStore.setDashboardModalOpened(false, '', lendStore.dashboardModalStep)}
         visible={lendStore.dashboardModalOpened}
       />
     </Root>

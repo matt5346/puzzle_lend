@@ -42,6 +42,10 @@ const Root = styled.div<{ withClickLogic?: boolean }>`
 `;
 
 const SupplyTokensRow: React.FC<IProps> = ({ vol24, token, rate, setupSupplyAPY, selfSupply, ...rest }) => {
+  const formatVal = (val: BN, decimal: number) => {
+    return BN.formatUnits(val, decimal).toSignificant(6).toString();
+  };
+
   return (
     <Root {...rest}>
       <RoundTokenIcon src={tokenLogos[token.symbol]} />
@@ -55,7 +59,7 @@ const SupplyTokensRow: React.FC<IProps> = ({ vol24, token, rate, setupSupplyAPY,
         <Text type="primary" className="text" textAlign="center">
           My Supply
         </Text>
-        {selfSupply != null ? <Text type="primary">{selfSupply.toFormat(7)}$</Text> : <Text>-</Text>}
+        {selfSupply != null ? <Text type="primary">{formatVal(selfSupply, token.decimals)}$</Text> : <Text>-</Text>}
       </Column>
     </Root>
   );

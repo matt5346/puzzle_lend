@@ -81,6 +81,7 @@ const wavesCapService = {
         setup_borrow_apr: 0,
         // supply APY
         setup_supply_apy: 0,
+        // user borrow/supply
         self_supply: 0,
         self_borrowed: 0,
         // sRate, need for counting SUPPLY compound on front
