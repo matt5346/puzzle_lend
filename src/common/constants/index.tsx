@@ -55,8 +55,8 @@ export const CONTRACT_ADDRESSES = {
 
 export const ROUTES = {
   HOME: '/',
+  DASHBOARD_TOKEN: '/dashboard/:assetId',
   NOT_FOUND: '/404',
-  DASHBOARD: '/dashboard',
 };
 
 export const TOKENS_LIST: Array<IToken> = Object.values(tokensList).map((t) => ({

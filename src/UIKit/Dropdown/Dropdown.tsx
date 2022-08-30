@@ -4,6 +4,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { Text } from '@src/UIKit/Text';
+import { ReactComponent as ChevronDown } from '@src/common/assets/icons/chevron_down.svg';
 
 interface IProps {
   title?: string;
@@ -11,19 +12,35 @@ interface IProps {
 }
 
 const ListGroupItem = styled.div`
+  position: relative;
   padding: 24px;
   border-radius: 12px;
   background-color: #fff;
   cursor: pointer;
+  transition: background 0.1s ease;
+
+  svg {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    transition: transform 0.3s ease;
+  }
 
   &:hover {
     background-color: #f1f2fe;
+  }
+
+  &.is-expanded {
+    svg {
+      transform: rotate(180deg);
+    }
   }
 
   .card-title {
     color: #363870;
     font-size: 20px;
   }
+
   h2 {
     margin-top: 5px !important;
   }
@@ -31,6 +48,7 @@ const ListGroupItem = styled.div`
 
 const CollapseBlock = styled.div`
   overflow: hidden;
+  transition: height 0.15s ease;
 
   .is-expanded & {
     margin-top: 24px;
@@ -60,6 +78,7 @@ const Dropdown: React.FC<IProps> = ({ title, children }) => {
   return (
     <ListGroupItem className={classes} onClick={handleToggle}>
       <Text className="card-title">{title}</Text>
+      <ChevronDown />
       <CollapseBlock className="card-collapse" style={{ height: `${currentHeight}px` }}>
         <Text className="card-body" ref={ref}>
           {children}

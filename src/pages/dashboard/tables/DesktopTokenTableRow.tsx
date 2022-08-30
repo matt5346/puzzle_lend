@@ -52,7 +52,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
   return (
     <Root className="gridRow">
       <Row>
-        <Row onClick={() => navigate(`/explore/token/${token.assetId}`)} style={{ cursor: 'pointer' }}>
+        <Row onClick={() => navigate(`/dashboard/${token.assetId}`)} style={{ cursor: 'pointer' }}>
           <SquareTokenIcon src={tokenLogos[token.symbol]} />
           <SizedBox width={18} />
           <Text nowrap weight={500} fitContent>
@@ -72,7 +72,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
       {selfBorrow != null ? <Text>{formatVal(selfBorrow, token.decimals)}</Text> : null}
 
       {selfSupply ? (
-        <Row justifyContent="center">
+        <Row justifyContent="flex-end">
           <Button onClick={() => handleSupplyAssetClick(token.assetId, 0)} size="medium" kind="secondary">
             Supply
           </Button>
@@ -84,7 +84,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
       ) : null}
 
       {selfBorrow ? (
-        <Row justifyContent="center">
+        <Row justifyContent="flex-end">
           <Button onClick={() => handleSupplyAssetClick(token.assetId, 2)} size="medium" kind="secondary">
             Borrow
           </Button>
@@ -96,9 +96,13 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
       ) : null}
 
       {totalSupply ? (
-        <Row justifyContent="center">
+        <Row justifyContent="flex-end">
           <Button onClick={() => handleSupplyAssetClick(token.assetId, 0)} size="medium" kind="secondary">
-            Details
+            Supply
+          </Button>
+          <SizedBox width={12} />
+          <Button onClick={() => handleSupplyAssetClick(token.assetId, 2)} size="medium" kind="secondary">
+            Borrow
           </Button>
         </Row>
       ) : null}

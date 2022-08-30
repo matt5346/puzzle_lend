@@ -33,6 +33,7 @@ const HealthWrap = styled.div`
   flex-direction: column;
   align-items: center;
   text-align: center;
+  background: #fff;
 `;
 
 const IconWrap = styled.div`

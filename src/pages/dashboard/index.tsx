@@ -17,7 +17,7 @@ import DashThree from '@src/common/assets/dashboard/dash3.png';
 import DashFour from '@src/common/assets/dashboard/dash4.png';
 
 const SubTitleWrap = styled.div`
-  width: 50%;
+  width: 100%;
   margin-bottom: 40px;
 `;
 
@@ -26,6 +26,10 @@ const TitleH = styled.h1`
   color: #363870;
   font-weight: 500;
   margin: 0;
+
+  b {
+    color: #7075e9;
+  }
 
   &:first-of-type {
     margin-bottom: 10px;
@@ -87,8 +91,9 @@ const Dashboard: React.FC = () => {
   return (
     <DashboardVMProvider>
       <Container>
-        <TitleH>Earn interest, borrow assets.</TitleH>
-        <TitleH>Total liquidity: $281,605,117</TitleH>
+        <TitleH>
+          Earn interest, borrow assets. Total liquidity: <b>&nbsp;$281,605,117</b>
+        </TitleH>
 
         <SubTitleWrap>
           <Text>
@@ -115,21 +120,25 @@ const Dashboard: React.FC = () => {
             <CardImg src={DashOne} />
             <CardText>
               <Text type="primary" weight={500}>
-                Supply
+                Deposit assets
               </Text>
               <SizedBox height={14} />
-              <Text size="medium">Supply into the protocol and watch your assets grow as a liquidity provider</Text>
+              <Text size="medium">
+                You can pick any tokens from the Waves Ecosystem to put them into markets and start earning Supply
+                rewards.
+              </Text>
             </CardText>
           </Card>
           <Card>
             <CardImg src={DashTwo} />
             <CardText>
               <Text type="primary" weight={500}>
-                Stake
+                Borrow funds
               </Text>
               <SizedBox height={14} />
               <Text size="medium">
-                Deposit your Puzzle into the protocol and earn rewards for securing the protocol
+                You can borrow assets from the market to use for extending your DeFi experience. Take into account that
+                you will pay Borrow interest for it.
               </Text>
             </CardText>
           </Card>
@@ -137,21 +146,24 @@ const Dashboard: React.FC = () => {
             <CardImg src={DashThree} />
             <CardText>
               <Text type="primary" weight={500}>
-                Supply
+                Leverage position
               </Text>
               <SizedBox height={14} />
-              <Text size="medium">Borrow against your collateral from across multiple networks and assets</Text>
+              <Text size="medium">
+                You can use lending protocol to take long or short positions with an upto 3x leverage.
+              </Text>
             </CardText>
           </Card>
           <Card>
             <CardImg src={DashFour} />
             <CardText>
               <Text type="primary" weight={500}>
-                Supply
+                Avoid liquidations
               </Text>
               <SizedBox height={14} />
               <Text size="medium">
-                Participate in Puzzle governance and vote on new proposals, new assets, and protocol upgrades
+                Use an advanced Oracle system based on the TWAP model, which guarantees that the market cannot be
+                manipulated to liquidate safe positions.
               </Text>
             </CardText>
           </Card>
@@ -166,23 +178,30 @@ const Dashboard: React.FC = () => {
             <Text>asked questions</Text>
           </FAQ>
           <Column>
-            <Dropdown title="What is a borrow APY">
-              When you are borrowing, you are paying a Borrow APY to the pool (for the users who supplied). This borrow
-              APY is calculated based on the Parameters & The Math, and are displayed on our UI when you borrow. Borrow
-              APY is added to your loan on a per-slot basis, so the amount of money you have to repay goes up over time.
+            <Dropdown title="What is the idea of Puzzle Lend?">
+              Puzzle Lend uses an experience of existing Lending Protocols to maximise the user experience. Thanks to an
+              isolated market model, Puzzle Lend enables to supply/borrow even small-cap assets presented in the Waves
+              Ecosystem.
             </Dropdown>
             <SizedBox height={10} />
-            <Dropdown title="What is a borrow APY">
-              When you are borrowing, you are paying a Borrow APY to the pool (for the users who supplied). This borrow
-              APY is calculated based on the Parameters & The Math, and are displayed on our UI when you borrow. Borrow
-              APY is added to your loan on a per-slot basis, so the amount of money you have to repay goes up over time.
+            <Dropdown title="What are the risks of using Puzzle Lend?">
+              WFor supplying an asset, there are 2 types of risks. The first one is the utilisation ratio: if it reaches
+              100%, you will be temporarily not able to withdraw your deposit. The second one is the smart contract
+              risk: we don’t recommend putting a significant amount of supply before Puzzle Lend smart contracts get
+              official audits.
             </Dropdown>
             <SizedBox height={10} />
-            <Dropdown title="What is a borrow APY">
-              When you are borrowing, you are paying a Borrow APY to the pool (for the users who supplied). This borrow
-              APY is calculated based on the Parameters & The Math, and are displayed on our UI when you borrow. Borrow
-              APY is added to your loan on a per-slot basis, so the amount of money you have to repay goes up over time.
+            <Dropdown title="What is Supply and Borrow APY?">
+              APY means compounded percent calculated for daily interest by the formula: APY = 100% * ((1 + interest) **
+              365 - 1). It demonstrates the percentage value of your deposit/debt change, if you don’t operate with it
+              for a year.
             </Dropdown>
+            <SizedBox height={10} />
+            <Dropdown title="How many funds can I borrow?">
+              To borrow assets, you need to deposit some collateral. After you supply an asset, the available amount to
+              borrow will be shown. It’s calculated according to the LTV (loan-to-value) factor of your deposit.
+            </Dropdown>
+            <SizedBox height={100} />
           </Column>
         </Row>
       </Container>

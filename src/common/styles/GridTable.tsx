@@ -23,6 +23,7 @@ const GridTable = styled.div<{
   }
 
   & .gridRow {
+    position: relative;
     max-width: 100%;
     cursor: pointer;
     display: grid;
@@ -33,12 +34,34 @@ const GridTable = styled.div<{
     line-height: 20px;
     color: #8082c5;
     box-sizing: border-box;
-    margin: 0 16px;
-    padding: 16px 0;
+    padding: 16px;
     border-bottom: 1px solid #f1f2fe;
+    transition: background 0.1s ease;
+
+    &:after {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 0;
+      display: block;
+      content: '';
+      width: 4px;
+      height: 80%;
+      background: #7075e9;
+      opacity: 0;
+    }
+
+    &:hover {
+      background: #f8f8ff;
+
+      &:after {
+        opacity: 1;
+      }
+    }
+
     @media (min-width: 880px) {
       grid-template-columns: ${({ desktopTemplate }) => desktopTemplate ?? '6fr 2fr 1fr'};
-      margin: 0 24px;
+      padding: 24px;
     }
 
     :last-of-type {

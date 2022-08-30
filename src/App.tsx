@@ -13,6 +13,7 @@ import WalletModal from '@components/Wallet/WalletModal';
 // pages
 import Home from '@src/pages/home/Home';
 import Dashboard from '@src/pages/dashboard';
+import DashboardToken from '@src/pages/dashboardToken';
 
 // css
 import { Column } from '@src/common/styles/Flex';
@@ -38,6 +39,7 @@ const App: React.FC = () => {
       <Routes>
         {/* Base */}
         <Route path={ROUTES.HOME} element={<Dashboard />} />
+        <Route path={ROUTES.DASHBOARD_TOKEN} element={<DashboardToken />} />
       </Routes>
       <WalletModal onClose={() => accountStore.setWalletModalOpened(false)} visible={accountStore.walletModalOpened} />
     </Root>
