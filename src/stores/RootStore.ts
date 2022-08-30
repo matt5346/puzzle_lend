@@ -1,7 +1,8 @@
 import { makeAutoObservable } from 'mobx';
 import AccountStore, { ISerializedAccountStore } from '@src/stores/AccountStore';
 import LendStore from '@src/stores/LendStore';
-import TokenStore, { ISerializedTokenStore } from '@src/stores/TokenStore';
+import TokenStore from '@src/stores/TokenStore';
+import { ISerializedTokenStore } from '@src/common/constants';
 import PoolsStore, { ISerializedPoolsStore } from '@src/stores/PoolsStore';
 
 export interface ISerializedRootStore {

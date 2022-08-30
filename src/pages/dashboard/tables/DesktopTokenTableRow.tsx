@@ -73,11 +73,19 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
 
       {selfSupply ? (
         <Row justifyContent="flex-end">
-          <Button onClick={() => handleSupplyAssetClick(token.assetId, 0)} size="medium" kind="secondary">
+          <Button
+            minWidth="108px"
+            onClick={() => handleSupplyAssetClick(token.assetId, 0)}
+            size="medium"
+            kind="secondary">
             Supply
           </Button>
           <SizedBox width={12} />
-          <Button onClick={() => handleSupplyAssetClick(token.assetId, 1)} size="medium" kind="secondary">
+          <Button
+            minWidth="108px"
+            onClick={() => handleSupplyAssetClick(token.assetId, 1)}
+            size="medium"
+            kind="secondary">
             Withdraw
           </Button>
         </Row>
@@ -85,11 +93,19 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
 
       {selfBorrow ? (
         <Row justifyContent="flex-end">
-          <Button onClick={() => handleSupplyAssetClick(token.assetId, 2)} size="medium" kind="secondary">
+          <Button
+            minWidth="108px"
+            onClick={() => handleSupplyAssetClick(token.assetId, 2)}
+            size="medium"
+            kind="secondary">
             Borrow
           </Button>
           <SizedBox width={12} />
-          <Button onClick={() => handleSupplyAssetClick(token.assetId, 3)} size="medium" kind="secondary">
+          <Button
+            minWidth="108px"
+            onClick={() => handleSupplyAssetClick(token.assetId, 3)}
+            size="medium"
+            kind="secondary">
             Repay
           </Button>
         </Row>
@@ -97,11 +113,19 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
 
       {totalSupply ? (
         <Row justifyContent="flex-end">
-          <Button onClick={() => handleSupplyAssetClick(token.assetId, 0)} size="medium" kind="secondary">
+          <Button
+            minWidth="108px"
+            onClick={() => handleSupplyAssetClick(token.assetId, 0)}
+            size="medium"
+            kind="secondary">
             Supply
           </Button>
           <SizedBox width={12} />
-          <Button onClick={() => handleSupplyAssetClick(token.assetId, 2)} size="medium" kind="secondary">
+          <Button
+            minWidth="108px"
+            onClick={() => handleSupplyAssetClick(token.assetId, 2)}
+            size="medium"
+            kind="secondary">
             Borrow
           </Button>
         </Row>

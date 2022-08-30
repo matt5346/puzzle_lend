@@ -36,20 +36,6 @@ const HealthWrap = styled.div`
   background: #fff;
 `;
 
-const IconWrap = styled.div`
-  display: flex;
-  justify-content: space-between;
-  background-color: #7075e9;
-  border-radius: 10px;
-  padding: 10px;
-  cursor: pointer;
-
-  svg {
-    width: 32px;
-    height: 32px;
-  }
-`;
-
 const UserInfo: React.FC<IProps> = () => {
   const vm = useDashboardVM();
   console.log(vm, 'VM-----');

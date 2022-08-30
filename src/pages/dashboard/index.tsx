@@ -44,7 +44,7 @@ const Card = styled.div`
   position: relative;
   min-height: 250px;
   display: flex;
-  width: 22%;
+  width: 24%;
   border: 1px solid #f1f2fe;
   border-radius: 16px;
   box-sizing: border-box;
@@ -61,10 +61,11 @@ const Card = styled.div`
 `;
 
 const CardText = styled.div`
-  position: absolute;
-  width: 60%;
-  bottom: 16px;
-  left: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 85%;
+  margin-top: 60px;
 `;
 
 const CardImg = styled.img`

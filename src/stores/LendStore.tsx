@@ -2,7 +2,7 @@
 import RootStore from '@src/stores/RootStore';
 import { makeAutoObservable, reaction, action } from 'mobx';
 import BN from '@src/common/utils/BN';
-import { TTokenStatistics } from '@src/stores/TokenStore';
+import { TTokenStatistics } from '@src/common/constants';
 
 export default class LendStore {
   public rootStore: RootStore;

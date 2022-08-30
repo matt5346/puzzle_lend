@@ -89,9 +89,9 @@ const Header: React.FC<IProps> = () => {
     <Root>
       <TopMenu>
         <Row alignItems="center" crossAxisSize="max">
-          <a href="https://puzzleswap.org">
+          <Link to={menuItems[0].link}>
             <img className="logo" src={puzzleLogo} alt="logo" />
-          </a>
+          </Link>
           <Desktop>
             <SizedBox width={54} />
             {menuItems.map(({ name, link }) => (

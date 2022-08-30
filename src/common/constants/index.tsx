@@ -1,15 +1,82 @@
 import tokenLogos from '@src/common/constants/tokenLogos';
 import tokensList from '@src/common/constants/tokens.json';
+import BN from '@src/common/utils/BN';
+
+export interface ISerializedTokenStore {
+  watchList: string[];
+}
+
+export type TTokenStatistics = {
+  assetId: string;
+  decimals: number;
+  name: string;
+  symbol: string;
+  setupLtv: string;
+  setupBorrowAPR: string;
+  setupSupplyAPY: string;
+  selfSupply: BN;
+  selfBorrow: BN;
+  selfSupplyRate: string;
+  totalSupply: BN;
+  totalPoolSupply: BN;
+  totalPoolBorrow: BN;
+  circulatingSupply: BN;
+  totalBurned: BN;
+  fullyDilutedMC: BN;
+  marketCap: BN;
+  currentPrice: BN;
+  change24H: BN;
+  change24HUsd: BN;
+  volume24: BN;
+  changeStr: string;
+};
+
+export function createITokenStat(): TTokenStatistics {
+  return {
+    assetId: '',
+    name: '',
+    symbol: '',
+    decimals: 0,
+    setupLtv: '',
+    setupBorrowAPR: '',
+    setupSupplyAPY: '',
+    changeStr: '',
+    selfSupplyRate: '',
+    selfSupply: BN.ZERO,
+    selfBorrow: BN.ZERO,
+    totalSupply: BN.ZERO,
+    totalPoolSupply: BN.ZERO,
+    totalPoolBorrow: BN.ZERO,
+    circulatingSupply: BN.ZERO,
+    totalBurned: BN.ZERO,
+    fullyDilutedMC: BN.ZERO,
+    marketCap: BN.ZERO,
+    currentPrice: BN.ZERO,
+    change24H: BN.ZERO,
+    change24HUsd: BN.ZERO,
+    volume24: BN.ZERO,
+  };
+}
 
 export interface IToken {
   assetId: string;
   name: string;
   symbol: string;
   decimals: number;
+  logo: string;
   startPrice?: number;
   description?: string;
-  logo: string;
   category?: string[];
+}
+
+export function createIToken(): IToken {
+  return {
+    assetId: '',
+    name: '',
+    symbol: '',
+    decimals: 0,
+    logo: '',
+  };
 }
 
 export interface IPoolConfig {

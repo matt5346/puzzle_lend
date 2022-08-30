@@ -5,10 +5,6 @@ import React, { useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import styled from '@emotion/styled';
 import { useStores } from '@src/stores';
-import GridTable from '@src/common/styles/GridTable';
-import Card from '@src/common/styles/Card';
-import { Row, Column } from '@src/common/styles/Flex';
-import { SizedBox } from '@src/UIKit/SizedBox';
 import { Text } from '@src/UIKit/Text';
 import { IToken } from '@src/common/constants';
 import { useDashboardVM } from '@src/pages/dashboard/DashboardVm';
@@ -55,9 +51,10 @@ const DashboardTable: React.FC<IProps> = () => {
   useMemo(() => {
     const data = vm.assetsWithStats;
 
+    // filtering USER supply/borrow values
+    // for showing or hiding supply/borrow TABLES
     data.forEach((t) => {
       const stats = tokenStore.statisticsByAssetId[t.assetId];
-      console.log(stats, '====STATS-');
 
       if (showBorrow === false && Number(stats.selfBorrow) > 0) {
         showBorrowTable(true);

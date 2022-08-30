@@ -2,38 +2,9 @@
 /* eslint-disable no-return-assign */
 import RootStore from '@src/stores/RootStore';
 import { makeAutoObservable } from 'mobx';
-import { TOKENS_BY_ASSET_ID, TOKENS_LIST } from '@src/common/constants';
+import { TOKENS_BY_ASSET_ID, TOKENS_LIST, TTokenStatistics, ISerializedTokenStore } from '@src/common/constants';
 import wavesCapService from '@src/common/services/wavesCapService';
 import BN from '@src/common/utils/BN';
-
-export interface ISerializedTokenStore {
-  watchList: string[];
-}
-
-export type TTokenStatistics = {
-  assetId: string;
-  decimals: number;
-  name: string;
-  symbol: string;
-  setupLtv: string;
-  setupBorrowAPR: string;
-  setupSupplyAPY: string;
-  selfSupply: BN;
-  selfBorrow: BN;
-  selfSupplyRate: string;
-  totalSupply: BN;
-  totalPoolSupply: BN;
-  totalPoolBorrow: BN;
-  circulatingSupply: BN;
-  totalBurned: BN;
-  fullyDilutedMC: BN;
-  marketCap: BN;
-  currentPrice: BN;
-  change24H: BN;
-  change24HUsd: BN;
-  volume24: BN;
-  changeStr: string;
-};
 
 export default class TokenStore {
   public rootStore: RootStore;

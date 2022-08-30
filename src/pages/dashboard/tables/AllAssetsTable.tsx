@@ -62,7 +62,7 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
     <Card style={{ padding: 0, overflow: 'auto' }} justifyContent="center">
       <GridTable
         style={{ width: 'fit-content', minWidth: '100%' }}
-        desktopTemplate="2fr 0.5fr 1fr 1fr 1fr 1fr 2fr"
+        desktopTemplate="2fr 0.5fr 1fr 1fr 1fr 1fr 2.5fr"
         mobileTemplate="2fr 1fr">
         <div className="gridTitle">
           <div>Asset</div>
