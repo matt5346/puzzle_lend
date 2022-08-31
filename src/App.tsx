@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import { ROUTES } from '@src/common/constants';
 
 import { useStores } from '@src/stores';
@@ -38,7 +38,8 @@ const App: React.FC = () => {
       <Header />
       <Routes>
         {/* Base */}
-        <Route path={ROUTES.HOME} element={<Dashboard />} />
+        <Route path={ROUTES.HOME} element={<Navigate to="/dashboard" />} />
+        <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
         <Route path={ROUTES.DASHBOARD_TOKEN} element={<DashboardToken />} />
       </Routes>
       <WalletModal onClose={() => accountStore.setWalletModalOpened(false)} visible={accountStore.walletModalOpened} />

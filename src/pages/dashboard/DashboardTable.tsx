@@ -8,6 +8,7 @@ import { useStores } from '@src/stores';
 import { Text } from '@src/UIKit/Text';
 import { IToken } from '@src/common/constants';
 import { useDashboardVM } from '@src/pages/dashboard/DashboardVm';
+import { SizedBox } from '@src/UIKit/SizedBox';
 import DashboardModal from '@src/pages/dashboard/modal';
 import AllAssetsTable from '@src/pages/dashboard/tables/AllAssetsTable';
 import MyBorrowTable from '@src/pages/dashboard/tables/MyBorrowTable';
@@ -79,17 +80,25 @@ const DashboardTable: React.FC<IProps> = () => {
     <Root>
       {showSupply ? (
         <Wrap>
-          <Text margin="0 0 10px 0">My supply</Text>
+          <Text weight={500} type="secondary" margin="0 0 10px 0">
+            My supply
+          </Text>
           <MySupplyTable filteredTokens={filteredTokens} handleSupplyAssetClick={handleSupplyAssetClick} />
         </Wrap>
       ) : null}
+      <SizedBox height={40} />
       {showBorrow ? (
         <Wrap>
-          <Text margin="10px 0">My borrow</Text>
+          <Text weight={500} type="secondary" margin="0 0 10px 0">
+            My borrow
+          </Text>
           <MyBorrowTable filteredTokens={filteredTokens} handleSupplyAssetClick={handleSupplyAssetClick} />
         </Wrap>
       ) : null}
-      <Text margin="10px 0">All assets</Text>
+      <SizedBox height={40} />
+      <Text weight={500} type="secondary" margin="0 0 10px 0">
+        All assets
+      </Text>
       <AllAssetsTable filteredTokens={filteredTokens} handleSupplyAssetClick={handleSupplyAssetClick} />
       <DashboardModal
         filteredTokens={filteredTokens}

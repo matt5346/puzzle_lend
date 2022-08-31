@@ -122,7 +122,9 @@ export const CONTRACT_ADDRESSES = {
 
 export const ROUTES = {
   HOME: '/',
-  DASHBOARD_TOKEN: '/dashboard/:assetId',
+  DASHBOARD: '/dashboard',
+  DASHBOARD_POOl: '/dashboard/pool/:poolId',
+  DASHBOARD_TOKEN: '/dashboard/token/:assetId',
   NOT_FOUND: '/404',
 };
 

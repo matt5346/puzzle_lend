@@ -1,0 +1,45 @@
+@font-face {
+  font-family: 'Roboto';
+  src: url('./common/assets/fonts/Roboto-Regular.eot') format("embedded-opentype"),
+      url('./common/assets/fonts/Roboto-Regular.svg') format("svg"),
+      url('./common/assets/fonts/Roboto-Regular.ttf') format("truetype"),
+      url('./common/assets/fonts/Roboto-Regular.woff') format("woff"),
+      url('./common/assets/fonts/Roboto-Regular.woff2') format("woff2"),
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: medium;
+  font-weight: 500;
+  src: url('./common/assets/fonts/Roboto-Medium.eot') format("embedded-opentype"),
+      url('./common/assets/fonts/Roboto-Medium.svg') format("svg"),
+      url('./common/assets/fonts/Roboto-Medium.ttf') format("truetype"),
+      url('./common/assets/fonts/Roboto-Medium.woff') format("woff"),
+      url('./common/assets/fonts/Roboto-Medium.woff2') format("woff2"),
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: bold;
+  font-weight: 700;
+  src: url('./common/assets/fonts/Roboto-Bold.eot') format("embedded-opentype"),
+      url('./common/assets/fonts/Roboto-Bold.svg') format("svg"),
+      url('./common/assets/fonts/Roboto-Bold.ttf') format("truetype"),
+      url('./common/assets/fonts/Roboto-Bold.woff') format("woff"),
+      url('./common/assets/fonts/Roboto-Bold.woff2') format("woff2"),
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  * {
+    font-family: 'Roboto';
+  }
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}

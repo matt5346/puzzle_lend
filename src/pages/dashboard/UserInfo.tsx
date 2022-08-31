@@ -13,16 +13,9 @@ import { useDashboardVM } from '@src/pages/dashboard/DashboardVm';
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IProps {}
 
-const ButtonWrap = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-`;
-
 const HealthWrap = styled.div`
   position: absolute;
-  top: -60px;
+  top: -45px;
   left: 50%;
   transform: translate(-50%);
   width: 100px;
@@ -51,17 +44,10 @@ const UserInfo: React.FC<IProps> = () => {
         position: 'relative',
       }}
       justifyContent="center">
-      <Text margin="0 0 10px 0" type="primary" weight={500} size="medium-2">
+      <Text margin="0 0 16px 0" type="secondary" weight={500} size="medium-2">
         Account
       </Text>
       <HealthWrap>
-        {/* <Text type="primary">{+tokenStore.userHealth.toFixed(2) * 100}%</Text>
-        <Text type="secondary" size="small">
-          Account
-        </Text>
-        <Text type="secondary" size="small">
-          Health
-        </Text> */}
         <PercentageCircleBar
           size={250}
           strokeWidth={10}
@@ -75,7 +61,7 @@ const UserInfo: React.FC<IProps> = () => {
           Supply balance
         </Text>
         {tokenStore.supplyUserTotal != null ? (
-          <Text fitContent>$ {tokenStore.supplyUserTotal.toFixed(7)}</Text>
+          <Text fitContent>$ {tokenStore.supplyUserTotal.toFixed(4)}</Text>
         ) : (
           <Text>-</Text>
         )}
@@ -85,7 +71,7 @@ const UserInfo: React.FC<IProps> = () => {
           Borrow balance
         </Text>
         {tokenStore.borrowUserTotal != null ? (
-          <Text fitContent>$ {tokenStore.borrowUserTotal.toFixed(7)}</Text>
+          <Text fitContent>$ {tokenStore.borrowUserTotal.toFixed(4)}</Text>
         ) : (
           <Text>-</Text>
         )}
@@ -103,7 +89,6 @@ const UserInfo: React.FC<IProps> = () => {
           <Text margin="10px 0">-</Text>
         )}
       </Row>
-      <LineDivider />
     </Card>
   );
 };

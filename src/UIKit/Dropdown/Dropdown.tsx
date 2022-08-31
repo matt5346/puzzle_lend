@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/require-default-props */
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from '@emotion/styled';
 import { Text } from '@src/UIKit/Text';
 import { ReactComponent as ChevronDown } from '@src/common/assets/icons/chevron_down.svg';
@@ -9,6 +9,7 @@ import { ReactComponent as ChevronDown } from '@src/common/assets/icons/chevron_
 interface IProps {
   title?: string;
   children?: string;
+  isOpened?: boolean;
 }
 
 const ListGroupItem = styled.div`
@@ -55,8 +56,8 @@ const CollapseBlock = styled.div`
   }
 `;
 
-const Dropdown: React.FC<IProps> = ({ title, children }) => {
-  const [isExpanded, setIsExpanded] = React.useState(false);
+const Dropdown: React.FC<IProps> = ({ title, children, isOpened = false }) => {
+  const [isExpanded, setIsExpanded] = React.useState(isOpened);
 
   const ref = React.useRef<HTMLDivElement>(null);
 
@@ -72,12 +73,24 @@ const Dropdown: React.FC<IProps> = ({ title, children }) => {
     }
   };
 
+  useEffect(() => {
+    if (isOpened) {
+      setIsExpanded(true);
+
+      if (ref.current && ref.current.clientHeight) {
+        setHeight(ref.current.clientHeight);
+      }
+    }
+  }, [isOpened]);
+
   const classes = `list-group-item ${isExpanded ? 'is-expanded' : null}`;
   const currentHeight = isExpanded ? height : 0;
 
   return (
     <ListGroupItem className={classes} onClick={handleToggle}>
-      <Text className="card-title">{title}</Text>
+      <Text type="primary" className="card-title">
+        {title}
+      </Text>
       <ChevronDown />
       <CollapseBlock className="card-collapse" style={{ height: `${currentHeight}px` }}>
         <Text className="card-body" ref={ref}>

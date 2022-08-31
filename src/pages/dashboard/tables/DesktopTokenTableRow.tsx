@@ -52,7 +52,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
   return (
     <Root className="gridRow">
       <Row>
-        <Row onClick={() => navigate(`/dashboard/${token.assetId}`)} style={{ cursor: 'pointer' }}>
+        <Row onClick={() => navigate(`/dashboard/token/${token.assetId}`)} style={{ cursor: 'pointer' }}>
           <SquareTokenIcon src={tokenLogos[token.symbol]} />
           <SizedBox width={18} />
           <Text nowrap weight={500} fitContent>
@@ -64,10 +64,10 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
       </Row>
       {selfSupply != null ? <Text>{formatVal(selfSupply, token.decimals)}</Text> : null}
       {setupLtv != null ? <Text>{setupLtv}%</Text> : null}
-      {totalSupply != null ? <Text>$ {totalSupply.toFormat(7)}</Text> : null}
+      {totalSupply != null ? <Text>$ {totalSupply.toFormat(2)}</Text> : null}
       {setupSupplyAPY != null ? <Text>{Number(setupSupplyAPY).toFixed(2)}%</Text> : null}
-      {dailyIncome != null ? <Text>{dailyIncome}</Text> : null}
-      {totalBorrow != null ? <Text>$ {totalBorrow.toFormat(7)}</Text> : null}
+      {dailyIncome != null ? <Text>???</Text> : null}
+      {totalBorrow != null ? <Text>$ {totalBorrow.toFormat(2)}</Text> : null}
       {setupBorrowAPR != null ? <Text>{setupBorrowAPR}%</Text> : null}
       {selfBorrow != null ? <Text>{formatVal(selfBorrow, token.decimals)}</Text> : null}
 

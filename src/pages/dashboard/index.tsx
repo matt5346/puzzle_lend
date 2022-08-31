@@ -66,6 +66,10 @@ const CardText = styled.div`
   align-items: flex-start;
   width: 85%;
   margin-top: 60px;
+
+  span {
+    color: #7075e9;
+  }
 `;
 
 const CardImg = styled.img`
@@ -125,8 +129,8 @@ const Dashboard: React.FC = () => {
               </Text>
               <SizedBox height={14} />
               <Text size="medium">
-                You can pick any tokens from the Waves Ecosystem to put them into markets and start earning Supply
-                rewards.
+                You can pick any tokens from the <span>Waves Ecosystem</span> to put them into markets and start earning
+                Supply rewards.
               </Text>
             </CardText>
           </Card>
@@ -138,8 +142,8 @@ const Dashboard: React.FC = () => {
               </Text>
               <SizedBox height={14} />
               <Text size="medium">
-                You can borrow assets from the market to use for extending your DeFi experience. Take into account that
-                you will pay Borrow interest for it.
+                You can borrow assets from the market to use for <span>extending your DeFi experience.</span> Take into
+                account that you will pay Borrow interest for it.
               </Text>
             </CardText>
           </Card>
@@ -151,7 +155,8 @@ const Dashboard: React.FC = () => {
               </Text>
               <SizedBox height={14} />
               <Text size="medium">
-                You can use lending protocol to take long or short positions with an upto 3x leverage.
+                You can use lending protocol <br /> to take long or short positions with an{' '}
+                <span>upto 3x leverage.</span>
               </Text>
             </CardText>
           </Card>
@@ -163,8 +168,8 @@ const Dashboard: React.FC = () => {
               </Text>
               <SizedBox height={14} />
               <Text size="medium">
-                Use an advanced Oracle system based on the TWAP model, which guarantees that the market cannot be
-                manipulated to liquidate safe positions.
+                Use an advanced Oracle system based on the TWAP model, which guarantees that the
+                <span>market cannot be manipulated</span> to liquidate safe positions.
               </Text>
             </CardText>
           </Card>
@@ -175,11 +180,15 @@ const Dashboard: React.FC = () => {
         <Row>
           <FAQ>
             <TitleH>FAQ</TitleH>
-            <Text>Get answers on the most</Text>
-            <Text>asked questions</Text>
+            <Text size="medium" type="secondary">
+              Get answers on the most
+            </Text>
+            <Text size="medium" type="secondary">
+              asked questions
+            </Text>
           </FAQ>
           <Column>
-            <Dropdown title="What is the idea of Puzzle Lend?">
+            <Dropdown isOpened title="What is the idea of Puzzle Lend?">
               Puzzle Lend uses an experience of existing Lending Protocols to maximise the user experience. Thanks to an
               isolated market model, Puzzle Lend enables to supply/borrow even small-cap assets presented in the Waves
               Ecosystem.

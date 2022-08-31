@@ -50,6 +50,10 @@ const Button = styled.button<{
     border: 1px solid ${({ kind }) => (kind === 'secondary' ? '#F1F2FE' : '#c6c9f4')};
     cursor: not-allowed;
   }
+
+  svg {
+    margin-right: 10px;
+  }
 `;
 
 export default Button;

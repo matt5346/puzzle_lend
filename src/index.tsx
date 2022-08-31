@@ -4,7 +4,8 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { RootStore, storesContext } from '@src/stores';
 import { loadState, saveState } from '@src/common/utils/localStorage';
 import { autorun } from 'mobx';
-import './index.css';
+
+import './index.scss';
 import App from './App';
 
 const initState = loadState();

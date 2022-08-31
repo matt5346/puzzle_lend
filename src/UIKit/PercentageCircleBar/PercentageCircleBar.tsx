@@ -42,11 +42,11 @@ const PercentageCircleBar: React.FC<IProps> = ({ size, strokeWidth, percentage, 
         strokeLinecap="round"
         style={{ transition: 'all 0.5s' }}
       />
-      <text fill="black" fontSize="40px" x="52%" y="30%" dy="20px" textAnchor="middle">
+      <text fill="#363870" fontWeight={500} fontSize="40px" x="52%" y="30%" dy="20px" textAnchor="middle">
         {`${percentage}%`}
       </text>
-      <text fontSize="36px" x="22%" y="50%" dy="20px" fill="#8082C5">Account</text>
-      <text fontSize="36px" x="27%" y="70%" dy="20px" fill="#8082C5">Health</text>
+      <text fontSize="34px" x="24%" y="50%" dy="20px" fill="#8082C5">Account</text>
+      <text fontSize="34px" x="29%" y="70%" dy="20px" fill="#8082C5">Health</text>
     </svg>
   );
 };

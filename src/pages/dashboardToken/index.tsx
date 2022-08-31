@@ -15,6 +15,8 @@ import { Anchor } from '@src/UIKit/Anchor';
 import tokenLogos from '@src/common/constants/tokenLogos';
 import RoundTokenIcon from '@src/common/styles/SquareTokenIcon';
 import { ReactComponent as ChevronDown } from '@src/common/assets/icons/chevron_down.svg';
+import { ReactComponent as Exchange } from '@src/common/assets/icons/exchange.svg';
+import { ReactComponent as Info } from '@src/common/assets/icons/info.svg';
 
 const Root = styled.div`
   display: flex;
@@ -157,12 +159,14 @@ const DashboardToken: React.FC = () => {
       <Row>
         <Anchor href="https://puzzleswap.org/" className="details-link-btn">
           <Button size="medium" kind="secondary">
+            <Exchange />
             Trade on Puzzle Swap
           </Button>
         </Anchor>
         <SizedBox width={8} />
         <Anchor href="https://puzzleswap.org/" className="details-link-btn">
           <Button size="medium" kind="secondary">
+            <Info />
             More info
           </Button>
         </Anchor>
