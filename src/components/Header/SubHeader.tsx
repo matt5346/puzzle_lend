@@ -55,15 +55,20 @@ const MenuItem = styled.div<{ selected?: boolean }>`
   font-weight: 500;
   font-size: 16px;
   line-height: 24px;
-  color: ${({ selected }) => (selected ? '#363870' : '#8082c5')};
   box-sizing: border-box;
   border-bottom: 4px solid ${({ selected }) => (selected ? '#7075e9' : 'transparent')};
   height: 100%;
   margin: 0 12px;
 
+  a {
+    color: ${({ selected }) => (selected ? '#363870' : '#8082c5')};
+  }
+
   &:hover {
     border-bottom: 4px solid #c6c9f4;
-    color: #7075e9;
+    a {
+      color: #7075e9;
+    }
   }
 `;
 
@@ -76,20 +81,16 @@ const Desktop = styled.div`
   }
 `;
 
-const isRoutesEquals = (a: string, b: string) => {
-  const result = a.replaceAll('/', '') === b.replaceAll('/', '');
-  console.log(a, b, 'ab');
-  return result;
-};
+const isRoutesEquals = (a: string, b: string) => a.replaceAll('/', '') === b.replaceAll('/', '');
 
-const poolId = '0x0x12323232';
+const poolId = 'TURBO_PUZZLE_Pool';
 
 const Header: React.FC<IProps> = () => {
   const location = useLocation();
 
   const menuItems = [
-    { name: 'Main Pool', link: ROUTES.HOME },
-    { name: 'TURBO PUZZLE Pool', link: `/dashboard/pool/${poolId}`, poolId: 'qweqww2123' },
+    { name: 'Main Pool', link: ROUTES.DASHBOARD },
+    { name: 'TURBO PUZZLE Pool', link: `/dashboard/pool/${poolId}`, poolId },
   ];
   return (
     <Root>

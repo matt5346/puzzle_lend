@@ -34,7 +34,7 @@ const TopMenu = styled.header`
   height: 64px;
   padding: 0 16px;
   max-width: 1440px;
-  z-index: 102;
+  z-index: 103;
   border-bottom: 1px solid #f1f2fe;
   box-sizing: border-box;
   background: #ffffff;
