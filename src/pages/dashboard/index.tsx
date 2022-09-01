@@ -1,14 +1,18 @@
 import React from 'react';
+import { useStores } from '@src/stores';
 import styled from '@emotion/styled';
 import { Row, Column } from '@src/common/styles/Flex';
 import { DashboardVMProvider } from '@src/pages/dashboard/DashboardVm';
 import DashboardTable from '@src/pages/dashboard/DashboardTable';
-import UserInfo from '@src/pages/dashboard/UserInfo';
 import Container from '@src/common/styles/Container';
 import { Text } from '@src/UIKit/Text';
 import { Dropdown } from '@src/UIKit/Dropdown';
 import { observer } from 'mobx-react-lite';
 import { SizedBox } from '@src/UIKit/SizedBox';
+import { LoginTypesRender } from '@src/components/Wallet/LoginModal';
+import { LOGIN_TYPE } from '@src/stores/AccountStore';
+import UserInfo from '@src/pages/dashboard/UserInfo';
+import LoginSideView from '@src/pages/dashboard/LoginSideView';
 
 // images
 import DashOne from '@src/common/assets/dashboard/dash1.png';
@@ -79,7 +83,7 @@ const CardImg = styled.img`
   border-radius: 0 16px 16px 0;
 `;
 
-const UserInfoAside = styled.div`
+const SideViewWrap = styled.div`
   display: flex;
   flex-direction: column;
   position: sticky;
@@ -93,6 +97,15 @@ const FAQ = styled.div`
 `;
 
 const Dashboard: React.FC = () => {
+  const { accountStore } = useStores();
+  const { address } = accountStore;
+  const isKeeperDisabled = !accountStore.isWavesKeeperInstalled;
+
+  const handleLogin = (loginType: LOGIN_TYPE) => {
+    console.log(loginType, 'LOGIN');
+    accountStore.login(loginType);
+  };
+
   return (
     <DashboardVMProvider>
       <Container>
@@ -112,10 +125,17 @@ const Dashboard: React.FC = () => {
             <DashboardTable />
           </Column>
           <SizedBox width={40} />
-          <UserInfoAside>
-            <SizedBox height={34} />
-            <UserInfo />
-          </UserInfoAside>
+          {address == null ? (
+            <SideViewWrap>
+              <SizedBox height={34} />
+              <LoginSideView isKeeperDisabled={isKeeperDisabled} handleLogin={handleLogin} />
+            </SideViewWrap>
+          ) : (
+            <SideViewWrap>
+              <SizedBox height={34} />
+              <UserInfo />
+            </SideViewWrap>
+          )}
         </Row>
 
         <SizedBox height={96} />

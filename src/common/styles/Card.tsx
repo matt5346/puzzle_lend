@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 
 const Card = styled.div<{
   maxWidth?: number;
+  minWidth?: number;
   paddingDesktop?: string;
   paddingMobile?: string;
   justifyContent?: 'start' | 'flex-end' | 'space-around' | 'space-between' | 'center';
@@ -15,6 +16,7 @@ const Card = styled.div<{
   justify-content: ${({ justifyContent }) => justifyContent ?? 'default'};
   align-items: ${({ alignItems }) => alignItems ?? 'default'};
   max-width: ${({ maxWidth }) => `${maxWidth}px` ?? '100%'};
+  min-width: ${({ minWidth }) => `${minWidth}px` ?? 'initial'};
   ${({ bordered }) => bordered && `border: 1px solid #F1F2FE;`};
   width: 100%;
   border: 1px solid #f1f2fe;

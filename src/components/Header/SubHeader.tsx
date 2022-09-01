@@ -90,7 +90,7 @@ const Header: React.FC<IProps> = () => {
 
   const menuItems = [
     { name: 'Main Pool', link: ROUTES.DASHBOARD },
-    { name: 'TURBO PUZZLE Pool', link: `/dashboard/pool/${poolId}`, poolId },
+    // { name: 'TURBO PUZZLE Pool', link: `/dashboard/pool/${poolId}`, poolId },
   ];
   return (
     <Root>

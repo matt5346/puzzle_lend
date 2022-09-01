@@ -12,7 +12,7 @@ import { Row, Column } from '@src/common/styles/Flex';
 import { SizedBox } from '@src/UIKit/SizedBox';
 
 interface IProps {
-  token?: IToken;
+  token: IToken;
   rate?: BN;
   selfSupply?: BN;
   selfBorrow?: BN;
@@ -20,8 +20,8 @@ interface IProps {
   setupLtv?: string;
   setupBorrowAPR?: string;
   setupSupplyAPY?: string;
-  totalSupply?: BN;
-  totalBorrow?: BN;
+  totalSupply: BN;
+  totalBorrow: BN;
 }
 
 const Root = styled.div`
@@ -45,6 +45,10 @@ const TokenData: React.FC<IProps> = ({
   console.log(assetId, 'aassetIdsset');
   const { tokenStore } = useStores();
   const { statisticsByAssetId } = tokenStore;
+
+  const formatVal = (val: BN, decimal: number) => {
+    return BN.formatUnits(val, decimal).toSignificant(6).toFormat(5);
+  };
 
   useMemo(() => {
     console.log(Object.keys(statisticsByAssetId), TOKENS_LIST, assetId, 'data----111-');
@@ -81,7 +85,7 @@ const TokenData: React.FC<IProps> = ({
             Market liquidity
           </Text>
           <Text size="medium" type="secondary" fitContent>
-            ???
+            {(+formatVal(totalSupply, token.decimals) - +formatVal(totalBorrow, token.decimals)).toFixed(5)}
           </Text>
         </Row>
         <SizedBox height={16} />

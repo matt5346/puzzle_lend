@@ -46,7 +46,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
 }) => {
   const navigate = useNavigate();
   const formatVal = (val: BN, decimal: number) => {
-    return BN.formatUnits(val, decimal).toSignificant(6).toString();
+    return BN.formatUnits(val, decimal).toSignificant(6).toFormat(5);
   };
 
   return (
@@ -62,14 +62,14 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
           <SizedBox width={18} />
         </Row>
       </Row>
-      {selfSupply != null ? <Text>{formatVal(selfSupply, token.decimals)}</Text> : null}
+      {selfSupply != null ? <Text>$ {formatVal(selfSupply, token.decimals)}</Text> : null}
       {setupLtv != null ? <Text>{setupLtv}%</Text> : null}
-      {totalSupply != null ? <Text>$ {totalSupply.toFormat(2)}</Text> : null}
+      {totalSupply != null ? <Text>$ {formatVal(totalSupply, token.decimals)}</Text> : null}
       {setupSupplyAPY != null ? <Text>{Number(setupSupplyAPY).toFixed(2)}%</Text> : null}
       {dailyIncome != null ? <Text>???</Text> : null}
-      {totalBorrow != null ? <Text>$ {totalBorrow.toFormat(2)}</Text> : null}
+      {totalBorrow != null ? <Text>$ {formatVal(totalBorrow, token.decimals)}</Text> : null}
       {setupBorrowAPR != null ? <Text>{setupBorrowAPR}%</Text> : null}
-      {selfBorrow != null ? <Text>{formatVal(selfBorrow, token.decimals)}</Text> : null}
+      {selfBorrow != null ? <Text>$ {formatVal(selfBorrow, token.decimals)}</Text> : null}
 
       {selfSupply ? (
         <Row justifyContent="flex-end">

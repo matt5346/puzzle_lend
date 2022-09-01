@@ -47,14 +47,16 @@ const UserInfo: React.FC<IProps> = () => {
       <Text margin="0 0 16px 0" type="secondary" weight={500} size="medium-2">
         Account
       </Text>
-      <HealthWrap>
-        <PercentageCircleBar
-          size={250}
-          strokeWidth={10}
-          percentage={+tokenStore.userHealth.toFixed(2) * 100}
-          color="purple"
-        />
-      </HealthWrap>
+      {tokenStore.userHealth ? (
+        <HealthWrap>
+          <PercentageCircleBar
+            size={250}
+            strokeWidth={10}
+            percentage={+tokenStore.userHealth.toFixed(2) * 100}
+            color="purple"
+          />
+        </HealthWrap>
+      ) : null}
       <Divider />
       <Row justifyContent="space-between">
         <Text fitContent margin="0 0 10px 0" type="secondary" size="medium-2">
@@ -81,12 +83,14 @@ const UserInfo: React.FC<IProps> = () => {
         <Text fitContent margin="10px 0" type="secondary" size="medium-2">
           NET APY
         </Text>
-        {tokenStore.netAPY != null ? (
+        {tokenStore.netAPY ? (
           <Text fitContent margin="10px 0">
             {tokenStore.netAPY.toFixed(2)}%
           </Text>
         ) : (
-          <Text margin="10px 0">-</Text>
+          <Text fitContent margin="10px 0">
+            0%
+          </Text>
         )}
       </Row>
     </Card>

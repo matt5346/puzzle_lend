@@ -23,25 +23,29 @@ const Supply: React.FC = () => {
   return (
     <Root>
       <Column justifyContent="center" alignItems="center" crossAxisSize="max">
-        <SizedBox height={12} />
-        <Row justifyContent="space-around">
-          <Text fitContent size="big" type="primary" className="text" textAlign="center">
-            Net APY
-          </Text>
-          <Text fitContent size="big" type="primary" className="text" textAlign="center">
-            {tokenStore.netAPY ? tokenStore.netAPY.toFixed(2) : 0}%
-          </Text>
-        </Row>
+        {tokenStore.netAPY ? (
+          <Column>
+            <SizedBox height={12} />
+            <Row justifyContent="space-around">
+              <Text fitContent size="big" type="primary" className="text" textAlign="center">
+                Net APY
+              </Text>
+              <Text fitContent size="big" type="primary" className="text" textAlign="center">
+                {tokenStore.netAPY ? tokenStore.netAPY.toFixed(2) : 0}%
+              </Text>
+            </Row>
+          </Column>
+        ) : null}
         <SizedBox height={12} />
         {vm.assetsStats.length === 0 && (
-          <Row>
+          <Column alignItems="center">
             <SizedBox height={24} />
             <NotFoundIcon style={{ marginBottom: 24 }} />
             <Text type="primary" className="text" textAlign="center">
               Unfortunately, there are no tokens that fit your filters.
             </Text>
             <SizedBox height={24} />
-          </Row>
+          </Column>
         )}
         {vm.assetsStats.map((t) => {
           const stats = tokenStore.statisticsByAssetId[t.assetId];

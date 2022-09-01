@@ -19,6 +19,10 @@ const Root = styled.div<{ disable?: boolean }>`
   border-radius: 12px;
   margin: 4px 0;
   cursor: ${({ disable }) => (disable ? 'not-allowed' : 'pointer')};
+
+  &:hover {
+    background: #f8f8ff;
+  }
 `;
 const Icon = styled.img`
   width: 24px;
@@ -30,7 +34,7 @@ const Icon = styled.img`
 const LoginType: React.FC<IProps> = ({ title, icon, type, ...rest }) => {
   return (
     <Root {...rest} disable={rest.onClick == null}>
-      <Text type="primary" size="medium" weight={500}>
+      <Text type="blue500" size="medium" weight={500}>
         {title}
       </Text>
       <Icon src={icon} alt={type} />

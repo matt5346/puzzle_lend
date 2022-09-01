@@ -37,13 +37,13 @@ const Wrap = styled.div`
 `;
 
 const DashboardTable: React.FC<IProps> = () => {
-  const { lendStore } = useStores();
+  const { lendStore, tokenStore, accountStore } = useStores();
   const [filteredTokens, setFilteredTokens] = useState<IToken[]>([]);
   const [showBorrow, showBorrowTable] = useState<boolean>(false);
   const [showSupply, showSupplyTable] = useState<boolean>(false);
   const vm = useDashboardVM();
 
-  const { tokenStore, accountStore } = useStores();
+  const { address } = accountStore;
 
   const handleSupplyAssetClick = (assetId: string, step: number) => {
     lendStore.setDashboardModalOpened(true, assetId, step);
@@ -78,24 +78,24 @@ const DashboardTable: React.FC<IProps> = () => {
 
   return (
     <Root>
-      {showSupply ? (
+      {showSupply && address ? (
         <Wrap>
           <Text weight={500} type="secondary" margin="0 0 10px 0">
             My supply
           </Text>
           <MySupplyTable filteredTokens={filteredTokens} handleSupplyAssetClick={handleSupplyAssetClick} />
+          <SizedBox height={40} />
         </Wrap>
       ) : null}
-      <SizedBox height={40} />
-      {showBorrow ? (
+      {showBorrow && address ? (
         <Wrap>
           <Text weight={500} type="secondary" margin="0 0 10px 0">
             My borrow
           </Text>
           <MyBorrowTable filteredTokens={filteredTokens} handleSupplyAssetClick={handleSupplyAssetClick} />
+          <SizedBox height={40} />
         </Wrap>
       ) : null}
-      <SizedBox height={40} />
       <Text weight={500} type="secondary" margin="0 0 10px 0">
         All assets
       </Text>

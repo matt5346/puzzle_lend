@@ -50,6 +50,19 @@ export default class TokenStore {
     index !== -1 && this.watchList.splice(index, 1);
   };
 
+  public loadTokenDetails = async (assetId: string) => {
+    console.log(assetId, 'loadTokenDetails');
+    const stats = await wavesCapService.getTokenStats(assetId).catch((e) => {
+      // notificationStore.notify(e.message ?? e.toString(), {
+      //   type: 'error',
+      // });
+      console.log(e, 'getAssetsStats');
+      return [];
+    });
+
+    return stats;
+  };
+
   // loading all data about tokens, their apy/apr, supply/borrow and evth
   private syncTokenStatistics = async () => {
     const { accountStore } = this.rootStore;
@@ -100,7 +113,18 @@ export default class TokenStore {
       baseAmount += details.self_supply / 10 ** details.precision;
 
       // count balance supply/borrow
-      console.log(details.self_supply, details.self_borrowed, 'TEEEEST');
+      console.log(
+        details.name,
+        details.self_supply / 10 ** details.precision,
+        details.supply_rate,
+        'supplyAmountCurrent'
+      );
+      console.log(
+        details.name,
+        details.self_borrowed / 10 ** details.precision,
+        details.borrow_rate,
+        'borrowedAmountCurrent'
+      );
       supplyAmountCurrent += (details.self_supply / 10 ** details.precision) * details.supply_rate;
       borrowedAmountCurrent += (details.self_borrowed / 10 ** details.precision) * details.borrow_rate;
 
@@ -140,14 +164,14 @@ export default class TokenStore {
         symbol: details.shortcode,
         totalSupply,
         setupLtv: details.setup_ltv,
-        setupBorrowAPR: details.setup_borrow_apr,
-        setupSupplyAPY: details.setup_supply_apy,
+        setupBorrowAPR: details.setup_borrow_apr.toFixed(2),
+        setupSupplyAPY: details.setup_supply_apy.toFixed(2),
         selfSupply: BN.formatUnits(details.self_supply, 0),
         selfBorrow: BN.formatUnits(details.self_borrowed, 0),
         selfSupplyRate: details.supply_rate,
-        totalPoolBorrow: BN.formatUnits(details.total_borrow, decimals),
-        totalPoolSupply: BN.formatUnits(details.total_supply, decimals),
-        circulatingSupply: BN.formatUnits(details.circulating, decimals),
+        totalPoolBorrow: BN.formatUnits(details.total_borrow, 0),
+        totalPoolSupply: BN.formatUnits(details.total_supply, 0),
+        circulatingSupply: BN.formatUnits(details.circulating, 0),
         change24H,
         change24HUsd,
         currentPrice,
