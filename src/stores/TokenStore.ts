@@ -29,7 +29,16 @@ export default class TokenStore {
 
   private setNetAPY = (v: number) => (this.netAPY = v);
 
-  private setUserHealth = (v: number) => (this.userHealth = v);
+  private setUserHealth = (v: number) => {
+    if (v > 100) {
+      this.userHealth = 100;
+    }
+    if (v < 0) {
+      this.userHealth = 0;
+    }
+
+    this.userHealth = +v.toFixed(2);
+  };
 
   private setUserCollateral = (v: number) => (this.userCollateral = v);
 
@@ -213,6 +222,7 @@ export default class TokenStore {
 
     const netAPY: number = (supplyAmountApy - borrowedAmountApr) / baseAmount;
     const accountHealth: number = borrowCapacity / borrowCapacityUsed;
+
     console.log(netAPY, accountHealth, 'netapy accountHealth');
 
     this.setNetAPY(netAPY);

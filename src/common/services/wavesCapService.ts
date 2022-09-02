@@ -175,7 +175,8 @@ const wavesCapService = {
 
             // same as Rates, passing setup_interest
             // firstly its %, all percents in 6 decimals
-            itemData.setup_interest = +tokensinterestArr[key] / 10 ** 6 / 100;
+            if (tokensinterestArr && +tokensinterestArr[key])
+              itemData.setup_interest = +tokensinterestArr[key] / 10 ** 6 / 100;
           }
         });
 

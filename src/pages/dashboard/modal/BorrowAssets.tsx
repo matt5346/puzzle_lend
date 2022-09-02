@@ -221,7 +221,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           Borrow APR
         </Text>
         <Text size="medium" fitContent>
-          {props.setupBorrowAPR}%
+          {props.setupBorrowAPR ? (+props.setupBorrowAPR).toFixed(2) : 0}%
         </Text>
       </Row>
       <SizedBox height={12} />
@@ -256,7 +256,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
       <SizedBox height={24} />
       <Row justifyContent="space-between">
         <Checkbox
-          label="You will be liquidated if you cannot cover your borrow"
+          label="You will be liquidated if you can not cover your borrow"
           checked={props.isAgree}
           onChange={(e) => props.onChange(e)}
         />

@@ -113,6 +113,9 @@ const BorrowAssets: React.FC<IProps> = (props) => {
 
   const handleChangeAmount = (v: BN) => {
     console.log('handleChangeAmount');
+
+    if (+props.selfBorrow < +v) return;
+
     setAmount(v);
     debounce(v);
   };
@@ -243,7 +246,11 @@ const BorrowAssets: React.FC<IProps> = (props) => {
       </Row>
       <SizedBox height={16} />
       <Footer>
-        <Button fixed onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId)} size="large">
+        <Button
+          disabled={+amount === 0}
+          fixed
+          onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId)}
+          size="large">
           Repay
         </Button>
       </Footer>

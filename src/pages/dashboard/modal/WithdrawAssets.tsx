@@ -194,7 +194,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
           Supply APY
         </Text>
         <Text size="medium" fitContent>
-          {props.setupSupplyAPY}%
+          {props.setupSupplyAPY ? (+props.setupSupplyAPY).toFixed(2) : 0}%
         </Text>
       </Row>
       <SizedBox height={12} />

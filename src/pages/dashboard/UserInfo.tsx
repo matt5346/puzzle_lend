@@ -51,7 +51,7 @@ const UserInfo: React.FC<IProps> = () => {
         <PercentageCircleBar
           size={250}
           strokeWidth={10}
-          percentage={tokenStore.userHealth ? +tokenStore.userHealth.toFixed(2) * 100 : 100}
+          percentage={tokenStore && tokenStore.userHealth ? tokenStore.userHealth : 100}
           color="purple"
         />
       </HealthWrap>
