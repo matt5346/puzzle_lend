@@ -117,6 +117,11 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     debounce(v);
   };
 
+  const getMax = (v: BN) => {
+    console.log(+v, +props.selfBorrow, 'handleChangeAmount11111111');
+    return BN.formatUnits(Math.ceil(+v), 0);
+  };
+
   const formatVal = (val: BN, decimal: number) => {
     return BN.formatUnits(val, decimal).toSignificant(6).toString();
   };
@@ -164,7 +169,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           <MaxButton
             onClick={() => {
               setFocused(true);
-              props.onMaxClick && props.onMaxClick(props.selfBorrow);
+              props.onMaxClick && props.onMaxClick(getMax(props.selfBorrow));
             }}
           />
         )}

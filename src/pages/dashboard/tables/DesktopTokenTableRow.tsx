@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable react/require-default-props */
 import styled from '@emotion/styled';
 import React, { useRef } from 'react';
@@ -96,7 +97,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
         <Column crossAxisSize="max">
           <Text textAlign="right">{Number(setupSupplyAPY).toFixed(2)}%</Text>
         </Column>
-      ) : (
+      ) : selfBorrow ? null : (
         <Text textAlign="right">0%</Text>
       )}
 
@@ -130,7 +131,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
 
       {setupBorrowAPR != null ? (
         <Column crossAxisSize="max">
-          <Text textAlign="right">{setupBorrowAPR}%</Text>
+          <Text textAlign="right">{(+setupBorrowAPR).toFixed(2)}%</Text>
         </Column>
       ) : null}
 

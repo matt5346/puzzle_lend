@@ -90,6 +90,7 @@ const wavesCapService = {
       console.log(err, 'ERR');
     }
 
+    console.log(tokensRates, 'tokensRates 2');
     // eslint-disable-next-line no-underscore-dangle
     const tokensRatesArr: string[] = tokensRates?.data?.result?.value?._2?.value.split(',');
     // eslint-disable-next-line no-underscore-dangle
@@ -117,6 +118,7 @@ const wavesCapService = {
         return { [itemId]: responseAssets.data };
       })
     );
+    console.log(response, '----response');
 
     const fullAssetsData = response.data.assets.map((item: any) => {
       const itemData = {
@@ -143,8 +145,10 @@ const wavesCapService = {
       };
 
       const assetExtraData = Object.values(assetsData).find((assetItem) => assetItem[item.id]);
+      console.log(assetExtraData, '----assetExtraData');
 
       if (assetExtraData && assetExtraData[item.id]) {
+        console.log(assetExtraData[item.id], '----assetExtraData[item.id]');
         const poolValue = assetExtraData[item.id].find((pool: any) => `total_supplied_${item.id}` === pool.key);
         const poolBorrowed = assetExtraData[item.id].find((pool: any) => `total_borrowed_${item.id}` === pool.key);
         const ltv = assetExtraData[item.id].find((pool: any) => pool.key === 'setup_ltvs')?.value?.split(',');
@@ -174,25 +178,27 @@ const wavesCapService = {
             itemData.setup_interest = +tokensinterestArr[key] / 10 ** 6 / 100;
           }
         });
+
         assetExtraData[item.id].forEach((pool: any) => {
           // setup_roi === borrow interest
           if (pool.key === 'setup_interest') {
-            itemData.setup_borrow_apr = (pool.value / 10 ** 8) * 365 * 100;
+            itemData.setup_borrow_apr = itemData.setup_interest * 365 * 100;
             // itemData.setup_interest = pool.value / 10 ** 8;
           }
         });
 
-        // console.log(poolValue, poolBorrowed, '--poolValue, poolBorrowed---spply');
-        // console.log(selfSupply, selfBorrowed, '--selfSupply, selfBorrowe---spply');
-        // console.log(
-        //   itemData.name,
-        //   itemData.supply_rate,
-        //   itemData.borrow_rate,
-        //   '--titemData.supply_rate, itemData.borrow_rate----'
-        // );
+        console.log(poolValue, poolBorrowed, '--poolValue, poolBorrowed---spply');
+        console.log(selfSupply, selfBorrowed, '--selfSupply, selfBorrowe---spply');
+        console.log(
+          itemData.name,
+          itemData.supply_rate,
+          itemData.borrow_rate,
+          '--titemData.supply_rate, itemData.borrow_rate----'
+        );
 
         // for simplicity
         // all values gonna be convert to real numbers with decimals only in TEMPLATE
+        console.log(poolValue, 'poolValue.setup_interest');
         if (poolValue) itemData.total_supply = poolValue.value * itemData.supply_rate;
         if (poolBorrowed) itemData.total_borrow = poolBorrowed.value * itemData.borrow_rate;
 
@@ -209,6 +215,7 @@ const wavesCapService = {
         itemData.setup_supply_apy = supplyAPY || null;
         itemData.supply_interest = supplyInterest;
       }
+      console.log(itemData, '----itemData');
 
       return itemData;
     });
