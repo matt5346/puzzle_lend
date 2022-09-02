@@ -47,16 +47,14 @@ const UserInfo: React.FC<IProps> = () => {
       <Text margin="0 0 16px 0" type="secondary" weight={500} size="medium-2">
         Account
       </Text>
-      {tokenStore.userHealth ? (
-        <HealthWrap>
-          <PercentageCircleBar
-            size={250}
-            strokeWidth={10}
-            percentage={+tokenStore.userHealth.toFixed(2) * 100}
-            color="purple"
-          />
-        </HealthWrap>
-      ) : null}
+      <HealthWrap>
+        <PercentageCircleBar
+          size={250}
+          strokeWidth={10}
+          percentage={tokenStore.userHealth ? +tokenStore.userHealth.toFixed(2) * 100 : 100}
+          color="purple"
+        />
+      </HealthWrap>
       <Divider />
       <Row justifyContent="space-between">
         <Text fitContent margin="0 0 10px 0" type="secondary" size="medium-2">

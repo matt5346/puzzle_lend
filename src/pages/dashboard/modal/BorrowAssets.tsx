@@ -30,10 +30,12 @@ interface IProps {
   assetName?: string;
   assetSymbol?: string;
   totalSupply: BN;
+  totalBorrow: BN;
   userBalance: BN;
   setupLtv: string;
   setupBorrowAPR?: string;
   selfBorrow: BN;
+  rate: BN;
   setAmount?: (amount: BN) => void;
   onMaxClick?: (amount?: BN) => void;
   onClose?: () => void;
@@ -112,11 +114,13 @@ const BorrowAssets: React.FC<IProps> = (props) => {
   );
 
   const handleChangeAmount = (v: BN) => {
-    console.log('handleChangeAmount');
+    console.log(props.rate.toFormat(4), 'handleChangeAmount');
     const formattedVal = formatVal(v, props.decimals);
+    const totalReserves = +formatVal(props.totalSupply, props.decimals) - +formatVal(props.totalBorrow, props.decimals);
     const maxCollateral = props.userColatteral / 10 ** 6;
 
     if (+formattedVal > +maxCollateral) return;
+    if (+formattedVal > +totalReserves) return;
 
     setAmount(v);
     debounce(v);
@@ -147,8 +151,11 @@ const BorrowAssets: React.FC<IProps> = (props) => {
               }}
             />
             <Text size="medium" fitContent>
-              {props.userColatteral
-                ? (props.userColatteral / 10 ** 6 - +formatVal(amount, props.decimals)).toFixed(3)
+              {props.userColatteral && props.rate
+                ? (
+                    props.userColatteral / 10 ** 6 / +props.rate.toFormat(4) -
+                    +formatVal(amount, props.decimals)
+                  ).toFixed(2)
                 : 0}
               <>&nbsp;</>
               {props.assetSymbol}
@@ -207,7 +214,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           Wallet balance
         </Text>
         <Text size="medium" fitContent>
-          {+formatVal(amount, props.decimals) + +formatVal(props.userBalance, props.decimals)}
+          {props.userBalance ? +formatVal(amount, props.decimals) + +formatVal(props.userBalance, props.decimals) : 0}
         </Text>
       </Row>
       <SizedBox height={12} />
@@ -238,8 +245,12 @@ const BorrowAssets: React.FC<IProps> = (props) => {
       </Row>
       <SizedBox height={24} />
       <Footer>
-        <Button fixed onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId)} size="large">
-          Withdraw
+        <Button
+          disabled={!props.isAgree}
+          fixed
+          onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId)}
+          size="large">
+          Borrow
         </Button>
       </Footer>
     </Root>
