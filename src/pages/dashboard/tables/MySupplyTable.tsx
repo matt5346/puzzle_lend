@@ -27,6 +27,7 @@ const TableTitle: React.FC<{
 }> = ({ sort, mode, onClick, children }) => (
   <Row
     alignItems="center"
+    justifyContent="flex-end"
     onClick={onClick}
     style={{
       userSelect: 'none',

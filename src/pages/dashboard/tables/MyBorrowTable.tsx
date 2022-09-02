@@ -23,6 +23,7 @@ const TableTitle: React.FC<{
 }> = ({ sort, mode, onClick, children }) => (
   <Row
     alignItems="center"
+    justifyContent="flex-end"
     onClick={onClick}
     style={{
       userSelect: 'none',
@@ -38,7 +39,7 @@ const TableTitle: React.FC<{
 const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClick }) => {
   const [sort, setSort] = useState<'borrowapr' | 'repay'>('repay');
   const [sortMode, setSortMode] = useState<'descending' | 'ascending'>('descending');
-  const { tokenStore, accountStore } = useStores();
+  const { tokenStore } = useStores();
 
   const selectSort = (v: 'repay' | 'borrowapr') => {
     if (sort === v) {
@@ -57,11 +58,11 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
         mobileTemplate="2fr 1fr">
         <div className="gridTitle">
           <div>Asset</div>
-          <TableTitle onClick={() => selectSort('borrowapr')} mode={sortMode} sort={sort === 'borrowapr'}>
-            Borrow APR
-          </TableTitle>
           <TableTitle onClick={() => selectSort('repay')} mode={sortMode} sort={sort === 'repay'}>
             To be repaid
+          </TableTitle>
+          <TableTitle onClick={() => selectSort('borrowapr')} mode={sortMode} sort={sort === 'borrowapr'}>
+            Borrow APR
           </TableTitle>
         </div>
         {filteredTokens.map((t) => {

@@ -9,7 +9,7 @@ import { Button } from '@src/UIKit/Button';
 import { IToken } from '@src/common/constants';
 import tokenLogos from '@src/common/constants/tokenLogos';
 import SquareTokenIcon from '@src/common/styles/SquareTokenIcon';
-import { Row } from '@src/common/styles/Flex';
+import { Column, Row } from '@src/common/styles/Flex';
 import BN from '@src/common/utils/BN';
 
 interface IProps {
@@ -63,14 +63,76 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
         </Text>
         <SizedBox width={18} />
       </Row>
-      {selfSupply != null ? <Text>$ {formatVal(selfSupply, token.decimals)}</Text> : null}
-      {setupLtv != null ? <Text>{setupLtv}%</Text> : null}
-      {totalSupply != null ? <Text>$ {formatVal(totalSupply, token.decimals)}</Text> : null}
-      {setupSupplyAPY != null ? <Text>{Number(setupSupplyAPY).toFixed(2)}%</Text> : null}
-      {dailyIncome != null ? <Text>{Number(dailyIncome).toFixed(8)}</Text> : null}
-      {totalBorrow != null ? <Text>$ {formatVal(totalBorrow, token.decimals)}</Text> : null}
-      {setupBorrowAPR != null ? <Text>{setupBorrowAPR}%</Text> : null}
-      {selfBorrow != null ? <Text>$ {formatVal(selfBorrow, token.decimals)}</Text> : null}
+
+      {selfSupply != null && rate ? (
+        <Column crossAxisSize="max">
+          <Text textAlign="right" size="medium">
+            {(+formatVal(selfSupply, token.decimals)).toFixed(4)} {token.symbol}
+          </Text>
+          <Text textAlign="right" size="small" type="secondary">
+            $ {(+formatVal(selfSupply, token.decimals) * +rate).toFixed(4)}
+          </Text>
+        </Column>
+      ) : null}
+
+      {setupLtv != null ? (
+        <Column crossAxisSize="max">
+          <Text textAlign="right">{setupLtv}%</Text>
+        </Column>
+      ) : null}
+
+      {totalSupply != null && rate ? (
+        <Column crossAxisSize="max">
+          <Text textAlign="right" size="medium">
+            {(+formatVal(totalSupply, token.decimals)).toFixed(2)} {token.symbol}
+          </Text>
+          <Text textAlign="right" size="small" type="secondary">
+            $ {(+formatVal(totalSupply, token.decimals) * +rate).toFixed(2)}
+          </Text>
+        </Column>
+      ) : null}
+
+      {setupSupplyAPY ? (
+        <Column crossAxisSize="max">
+          <Text textAlign="right">{Number(setupSupplyAPY).toFixed(2)}%</Text>
+        </Column>
+      ) : (
+        <Text textAlign="right">0%</Text>
+      )}
+
+      {dailyIncome != null ? (
+        <Column crossAxisSize="max">
+          <Text textAlign="right">$ {Number(dailyIncome).toFixed(8)}</Text>
+        </Column>
+      ) : null}
+
+      {totalBorrow != null && rate ? (
+        <Column crossAxisSize="max">
+          <Text textAlign="right" size="medium">
+            {(+formatVal(totalBorrow, token.decimals)).toFixed(2)} {token.symbol}
+          </Text>
+          <Text textAlign="right" size="small" type="secondary">
+            $ {(+formatVal(totalBorrow, token.decimals) * +rate).toFixed(2)}
+          </Text>
+        </Column>
+      ) : null}
+
+      {selfBorrow != null && rate ? (
+        <Column crossAxisSize="max">
+          <Text textAlign="right" size="medium">
+            {(+formatVal(selfBorrow, token.decimals)).toFixed(4)} {token.symbol}
+          </Text>
+          <Text textAlign="right" size="small" type="secondary">
+            $ {(+formatVal(selfBorrow, token.decimals) * +rate).toFixed(4)}
+          </Text>
+        </Column>
+      ) : null}
+
+      {setupBorrowAPR != null ? (
+        <Column crossAxisSize="max">
+          <Text textAlign="right">{setupBorrowAPR}%</Text>
+        </Column>
+      ) : null}
 
       {selfSupply ? (
         <Row justifyContent="flex-end">

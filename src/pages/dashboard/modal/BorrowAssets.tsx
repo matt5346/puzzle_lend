@@ -92,6 +92,13 @@ const InputContainer = styled.div<{
   }
 `;
 
+const TokenToDollar = styled.div`
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+`;
+
 const BorrowAssets: React.FC<IProps> = (props) => {
   const navigate = useNavigate();
   const [focused, setFocused] = useState(false);
@@ -99,6 +106,15 @@ const BorrowAssets: React.FC<IProps> = (props) => {
 
   const formatVal = (val: BN, decimal: number) => {
     return BN.formatUnits(val, decimal).toSignificant(6).toString();
+  };
+
+  const userMaximumToBorrowBN = (userColatteral: number, rate: BN) => {
+    const val = (userColatteral / 10 ** 6 / +rate.toFormat(4)) * 10 ** props.decimals;
+    return BN.formatUnits(val, 0);
+  };
+
+  const userMaximumToBorrow = (userColatteral: number, rate: BN) => {
+    return (userColatteral / 10 ** 6 / +rate.toFormat(4)).toFixed(4);
   };
 
   useEffect(() => {
@@ -151,12 +167,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
               }}
             />
             <Text size="medium" fitContent>
-              {props.userColatteral && props.rate
-                ? (
-                    props.userColatteral / 10 ** 6 / +props.rate.toFormat(4) -
-                    +formatVal(amount, props.decimals)
-                  ).toFixed(2)
-                : 0}
+              {props.userColatteral && props.rate ? userMaximumToBorrow(props.userColatteral, props.rate) : 0}
               <>&nbsp;</>
               {props.assetSymbol}
             </Text>
@@ -172,7 +183,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           <MaxButton
             onClick={() => {
               setFocused(true);
-              props.onMaxClick && props.onMaxClick(BN.formatUnits(props.userColatteral, 0));
+              props.onMaxClick && props.onMaxClick(userMaximumToBorrowBN(props.userColatteral, props.rate));
             }}
           />
         )}
@@ -198,6 +209,11 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           placeholder="0.00"
           readOnly={!props.setAmount}
         />
+        <TokenToDollar>
+          <Text size="small" type="secondary">
+            ~${props.rate && amount ? (+formatVal(amount, props.decimals) * +props.rate.toFormat(4)).toFixed(3) : 0}
+          </Text>
+        </TokenToDollar>
       </InputContainer>
       <SizedBox height={24} />
       <Row justifyContent="space-between">
@@ -214,7 +230,9 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           Wallet balance
         </Text>
         <Text size="medium" fitContent>
-          {props.userBalance ? +formatVal(amount, props.decimals) + +formatVal(props.userBalance, props.decimals) : 0}
+          {props.userBalance && amount
+            ? (+formatVal(amount, props.decimals) + +formatVal(props.userBalance, props.decimals)).toFixed(4)
+            : 0}
         </Text>
       </Row>
       <SizedBox height={12} />

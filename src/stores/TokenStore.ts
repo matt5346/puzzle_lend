@@ -82,7 +82,7 @@ export default class TokenStore {
   };
 
   // loading all data about tokens, their apy/apr, supply/borrow and evth
-  private syncTokenStatistics = async () => {
+  public syncTokenStatistics = async () => {
     const { accountStore } = this.rootStore;
     const assets = TOKENS_LIST.map(({ assetId }) => assetId);
     const stats = await wavesCapService.getAssetsStats(assets, accountStore.address!).catch((e) => {
@@ -152,12 +152,12 @@ export default class TokenStore {
       supplyAmountCurrent += (details.self_supply / 10 ** details.precision) * details.supply_rate;
       borrowedAmountCurrent += (details.self_borrowed / 10 ** details.precision) * details.borrow_rate;
 
-      console.log(
-        details.self_borrowed,
-        details.setup_ltv,
-        supplyAmountApy,
-        'details.self_borrowed, details.setup_ltv, suppliedAmount'
-      );
+      // console.log(
+      //   details.self_borrowed,
+      //   details.setup_ltv,
+      //   supplyAmountApy,
+      //   'details.self_borrowed, details.setup_ltv, suppliedAmount'
+      // );
 
       // count USER HEALTH
       // NEXT COMMENTED case for DIFFERENT assets pairs as usdc/waves pool
@@ -175,10 +175,11 @@ export default class TokenStore {
           details.self_supply,
           details.setup_ltv,
           details.self_borrowed,
+          +currentPrice,
           '(details.self_supply * details.setup_ltv) / details.self_borrowed'
         );
-        borrowCapacity += details.self_supply * (details.setup_ltv / 100) * Number(details.data?.['firstPrice_usd-n']);
-        borrowCapacityUsed += details.self_borrowed * Number(details.data?.['firstPrice_usd-n']);
+        borrowCapacity += (details.self_supply / 10 ** details.precision) * (details.setup_ltv / 100) * +currentPrice;
+        borrowCapacityUsed += (details.self_borrowed / 10 ** details.precision) * +currentPrice;
       }
 
       return {
@@ -188,8 +189,8 @@ export default class TokenStore {
         symbol: details.shortcode,
         totalSupply,
         setupLtv: details.setup_ltv,
-        setupBorrowAPR: details.setup_borrow_apr.toFixed(2),
-        setupSupplyAPY: details.setup_supply_apy.toFixed(2),
+        setupBorrowAPR: details.setup_borrow_apr,
+        setupSupplyAPY: details.setup_supply_apy,
         selfSupply: BN.formatUnits(details.self_supply, 0),
         selfBorrow: BN.formatUnits(details.self_borrowed, 0),
         selfDailyIncome: details.self_daily_income,
@@ -226,7 +227,7 @@ export default class TokenStore {
     makeAutoObservable(this);
     this.watchList = initState?.watchList ?? [];
     Promise.all([this.syncTokenStatistics(), this.loadUserDetails()]).then(() => this.setInitialized(true));
-    setInterval(this.syncTokenStatistics, 60 * 1000);
+    setInterval(this.syncTokenStatistics, 60 * 2000);
   }
 
   serialize = (): ISerializedTokenStore => ({

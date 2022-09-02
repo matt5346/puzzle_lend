@@ -94,6 +94,7 @@ const WalletModalBody: React.FC<IProps> = ({ filteredTokens }) => {
             setupSupplyAPY={lendStore.choosenToken?.setupSupplyAPY}
             assetName={tokenFilteredData?.name}
             assetSymbol={tokenFilteredData?.symbol}
+            rate={lendStore.choosenToken?.currentPrice}
             supplyInterest={lendStore.choosenToken?.supplyInterest}
             userBalance={getTokenBalance()}
             decimals={lendStore.choosenToken?.decimals}
@@ -112,6 +113,7 @@ const WalletModalBody: React.FC<IProps> = ({ filteredTokens }) => {
             setupSupplyAPY={lendStore.choosenToken?.setupSupplyAPY}
             assetName={tokenFilteredData?.name}
             assetSymbol={tokenFilteredData?.symbol}
+            rate={lendStore.choosenToken?.currentPrice}
             selfSupply={lendStore.choosenToken?.selfSupply}
             totalSupply={lendStore.choosenToken?.totalAssetSupply}
             totalBorrow={lendStore.choosenToken?.totalAssetBorrow}
@@ -153,6 +155,7 @@ const WalletModalBody: React.FC<IProps> = ({ filteredTokens }) => {
             setupBorrowAPR={lendStore.choosenToken?.setupBorrowAPR}
             assetName={tokenFilteredData?.name}
             assetSymbol={tokenFilteredData?.symbol}
+            rate={lendStore.choosenToken?.currentPrice}
             selfBorrow={lendStore.choosenToken?.selfBorrow}
             totalSupply={lendStore.choosenToken?.totalAssetSupply}
             userBalance={getTokenBalance()}

@@ -31,6 +31,7 @@ interface IProps {
   userBalance: BN;
   supplyInterest: string;
   setupSupplyAPY?: string;
+  rate: BN;
   onChange: (agreement: boolean) => void;
   setAmount?: (amount: BN) => void;
   onMaxClick?: () => void;
@@ -85,6 +86,13 @@ const InputContainer = styled.div<{
     border-color: ${({ readOnly, focused, error }) =>
       error ? '#ED827E' : !readOnly && !focused ? '#C6C9F4' : focused ?? '#7075E9'};
   }
+`;
+
+const TokenToDollar = styled.div`
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
 `;
 
 const SupplyAssets: React.FC<IProps> = (props) => {
@@ -188,6 +196,11 @@ const SupplyAssets: React.FC<IProps> = (props) => {
           placeholder="0.00"
           readOnly={!props.setAmount}
         />
+        <TokenToDollar>
+          <Text size="small" type="secondary">
+            ~${props.rate && amount ? (+formatVal(amount, props.decimals) * +props.rate.toFormat(4)).toFixed(3) : 0}
+          </Text>
+        </TokenToDollar>
       </InputContainer>
       {/* itemData.self_daily_income = supplyInterest * (itemData.self_supply / 10 ** itemData.precision); */}
       <SizedBox height={24} />
@@ -196,7 +209,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
           Daily Income
         </Text>
         <Text size="medium" fitContent>
-          {(+props.supplyInterest * +formatVal(amount, props.decimals)).toFixed(6)}
+          {props.supplyInterest ? (+props.supplyInterest * +formatVal(amount, props.decimals)).toFixed(6) : 0}
         </Text>
       </Row>
       <SizedBox height={24} />
@@ -205,7 +218,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
           Supply APY
         </Text>
         <Text size="medium" fitContent>
-          {props.setupSupplyAPY}%
+          {props.setupSupplyAPY ? props.setupSupplyAPY : 0}%
         </Text>
       </Row>
       <SizedBox height={14} />

@@ -30,6 +30,7 @@ interface IProps {
   userBalance: BN;
   setupSupplyAPY?: string;
   selfSupply: BN;
+  rate: BN;
   setAmount?: (amount: BN) => void;
   onMaxClick?: (amount?: BN) => void;
   onClose?: () => void;
@@ -85,6 +86,13 @@ const InputContainer = styled.div<{
   }
 `;
 
+const TokenToDollar = styled.div`
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+`;
+
 const WithdrawAssets: React.FC<IProps> = (props) => {
   const navigate = useNavigate();
   const [focused, setFocused] = useState(false);
@@ -132,7 +140,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
         <Column alignItems="flex-end">
           <Text size="medium" textAlign="right">
             {props.userBalance
-              ? (+formatVal(props.userBalance, props.decimals) - +formatVal(amount, props.decimals)).toFixed(2)
+              ? (+formatVal(props.userBalance, props.decimals) + +formatVal(amount, props.decimals)).toFixed(2)
               : 0}
             <>&nbsp;</>
             {props.assetSymbol}
@@ -174,6 +182,11 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
           placeholder="0.00"
           readOnly={!props.setAmount}
         />
+        <TokenToDollar>
+          <Text size="small" type="secondary">
+            ~${props.rate && amount ? (+formatVal(amount, props.decimals) * +props.rate.toFormat(4)).toFixed(3) : 0}
+          </Text>
+        </TokenToDollar>
       </InputContainer>
       <SizedBox height={24} />
       <Row justifyContent="space-between">

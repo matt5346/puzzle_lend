@@ -82,15 +82,6 @@ const TokenData: React.FC<IProps> = ({
         <SizedBox height={16} />
         <Row justifyContent="space-between">
           <Text size="medium" type="secondary" fitContent>
-            Market liquidity
-          </Text>
-          <Text size="medium" type="secondary" fitContent>
-            {(+formatVal(totalSupply, token.decimals) - +formatVal(totalBorrow, token.decimals)).toFixed(5)}
-          </Text>
-        </Row>
-        <SizedBox height={16} />
-        <Row justifyContent="space-between">
-          <Text size="medium" type="secondary" fitContent>
             Number of suppliers
           </Text>
           <Text size="medium" type="secondary" fitContent>

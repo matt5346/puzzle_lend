@@ -66,7 +66,7 @@ class DashboardWalletVM {
   };
 
   submitBorrow = async (amount: any, assetId: any) => {
-    const { accountStore, lendStore } = this.rootStore;
+    const { accountStore, lendStore, tokenStore } = this.rootStore;
     console.log(amount.toString(), assetId, 'token');
 
     await accountStore
@@ -89,12 +89,13 @@ class DashboardWalletVM {
       })
       .then(() => {
         accountStore.updateAccountAssets(true);
+        tokenStore.syncTokenStatistics();
         lendStore.setDashboardModalOpened(false, '', 0);
       });
   };
 
   submitSupply = async (amount: any, assetId: any) => {
-    const { accountStore, lendStore } = this.rootStore;
+    const { accountStore, lendStore, tokenStore } = this.rootStore;
     console.log(amount.toString(), assetId, 'token');
 
     await accountStore
@@ -119,12 +120,13 @@ class DashboardWalletVM {
       })
       .then(() => {
         accountStore.updateAccountAssets(true);
+        tokenStore.syncTokenStatistics();
         lendStore.setDashboardModalOpened(false, '', 0);
       });
   };
 
   submitWithdraw = async (amount: any, assetId: any) => {
-    const { accountStore, lendStore } = this.rootStore;
+    const { accountStore, lendStore, tokenStore } = this.rootStore;
     console.log(amount.toString(), assetId, 'token');
 
     await accountStore
@@ -147,24 +149,27 @@ class DashboardWalletVM {
       })
       .then(() => {
         accountStore.updateAccountAssets(true);
+        tokenStore.syncTokenStatistics();
         lendStore.setDashboardModalOpened(false, '', 0);
       });
   };
 
   submitRepay = async (amount: any, assetId: any) => {
-    const { accountStore, lendStore } = this.rootStore;
+    const { accountStore, lendStore, tokenStore } = this.rootStore;
     console.log(amount.toString(), assetId, 'token');
 
     await accountStore
       .invoke({
         dApp: CONTRACT_ADDRESSES.ltv1,
-        payment: [],
+        payment: [
+          {
+            assetId,
+            amount: amount.toString(),
+          },
+        ],
         call: {
           function: 'repay',
-          args: [
-            { type: 'string', value: assetId },
-            { type: 'integer', value: amount },
-          ],
+          args: [],
         },
       })
       .then((txId) => {
@@ -175,6 +180,7 @@ class DashboardWalletVM {
       })
       .then(() => {
         accountStore.updateAccountAssets(true);
+        tokenStore.syncTokenStatistics();
         lendStore.setDashboardModalOpened(false, '', 0);
       });
   };

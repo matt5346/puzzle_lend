@@ -67,18 +67,15 @@ const DashboardToken: React.FC = () => {
   useMemo(() => {
     console.log(statisticsByAssetId, TOKENS_LIST, assetId, 'data----111-');
     const iData: IToken = TOKENS_LIST.find((item) => item.assetId === assetId) || createIToken();
-    const data: TTokenStatistics = createITokenStat();
+    let data: TTokenStatistics = createITokenStat();
 
-    // if (assetId) {
-    //   const tokenInfo = tokenStore.loadTokenDetails(assetId);
-    //   if (assetId) data = tokenStore.statisticsByAssetId[assetId];
-    // }
+    if (assetId) data = tokenStore.statisticsByAssetId[assetId];
 
     console.log(data, iData, 'data-----');
 
     setFilteredTokens(data);
     setIToken(iData);
-  }, [assetId, statisticsByAssetId]);
+  }, [assetId, tokenStore.statisticsByAssetId, statisticsByAssetId]);
 
   return (
     <Root>
