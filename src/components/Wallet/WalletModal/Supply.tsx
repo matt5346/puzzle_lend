@@ -27,19 +27,6 @@ const Supply: React.FC = () => {
   return (
     <Root>
       <Column justifyContent="center" alignItems="center" crossAxisSize="max">
-        {tokenStore.netAPY ? (
-          <Column>
-            <SizedBox height={12} />
-            <Row justifyContent="space-around">
-              <Text fitContent size="big" type="primary" className="text" textAlign="center">
-                Net APY
-              </Text>
-              <Text fitContent size="big" type="primary" className="text" textAlign="center">
-                {tokenStore.netAPY ? tokenStore.netAPY.toFixed(2) : 0}%
-              </Text>
-            </Row>
-          </Column>
-        ) : null}
         <SizedBox height={12} />
         {vm.assetsStats.length === 0 && (
           <Column alignItems="center">

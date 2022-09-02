@@ -103,8 +103,8 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
               setupBorrowAPR={stats.setupBorrowAPR}
               setupSupplyAPY={stats.setupSupplyAPY}
               setupLtv={stats.setupLtv}
-              totalSupply={stats.totalPoolSupply}
-              totalBorrow={stats.totalPoolBorrow}
+              totalSupply={stats.totalAssetSupply}
+              totalBorrow={stats.totalAssetBorrow}
               handleSupplyAssetClick={handleSupplyAssetClick}
             />
           );

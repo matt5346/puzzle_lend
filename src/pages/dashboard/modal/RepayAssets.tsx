@@ -3,6 +3,7 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import { observer } from 'mobx-react-lite';
 import styled from '@emotion/styled';
@@ -12,15 +13,20 @@ import { MaxButton } from '@src/UIKit/MaxButton';
 import { useStores } from '@src/stores';
 import { BigNumberInput } from '@src/UIKit/BigNumberInput';
 import { AmountInput } from '@src/UIKit/AmountInput';
-import { Row } from '@src/common/styles/Flex';
+import { Row, Column } from '@src/common/styles/Flex';
 import BN from '@src/common/utils/BN';
 import _ from 'lodash';
+
+import tokenLogos from '@src/common/constants/tokenLogos';
+import SquareTokenIcon from '@src/common/styles/SquareTokenIcon';
+import { ReactComponent as Back } from '@src/common/assets/icons/arrowBackWithTail.svg';
 
 interface IProps {
   assetId: string;
   decimals: number;
   amount: BN;
-  assetName: string;
+  assetSymbol?: string;
+  assetName?: string;
   totalSupply: BN;
   userBalance?: BN;
   setupBorrowAPR?: string;
@@ -37,7 +43,7 @@ const Root = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 300px;
-  padding: 10px 20px;
+  padding: 24px 20px 16px 20px;
 `;
 
 const Footer = styled.div`
@@ -81,7 +87,7 @@ const InputContainer = styled.div<{
 `;
 
 const BorrowAssets: React.FC<IProps> = (props) => {
-  // const { accountStore, poolsStore, stakeStore } = useStores();
+  const navigate = useNavigate();
   const [focused, setFocused] = useState(false);
   const [amount, setAmount] = useState<BN>(props.amount);
 
@@ -109,6 +115,42 @@ const BorrowAssets: React.FC<IProps> = (props) => {
 
   return (
     <Root>
+      <Row onClick={() => navigate(`/dashboard/token/${props.assetId}`)} style={{ cursor: 'pointer' }}>
+        <Row alignItems="center">
+          {props.assetSymbol && <SquareTokenIcon size="small" src={tokenLogos[props.assetSymbol]} />}
+          <SizedBox width={8} />
+          <Column>
+            <Text size="medium">{props.assetSymbol}</Text>
+            <Text size="small" type="secondary">
+              {props.assetName ? props.assetName : ''}
+            </Text>
+          </Column>
+        </Row>
+        <Column alignItems="flex-end">
+          <Row alignItems="center" justifyContent="flex-end">
+            <Text size="medium" type="secondary" fitContent>
+              {formatVal(amount, props.decimals) || 0}
+            </Text>
+            <Back
+              style={{
+                minWidth: '16px',
+                transform: 'rotate(180deg)',
+              }}
+            />
+            <Text size="medium" fitContent>
+              {props.selfBorrow
+                ? (+formatVal(props.selfBorrow, props.decimals) - +formatVal(amount, props.decimals)).toFixed(3)
+                : 0}
+              <>&nbsp;</>
+              {props.assetSymbol}
+            </Text>
+          </Row>
+          <Text textAlign="right" nowrap size="medium" type="secondary">
+            Borrow Balance
+          </Text>
+        </Column>
+      </Row>
+      <SizedBox height={16} />
       <InputContainer focused={focused} readOnly={!props.setAmount} error={props.error}>
         {props.onMaxClick && (
           <MaxButton
@@ -181,6 +223,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           0,005 WAVES
         </Text>
       </Row>
+      <SizedBox height={16} />
       <Footer>
         <Button fixed onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId)} size="large">
           Repay

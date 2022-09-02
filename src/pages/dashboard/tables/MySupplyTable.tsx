@@ -87,7 +87,7 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
                 rate={stats.currentPrice}
                 selfSupply={stats.selfSupply}
                 setupSupplyAPY={stats.setupSupplyAPY}
-                dailyIncome="100$"
+                dailyIncome={stats.selfDailyIncome}
                 handleSupplyAssetClick={handleSupplyAssetClick}
               />
             );

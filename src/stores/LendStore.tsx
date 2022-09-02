@@ -2,7 +2,7 @@
 import RootStore from '@src/stores/RootStore';
 import { makeAutoObservable, reaction, action } from 'mobx';
 import BN from '@src/common/utils/BN';
-import { TTokenStatistics } from '@src/common/constants';
+import { TTokenStatistics, createITokenStat } from '@src/common/constants';
 
 export default class LendStore {
   public rootStore: RootStore;
@@ -21,30 +21,7 @@ export default class LendStore {
 
   dashboardModalStep = 0;
 
-  choosenToken: TTokenStatistics = {
-    assetId: '',
-    decimals: 0,
-    name: '',
-    symbol: '',
-    totalSupply: BN.ZERO,
-    circulatingSupply: BN.ZERO,
-    totalBurned: BN.ZERO,
-    fullyDilutedMC: BN.ZERO,
-    marketCap: BN.ZERO,
-    currentPrice: BN.ZERO,
-    change24H: BN.ZERO,
-    change24HUsd: BN.ZERO,
-    volume24: BN.ZERO,
-    changeStr: '',
-    setupLtv: '',
-    setupBorrowAPR: '',
-    setupSupplyAPY: '',
-    selfSupply: BN.ZERO,
-    selfBorrow: BN.ZERO,
-    selfSupplyRate: '',
-    totalPoolSupply: BN.ZERO,
-    totalPoolBorrow: BN.ZERO,
-  };
+  choosenToken: TTokenStatistics = createITokenStat();
 
   @action.bound setModalStep = (step: number) => {
     this.dashboardModalStep = step;

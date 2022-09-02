@@ -51,22 +51,23 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
 
   return (
     <Root className="gridRow">
-      <Row>
-        <Row onClick={() => navigate(`/dashboard/token/${token.assetId}`)} style={{ cursor: 'pointer' }}>
-          <SquareTokenIcon src={tokenLogos[token.symbol]} />
-          <SizedBox width={18} />
-          <Text nowrap weight={500} fitContent>
-            {token.name}
-            <Text>$ {rate?.gte(0.0001) ? rate?.toFormat(4) : rate?.toFormat(8)}</Text>
-          </Text>
-          <SizedBox width={18} />
-        </Row>
+      <Row
+        alignItems="center"
+        onClick={() => navigate(`/dashboard/token/${token.assetId}`)}
+        style={{ cursor: 'pointer' }}>
+        <SquareTokenIcon src={tokenLogos[token.symbol]} />
+        <SizedBox width={18} />
+        <Text nowrap weight={500} fitContent>
+          {token.name}
+          <Text>$ {rate?.gte(0.0001) ? rate?.toFormat(4) : rate?.toFormat(8)}</Text>
+        </Text>
+        <SizedBox width={18} />
       </Row>
       {selfSupply != null ? <Text>$ {formatVal(selfSupply, token.decimals)}</Text> : null}
       {setupLtv != null ? <Text>{setupLtv}%</Text> : null}
       {totalSupply != null ? <Text>$ {formatVal(totalSupply, token.decimals)}</Text> : null}
       {setupSupplyAPY != null ? <Text>{Number(setupSupplyAPY).toFixed(2)}%</Text> : null}
-      {dailyIncome != null ? <Text>???</Text> : null}
+      {dailyIncome != null ? <Text>{Number(dailyIncome).toFixed(8)}</Text> : null}
       {totalBorrow != null ? <Text>$ {formatVal(totalBorrow, token.decimals)}</Text> : null}
       {setupBorrowAPR != null ? <Text>{setupBorrowAPR}%</Text> : null}
       {selfBorrow != null ? <Text>$ {formatVal(selfBorrow, token.decimals)}</Text> : null}

@@ -3,27 +3,31 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import { observer } from 'mobx-react-lite';
 import styled from '@emotion/styled';
 import { Text } from '@src/UIKit/Text';
 import { Button } from '@src/UIKit/Button';
 import { MaxButton } from '@src/UIKit/MaxButton';
-import { useStores } from '@src/stores';
 import { BigNumberInput } from '@src/UIKit/BigNumberInput';
 import { AmountInput } from '@src/UIKit/AmountInput';
-import { Row } from '@src/common/styles/Flex';
+import { Column, Row } from '@src/common/styles/Flex';
 import BN from '@src/common/utils/BN';
 import _ from 'lodash';
+
+import tokenLogos from '@src/common/constants/tokenLogos';
+import SquareTokenIcon from '@src/common/styles/SquareTokenIcon';
 
 interface IProps {
   assetId: string;
   decimals: number;
   amount: BN;
-  assetName: string;
+  assetSymbol?: string;
+  assetName?: string;
   totalSupply: BN;
   totalBorrow: BN;
-  userBalance?: BN;
+  userBalance: BN;
   setupSupplyAPY?: string;
   selfSupply: BN;
   setAmount?: (amount: BN) => void;
@@ -38,7 +42,7 @@ const Root = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 300px;
-  padding: 10px 20px;
+  padding: 24px 20px 16px 20px;
 `;
 
 const Footer = styled.div`
@@ -82,8 +86,13 @@ const InputContainer = styled.div<{
 `;
 
 const WithdrawAssets: React.FC<IProps> = (props) => {
+  const navigate = useNavigate();
   const [focused, setFocused] = useState(false);
   const [amount, setAmount] = useState<BN>(props.amount);
+
+  const formatVal = (val: BN, decimal: number) => {
+    return BN.formatUnits(val, decimal).toSignificant(6).toString();
+  };
 
   useEffect(() => {
     props.amount && setAmount(props.amount);
@@ -99,16 +108,41 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
 
   const handleChangeAmount = (v: BN) => {
     console.log('handleChangeAmount');
+    const formattedVal = formatVal(v, props.decimals);
+    const selfSupply = formatVal(props.selfSupply, props.decimals);
+
+    if (+formattedVal > +selfSupply) return;
     setAmount(v);
     debounce(v);
   };
 
-  const formatVal = (val: BN, decimal: number) => {
-    return BN.formatUnits(val, decimal).toSignificant(6).toString();
-  };
-
   return (
     <Root>
+      <Row onClick={() => navigate(`/dashboard/token/${props.assetId}`)} style={{ cursor: 'pointer' }}>
+        <Row alignItems="center">
+          {props.assetSymbol && <SquareTokenIcon size="small" src={tokenLogos[props.assetSymbol]} />}
+          <SizedBox width={8} />
+          <Column>
+            <Text size="medium">{props.assetSymbol}</Text>
+            <Text size="small" type="secondary">
+              {props.assetName ? props.assetName : ''}
+            </Text>
+          </Column>
+        </Row>
+        <Column alignItems="flex-end">
+          <Text size="medium" textAlign="right">
+            {props.userBalance
+              ? (+formatVal(props.userBalance, props.decimals) - +formatVal(amount, props.decimals)).toFixed(2)
+              : 0}
+            <>&nbsp;</>
+            {props.assetSymbol}
+          </Text>
+          <Text nowrap size="medium" type="secondary">
+            Wallet Balance
+          </Text>
+        </Column>
+      </Row>
+      <SizedBox height={16} />
       <InputContainer focused={focused} readOnly={!props.setAmount} error={props.error}>
         {props.onMaxClick && (
           <MaxButton
@@ -141,19 +175,6 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
           readOnly={!props.setAmount}
         />
       </InputContainer>
-      <SizedBox height={8} />
-      <Row justifyContent="space-between">
-        <Text size="medium" type="secondary" fitContent>
-          Wallet Balance
-        </Text>
-        <Text size="medium" fitContent>
-          {BN.formatUnits(props.userBalance ? props.userBalance : BN.ZERO, props.decimals)
-            .toSignificant(6)
-            .toString()}
-          <>&nbsp;</>
-          {props.assetName}
-        </Text>
-      </Row>
       <SizedBox height={24} />
       <Row justifyContent="space-between">
         <Text size="medium" type="secondary" fitContent>
@@ -178,7 +199,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
           Market supply
         </Text>
         <Text size="medium" fitContent>
-          {(+props.totalSupply?.toFormat(3) - +props.totalBorrow?.toFormat(3)).toFixed(7)}
+          {(+formatVal(props.totalSupply, props.decimals) - +formatVal(props.totalBorrow, props.decimals)).toFixed(2)}
         </Text>
       </Row>
       <SizedBox height={12} />
@@ -190,6 +211,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
           0,005 WAVES
         </Text>
       </Row>
+      <SizedBox height={16} />
       <Footer>
         <Button fixed onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId)} size="large">
           Withdraw

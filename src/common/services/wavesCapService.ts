@@ -17,37 +17,39 @@ interface IAssetResponse {
 }
 
 const wavesCapService = {
-  getTokenStats: async (assetId: string): Promise<any> => {
-    console.log(assetId, 'assetId getTokenStats');
-    let data = null;
-    let userCollateral: any = {};
+  getUserExtraStats: async (userId: string): Promise<any> => {
+    console.log(userId, 'assetId getTokenStats');
+    const data = null;
+    let userCollateral = 0;
 
     try {
       const tokensRatesUrl = 'http://nodes.wavesnodes.com/utils/script/evaluate/3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT';
-      userCollateral = await axios(tokensRatesUrl, {
+      const response = await axios(tokensRatesUrl, {
         method: 'POST',
         headers: {
           'Content-type': 'application/json',
         },
         data: {
-          expr: 'getUserCollateral(false, "3PAxdDSmN758L5SHSGRC5apEtQE2aApZotG", true)',
+          expr: `getUserCollateral(false, "${userId}", true)`,
         },
       });
-      console.log(userCollateral, '.*userCollateral');
+      console.log(response, '.*response');
 
-      const stringParams = buildUrlParams({
-        total_suppliers: `.*_supplied_${assetId}`,
-      });
+      // eslint-disable-next-line no-underscore-dangle
+      userCollateral = response?.data?.result?.value?._2?.value;
+      // const stringParams = buildUrlParams({
+      //   total_suppliers: `.*_supplied_${assetId}`,
+      // });
 
-      const urlSupply = `https://nodes.wavesnodes.com/addresses/data/3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT?${stringParams}`;
-      const responseAssets = await axios.get(urlSupply);
-      console.log(responseAssets, '.*_supplied_USDN');
-      data = responseAssets.data;
+      // const urlSupply = `https://nodes.wavesnodes.com/addresses/data/3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT?${stringParams}`;
+      // const responseAssets = await axios.get(urlSupply);
+      // console.log(responseAssets, '.*_supplied_USDN');
+      // data = responseAssets.data;
     } catch (err) {
       console.log(err, 'ERR');
     }
 
-    return data;
+    return userCollateral;
   },
   getAssetsStats: async (assetsId: string[], address?: string): Promise<IAssetResponse[]> => {
     const params = new URLSearchParams();
@@ -112,11 +114,13 @@ const wavesCapService = {
         setup_interest: 0,
         // borrow APR
         setup_borrow_apr: 0,
-        // supply APY
+        // supply APY/ supply interest
         setup_supply_apy: 0,
-        // user borrow/supply
+        supply_interest: 0,
+        // user borrow/supply + daily income
         self_supply: 0,
         self_borrowed: 0,
+        self_daily_income: 0,
         // sRate, need for counting SUPPLY compound on front
         supply_rate: 0,
         // bRate, need for counting BORROW compound on front
@@ -181,7 +185,10 @@ const wavesCapService = {
         const UR = itemData.total_borrow / itemData.total_supply;
         const supplyInterest = itemData.setup_interest * UR;
         const supplyAPY = ((1 + supplyInterest) ** 365 - 1) * 100;
+
+        itemData.self_daily_income = supplyInterest * (itemData.self_supply / 10 ** itemData.precision);
         itemData.setup_supply_apy = supplyAPY;
+        itemData.supply_interest = supplyInterest;
       }
 
       return itemData;

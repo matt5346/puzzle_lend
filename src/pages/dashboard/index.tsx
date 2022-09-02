@@ -97,7 +97,7 @@ const FAQ = styled.div`
 `;
 
 const Dashboard: React.FC = () => {
-  const { accountStore } = useStores();
+  const { accountStore, tokenStore } = useStores();
   const { address } = accountStore;
   const isKeeperDisabled = !accountStore.isWavesKeeperInstalled;
 
@@ -110,13 +110,13 @@ const Dashboard: React.FC = () => {
     <DashboardVMProvider>
       <Container>
         <TitleH>
-          Earn interest, borrow assets. Total liquidity: <b>&nbsp;$281,605,117</b>
+          Earn interest, borrow assets. Total liquidity: <b>&nbsp;$ {tokenStore.poolTotal.toFixed(2)}</b>
         </TitleH>
 
         <SubTitleWrap>
-          <Text>
+          <Text size="medium">
             Get interest and borrow more than 6 assets at low rate on Puzzle Lend DeFi lending protocol, which are the
-            fastecst growing platform on Waves
+            fastest growing platform on Waves
           </Text>
         </SubTitleWrap>
 

@@ -1,6 +1,6 @@
 /* eslint-disable no-bitwise */
 import styled from '@emotion/styled';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import BN from '@src/common/utils/BN';
 import { Column, Row } from '@src/common/styles/Flex';
 import { observer } from 'mobx-react-lite';
@@ -36,6 +36,9 @@ const ListWrapper = styled.div<{ headerExpanded: boolean }>`
 `;
 
 const WalletModalBody: React.FC<IProps> = ({ filteredTokens }) => {
+  const [tokenFilteredData, setFilteredToken] = useState<IToken>();
+  const [isAgree, setAgree] = useState<boolean>(false);
+  const [isBorrowAgree, setBorrowAgree] = useState<boolean>(false);
   const vm = DashboardWalletUseVM();
   const { lendStore, tokenStore } = vm.rootStore;
 
@@ -61,14 +64,9 @@ const WalletModalBody: React.FC<IProps> = ({ filteredTokens }) => {
     if (getAssetData) vm.setWithdrawAmount(amount || getAssetData.balance!);
   };
 
-  const borrowMaxClickFunc = (amount?: BN) => {
-    // todo: CHECK LOGIN OF LTV counting
-    const borrowedAmount = BN.formatUnits(amount || BN.ZERO).toSignificant(6);
-    const maxBorrowAmount =
-      +lendStore.choosenToken?.selfSupply * (+lendStore.choosenToken?.setupLtv / 100) - +borrowedAmount;
-    console.log(maxBorrowAmount, 'maxBorrowAmount');
-
-    vm.setBorrowAmount(BN.formatUnits(maxBorrowAmount, 0));
+  const borrowMaxClickFunc = (amount: BN) => {
+    console.log(amount.toString(), 'MAX');
+    vm.setBorrowAmount(amount);
   };
 
   const repayMaxClickFunc = (amount?: BN) => {
@@ -77,16 +75,26 @@ const WalletModalBody: React.FC<IProps> = ({ filteredTokens }) => {
     if (getAssetData) vm.setRepayAmount(amount || getAssetData.balance!);
   };
 
+  // main reason of this useMemo is SYMBOl
+  // token flow of filtered tokens and lendstore.choosenToken different
+  // todo: figure out, why symbol is different
+  useMemo(() => {
+    const token = filteredTokens.find((item) => item.assetId === lendStore.choosenToken?.assetId);
+
+    setFilteredToken(token);
+  }, [lendStore.choosenToken, filteredTokens]);
+
   console.log(vm, 'ASSETS vm');
 
   return (
     <Root>
       <ListWrapper headerExpanded={vm.headerExpanded}>
-        <SizedBox height={8} />
         {lendStore.dashboardModalStep === 0 && (
           <SupplyAssets
             setupSupplyAPY={lendStore.choosenToken?.setupSupplyAPY}
-            assetName={lendStore.choosenToken?.symbol}
+            assetName={tokenFilteredData?.name}
+            assetSymbol={tokenFilteredData?.symbol}
+            supplyInterest={lendStore.choosenToken?.supplyInterest}
             userBalance={getTokenBalance()}
             decimals={lendStore.choosenToken?.decimals}
             amount={vm.supplyAmount}
@@ -95,15 +103,18 @@ const WalletModalBody: React.FC<IProps> = ({ filteredTokens }) => {
             onMaxClick={supplyMaxClickFunc}
             onSubmit={vm.submitSupply}
             onClose={vm.onCloseModal}
+            isAgree={isAgree}
+            onChange={setAgree}
           />
         )}
         {lendStore.dashboardModalStep === 1 && (
           <WithdrawAssets
             setupSupplyAPY={lendStore.choosenToken?.setupSupplyAPY}
-            assetName={lendStore.choosenToken?.symbol}
+            assetName={tokenFilteredData?.name}
+            assetSymbol={tokenFilteredData?.symbol}
             selfSupply={lendStore.choosenToken?.selfSupply}
-            totalSupply={lendStore.choosenToken?.totalPoolSupply}
-            totalBorrow={lendStore.choosenToken?.totalPoolBorrow}
+            totalSupply={lendStore.choosenToken?.totalAssetSupply}
+            totalBorrow={lendStore.choosenToken?.totalAssetBorrow}
             userBalance={getTokenBalance()}
             decimals={lendStore.choosenToken?.decimals}
             amount={vm.withdrawAmount}
@@ -117,26 +128,31 @@ const WalletModalBody: React.FC<IProps> = ({ filteredTokens }) => {
         {lendStore.dashboardModalStep === 2 && (
           <BorrowAssets
             setupBorrowAPR={lendStore.choosenToken?.setupBorrowAPR}
-            assetName={lendStore.choosenToken?.symbol}
+            assetName={tokenFilteredData?.name}
+            assetSymbol={tokenFilteredData?.symbol}
+            userColatteral={tokenStore?.userCollateral}
             selfBorrow={lendStore.choosenToken?.selfBorrow}
-            totalSupply={lendStore.choosenToken?.totalPoolSupply}
+            totalSupply={lendStore.choosenToken?.totalAssetSupply}
             setupLtv={lendStore.choosenToken?.setupLtv}
             userBalance={getTokenBalance()}
             decimals={lendStore.choosenToken?.decimals}
             amount={vm.borrowAmount}
             setAmount={vm.setBorrowAmount}
             assetId={lendStore.choosenToken?.assetId}
-            onMaxClick={borrowMaxClickFunc}
+            onMaxClick={(arg) => borrowMaxClickFunc(arg!)}
             onSubmit={vm.submitBorrow}
             onClose={vm.onCloseModal}
+            isAgree={isBorrowAgree}
+            onChange={setBorrowAgree}
           />
         )}
         {lendStore.dashboardModalStep === 3 && (
           <RepayAssets
             setupBorrowAPR={lendStore.choosenToken?.setupBorrowAPR}
-            assetName={lendStore.choosenToken?.symbol}
+            assetName={tokenFilteredData?.name}
+            assetSymbol={tokenFilteredData?.symbol}
             selfBorrow={lendStore.choosenToken?.selfBorrow}
-            totalSupply={lendStore.choosenToken?.totalPoolSupply}
+            totalSupply={lendStore.choosenToken?.totalAssetSupply}
             userBalance={getTokenBalance()}
             decimals={lendStore.choosenToken?.decimals}
             amount={vm.repayAmount}
@@ -147,7 +163,6 @@ const WalletModalBody: React.FC<IProps> = ({ filteredTokens }) => {
             onClose={vm.onCloseModal}
           />
         )}
-        <SizedBox height={64} width={1} />
       </ListWrapper>
     </Root>
   );

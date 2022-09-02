@@ -21,15 +21,25 @@ export default class TokenStore {
 
   borrowUserTotal = 0;
 
+  poolTotal = 0;
+
+  userCollateral = 0;
+
   private setInitialized = (v: boolean) => (this.initialized = v);
 
   private setNetAPY = (v: number) => (this.netAPY = v);
 
   private setUserHealth = (v: number) => (this.userHealth = v);
 
+  private setUserCollateral = (v: number) => (this.userCollateral = v);
+
   private setSupplyBorrow = (s: number, b: number) => {
     this.supplyUserTotal = s;
     this.borrowUserTotal = b;
+  };
+
+  private setPoolTotal = (s: number) => {
+    this.poolTotal = s;
   };
 
   private setStatistics = (v: Array<TTokenStatistics>) => (this.statistics = v);
@@ -50,15 +60,23 @@ export default class TokenStore {
     index !== -1 && this.watchList.splice(index, 1);
   };
 
-  public loadTokenDetails = async (assetId: string) => {
-    console.log(assetId, 'loadTokenDetails');
-    const stats = await wavesCapService.getTokenStats(assetId).catch((e) => {
-      // notificationStore.notify(e.message ?? e.toString(), {
-      //   type: 'error',
-      // });
-      console.log(e, 'getAssetsStats');
-      return [];
-    });
+  // currently only for collateral
+  // further can be used for other info
+  // remove to account STORE
+  public loadUserDetails = async () => {
+    const { accountStore } = this.rootStore;
+    let stats = null;
+    if (accountStore.address) {
+      stats = await wavesCapService.getUserExtraStats(accountStore.address).catch((e) => {
+        // notificationStore.notify(e.message ?? e.toString(), {
+        //   type: 'error',
+        // });
+        console.log(e, 'getAssetsStats');
+        return [];
+      });
+    }
+
+    this.setUserCollateral(stats);
 
     return stats;
   };
@@ -74,6 +92,9 @@ export default class TokenStore {
       console.log(e, 'getAssetsStats');
       return [];
     });
+
+    // count pool Total
+    let poolTotal = 0;
 
     // count net apy
     let supplyAmountApy = 0;
@@ -106,6 +127,9 @@ export default class TokenStore {
       const formatChange24HUsd = change24HUsd?.times(change24H?.gte(0) ? 1 : -1).toFormat(2);
       const formatChange24H = change24H?.times(change24H?.gte(0) ? 1 : -1).toFormat(2);
       const changeStr = `${changePrefix} $${formatChange24HUsd} (${formatChange24H}%)`;
+
+      // pool Total
+      poolTotal += details.total_supply / 10 ** details.precision;
 
       // net APY
       supplyAmountApy += (details.self_supply / 10 ** details.precision) * details.setup_supply_apy;
@@ -168,9 +192,11 @@ export default class TokenStore {
         setupSupplyAPY: details.setup_supply_apy.toFixed(2),
         selfSupply: BN.formatUnits(details.self_supply, 0),
         selfBorrow: BN.formatUnits(details.self_borrowed, 0),
+        selfDailyIncome: details.self_daily_income,
+        supplyInterest: details.supply_interest,
         selfSupplyRate: details.supply_rate,
-        totalPoolBorrow: BN.formatUnits(details.total_borrow, 0),
-        totalPoolSupply: BN.formatUnits(details.total_supply, 0),
+        totalAssetBorrow: BN.formatUnits(details.total_borrow, 0),
+        totalAssetSupply: BN.formatUnits(details.total_supply, 0),
         circulatingSupply: BN.formatUnits(details.circulating, 0),
         change24H,
         change24HUsd,
@@ -191,6 +217,7 @@ export default class TokenStore {
     this.setNetAPY(netAPY);
     this.setSupplyBorrow(supplyAmountCurrent, borrowedAmountCurrent);
     this.setUserHealth(accountHealth);
+    this.setPoolTotal(poolTotal);
     this.setStatistics(statistics);
   };
 
@@ -198,7 +225,7 @@ export default class TokenStore {
     this.rootStore = rootStore;
     makeAutoObservable(this);
     this.watchList = initState?.watchList ?? [];
-    Promise.all([this.syncTokenStatistics()]).then(() => this.setInitialized(true));
+    Promise.all([this.syncTokenStatistics(), this.loadUserDetails()]).then(() => this.setInitialized(true));
     setInterval(this.syncTokenStatistics, 60 * 1000);
   }
 

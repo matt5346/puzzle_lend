@@ -43,10 +43,10 @@ const DashboardModal: React.FC<IProps> = ({ filteredTokens, ...rest }) => {
       animation="zoom"
       maskAnimation="fade"
       destroyOnClose
+      title="Operations"
       {...rest}>
       <DashboardWalletVMProvider>
         <Root>
-          <SizedBox height={48} />
           <SizedBox height={56} />
           <TabsWrapper>
             {lendStore.dashboardModalStep < 2 && (

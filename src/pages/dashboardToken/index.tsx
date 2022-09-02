@@ -67,18 +67,18 @@ const DashboardToken: React.FC = () => {
   useMemo(() => {
     console.log(statisticsByAssetId, TOKENS_LIST, assetId, 'data----111-');
     const iData: IToken = TOKENS_LIST.find((item) => item.assetId === assetId) || createIToken();
-    let data: TTokenStatistics = createITokenStat();
+    const data: TTokenStatistics = createITokenStat();
 
-    if (assetId) {
-      const tokenInfo = tokenStore.loadTokenDetails(assetId);
-      if (assetId) data = tokenStore.statisticsByAssetId[assetId];
-    }
+    // if (assetId) {
+    //   const tokenInfo = tokenStore.loadTokenDetails(assetId);
+    //   if (assetId) data = tokenStore.statisticsByAssetId[assetId];
+    // }
 
     console.log(data, iData, 'data-----');
 
     setFilteredTokens(data);
     setIToken(iData);
-  }, [assetId, tokenStore, statisticsByAssetId]);
+  }, [assetId, statisticsByAssetId]);
 
   return (
     <Root>
@@ -109,7 +109,7 @@ const DashboardToken: React.FC = () => {
                 Total supply
               </Text>
               <Text size="medium" type="primary" fitContent>
-                {formatVal(tokenFullData.totalPoolSupply, tokenFullData.decimals)}
+                {formatVal(tokenFullData.totalAssetSupply, tokenFullData.decimals)}
               </Text>
             </Column>
             <SizedBox width={32} />
@@ -118,7 +118,7 @@ const DashboardToken: React.FC = () => {
                 Total borrowing
               </Text>
               <Text size="medium" type="primary" fitContent>
-                {formatVal(tokenFullData.totalPoolBorrow, tokenFullData.decimals)}
+                {formatVal(tokenFullData.totalAssetBorrow, tokenFullData.decimals)}
               </Text>
             </Column>
             <SizedBox width={32} />
@@ -128,8 +128,8 @@ const DashboardToken: React.FC = () => {
               </Text>
               <Text size="medium" type="primary" fitContent>
                 {(
-                  +formatVal(tokenFullData.totalPoolSupply, tokenFullData.decimals) -
-                  +formatVal(tokenFullData.totalPoolBorrow, tokenFullData.decimals)
+                  +formatVal(tokenFullData.totalAssetSupply, tokenFullData.decimals) -
+                  +formatVal(tokenFullData.totalAssetBorrow, tokenFullData.decimals)
                 ).toFixed(5)}
               </Text>
             </Column>
@@ -163,8 +163,8 @@ const DashboardToken: React.FC = () => {
           setupBorrowAPR={tokenFullData.setupBorrowAPR}
           setupSupplyAPY={tokenFullData.setupSupplyAPY}
           setupLtv={tokenFullData.setupLtv}
-          totalSupply={tokenFullData.totalPoolSupply}
-          totalBorrow={tokenFullData.totalPoolBorrow}
+          totalSupply={tokenFullData.totalAssetSupply}
+          totalBorrow={tokenFullData.totalAssetBorrow}
         />
       )}
       <SizedBox height={24} />

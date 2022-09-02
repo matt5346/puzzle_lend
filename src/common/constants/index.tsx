@@ -17,9 +17,11 @@ export type TTokenStatistics = {
   selfSupply: BN;
   selfBorrow: BN;
   selfSupplyRate: string;
+  selfDailyIncome: string;
+  supplyInterest: string;
   totalSupply: BN;
-  totalPoolSupply: BN;
-  totalPoolBorrow: BN;
+  totalAssetSupply: BN;
+  totalAssetBorrow: BN;
   circulatingSupply: BN;
   totalBurned: BN;
   fullyDilutedMC: BN;
@@ -44,9 +46,11 @@ export function createITokenStat(): TTokenStatistics {
     selfSupplyRate: '',
     selfSupply: BN.ZERO,
     selfBorrow: BN.ZERO,
+    selfDailyIncome: '',
+    supplyInterest: '',
     totalSupply: BN.ZERO,
-    totalPoolSupply: BN.ZERO,
-    totalPoolBorrow: BN.ZERO,
+    totalAssetSupply: BN.ZERO,
+    totalAssetBorrow: BN.ZERO,
     circulatingSupply: BN.ZERO,
     totalBurned: BN.ZERO,
     fullyDilutedMC: BN.ZERO,

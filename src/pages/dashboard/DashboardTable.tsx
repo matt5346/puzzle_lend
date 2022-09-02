@@ -99,7 +99,9 @@ const DashboardTable: React.FC<IProps> = () => {
       <Text weight={500} type="secondary" margin="0 0 10px 0">
         All assets
       </Text>
+
       <AllAssetsTable filteredTokens={filteredTokens} handleSupplyAssetClick={handleSupplyAssetClick} />
+
       <DashboardModal
         filteredTokens={filteredTokens}
         onClose={() => lendStore.setDashboardModalOpened(false, '', lendStore.dashboardModalStep)}
