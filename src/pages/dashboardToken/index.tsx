@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useStores } from '@src/stores';
 import { observer } from 'mobx-react-lite';
@@ -64,15 +64,34 @@ const DashboardToken: React.FC = () => {
     return BN.formatUnits(val, decimal).toSignificant(6).toFormat(5);
   };
 
-  useMemo(() => {
-    console.log(poolDataTokensWithStats, assetId, 'data----111-');
+  // useMemo(() => {
+  //   console.log(poolDataTokensWithStats, assetId, 'data----111-');
+  //   const iData: IToken =
+  //     TOKENS_LIST(lendStore.activePoolName).find((item) => item.assetId === assetId) || createIToken();
+  //   let data: TTokenStatistics = createITokenStat();
+
+  //   if (assetId && poolDataTokensWithStats && poolDataTokensWithStats.length)
+  //     data = tokenStore.poolDataTokensWithStats[assetId];
+
+  //   console.log(data, iData, 'data-----');
+
+  //   setFilteredTokens(data);
+  //   setIToken(iData);
+  // }, [assetId, lendStore.activePoolName, tokenStore.poolDataTokensWithStats, poolDataTokensWithStats]);
+
+  useEffect(() => {
+    console.log(poolDataTokensWithStats, assetId, lendStore.activePoolName, 'data----111-');
     const iData: IToken =
       TOKENS_LIST(lendStore.activePoolName).find((item) => item.assetId === assetId) || createIToken();
     let data: TTokenStatistics = createITokenStat();
 
-    if (assetId) data = tokenStore.poolDataTokensWithStats[assetId];
+    if (assetId) {
+      data = tokenStore.poolDataTokensWithStats[assetId];
+      const token = TOKENS_LIST(lendStore.activePoolName).find((item) => item.assetId === assetId)!;
+      console.log(token, 'iData-----');
+    }
 
-    console.log(data, iData, 'data-----');
+    console.log(data, iData, TOKENS_LIST(lendStore.activePoolName), 'data-----');
 
     setFilteredTokens(data);
     setIToken(iData);
@@ -137,7 +156,7 @@ const DashboardToken: React.FC = () => {
                 Supply APY
               </Text>
               <Text size="medium" type="primary" fitContent>
-                {tokenFullData.setupSupplyAPY} %
+                {tokenFullData.setupSupplyAPY ? (+tokenFullData.setupSupplyAPY).toFixed(2) : 0} %
               </Text>
             </Column>
             <SizedBox width={32} />
@@ -146,7 +165,7 @@ const DashboardToken: React.FC = () => {
                 Borrow APR
               </Text>
               <Text size="medium" type="primary" fitContent>
-                {tokenFullData.setupBorrowAPR} %
+                {tokenFullData.setupBorrowAPR ? (+tokenFullData.setupBorrowAPR).toFixed(2) : 0} %
               </Text>
             </Column>
           </Row>

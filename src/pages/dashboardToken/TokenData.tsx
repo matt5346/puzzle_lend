@@ -40,22 +40,6 @@ const TokenData: React.FC<IProps> = ({
   setupBorrowAPR,
   setupSupplyAPY,
 }) => {
-  const [filteredTokens, setFilteredTokens] = useState<TTokenStatistics>();
-  const { assetId } = useParams<{ assetId: string }>();
-  console.log(assetId, 'assetId-----');
-  const { tokenStore } = useStores();
-  const { poolDataTokensWithStats } = tokenStore;
-
-  useMemo(() => {
-    console.log(Object.keys(poolDataTokensWithStats), assetId, 'data----111-');
-    let data: TTokenStatistics = createITokenStat();
-
-    if (assetId) data = tokenStore.poolDataTokensWithStats[assetId];
-    console.log(data, 'data-----');
-
-    setFilteredTokens(data);
-  }, [assetId, tokenStore.poolDataTokensWithStats, poolDataTokensWithStats]);
-
   return (
     <Root>
       <Card>
@@ -99,7 +83,7 @@ const TokenData: React.FC<IProps> = ({
             LTV
           </Text>
           <Text size="medium" type="secondary" fitContent>
-            {setupLtv}%
+            {setupLtv || 0}%
           </Text>
         </Row>
         <SizedBox height={16} />

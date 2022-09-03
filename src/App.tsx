@@ -32,7 +32,7 @@ const Root = styled(Column)`
 `;
 
 const App: React.FC = () => {
-  const { accountStore } = useStores();
+  const { accountStore, tokenStore } = useStores();
 
   return (
     <Root>
@@ -44,7 +44,7 @@ const App: React.FC = () => {
         <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
         {/* for other pools with ids routes */}
         <Route path={ROUTES.DASHBOARD_POOl} element={<Dashboard />} />
-        <Route path={ROUTES.DASHBOARD_TOKEN} element={<DashboardToken />} />
+        {tokenStore.poolDataTokensWithStats && <Route path={ROUTES.DASHBOARD_TOKEN} element={<DashboardToken />} />}
       </Routes>
       <WalletModal onClose={() => accountStore.setWalletModalOpened(false)} visible={accountStore.walletModalOpened} />
     </Root>

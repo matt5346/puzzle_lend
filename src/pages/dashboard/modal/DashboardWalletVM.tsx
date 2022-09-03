@@ -83,6 +83,7 @@ class DashboardWalletVM {
       })
       .then((txId) => {
         console.log(txId, '---tx');
+        lendStore.setDashboardModalOpened(false, '', 0);
       })
       .catch((e) => {
         console.log(e, '---e');
@@ -90,7 +91,6 @@ class DashboardWalletVM {
       .then(() => {
         accountStore.updateAccountAssets(true);
         tokenStore.syncTokenStatistics(lendStore.activePoolName);
-        lendStore.setDashboardModalOpened(false, '', 0);
       });
   };
 
@@ -114,6 +114,7 @@ class DashboardWalletVM {
       })
       .then((txId) => {
         console.log(txId, '---tx');
+        lendStore.setDashboardModalOpened(false, '', 0);
       })
       .catch((e) => {
         console.log(e, '---e');
@@ -121,7 +122,6 @@ class DashboardWalletVM {
       .then(() => {
         accountStore.updateAccountAssets(true);
         tokenStore.syncTokenStatistics(lendStore.activePoolName);
-        lendStore.setDashboardModalOpened(false, '', 0);
       });
   };
 
@@ -143,6 +143,7 @@ class DashboardWalletVM {
       })
       .then((txId) => {
         console.log(txId, '---tx');
+        lendStore.setDashboardModalOpened(false, '', 0);
       })
       .catch((e) => {
         console.log(e, '---e');
@@ -150,7 +151,6 @@ class DashboardWalletVM {
       .then(() => {
         accountStore.updateAccountAssets(true);
         tokenStore.syncTokenStatistics(lendStore.activePoolName);
-        lendStore.setDashboardModalOpened(false, '', 0);
       });
   };
 
@@ -174,6 +174,7 @@ class DashboardWalletVM {
       })
       .then((txId) => {
         console.log(txId, '---tx');
+        lendStore.setDashboardModalOpened(false, '', 0);
       })
       .catch((e) => {
         console.log(e, '---e');
@@ -181,7 +182,6 @@ class DashboardWalletVM {
       .then(() => {
         accountStore.updateAccountAssets(true);
         tokenStore.syncTokenStatistics(lendStore.activePoolName);
-        lendStore.setDashboardModalOpened(false, '', 0);
       });
   };
 
