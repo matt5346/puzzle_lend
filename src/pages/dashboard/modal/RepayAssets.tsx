@@ -123,7 +123,13 @@ const BorrowAssets: React.FC<IProps> = (props) => {
 
   const getMax = (v: BN) => {
     console.log(+v, +props.selfBorrow, 'handleChangeAmount11111111');
-    return BN.formatUnits(Math.ceil(+v), 0);
+    let val = +v;
+
+    // todo:
+    // bug with 1 integer num
+    if (val === 1) val += 1;
+
+    return BN.formatUnits(Math.ceil(val), 0);
   };
 
   const formatVal = (val: BN, decimal: number) => {
@@ -211,9 +217,9 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           Wallet Balance
         </Text>
         <Text size="medium" fitContent>
-          {BN.formatUnits(props.userBalance ? props.userBalance : BN.ZERO, props.decimals)
-            .toSignificant(6)
-            .toString()}
+          {props.userBalance
+            ? (+formatVal(props.userBalance, props.decimals) - +formatVal(amount, props.decimals)).toFixed(2)
+            : 0}
           <>&nbsp;</>
           {props.assetName}
         </Text>

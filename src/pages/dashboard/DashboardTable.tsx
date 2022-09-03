@@ -50,11 +50,14 @@ const DashboardTable: React.FC<IProps> = () => {
 
   useMemo(() => {
     const poolsData = tokenStore.poolDataTokens;
+    console.log(poolsData, 'poolsData');
+    console.log(tokenStore.poolDataTokensWithStats, 'tokenStore.poolDataTokensWithStats');
 
     if (poolsData.every((item) => +tokenStore.poolDataTokensWithStats[item.assetId].selfBorrow === 0))
-      showSupplyTable(false);
-    if (poolsData.every((item) => +tokenStore.poolDataTokensWithStats[item.assetId].selfSupply === 0))
       showBorrowTable(false);
+
+    if (poolsData.every((item) => +tokenStore.poolDataTokensWithStats[item.assetId].selfSupply === 0))
+      showSupplyTable(false);
 
     // filtering USER supply/borrow values
     // for showing or hiding supply/borrow TABLES

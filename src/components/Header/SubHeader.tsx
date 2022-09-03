@@ -92,10 +92,10 @@ const Header: React.FC<IProps> = () => {
   const menuItems = [
     { name: 'Main Pool', link: ROUTES.DASHBOARD, poolContract: LENDS_CONTRACTS.mainPool },
     {
-      name: 'Waves Pool',
-      link: `/dashboard/pool/${LENDS_CONTRACTS.wavesPool}`,
+      name: 'PUZZLE Pool',
+      link: `/dashboard/pool/${LENDS_CONTRACTS.puzzlePool}`,
       poolId,
-      poolContract: LENDS_CONTRACTS.wavesPool,
+      poolContract: LENDS_CONTRACTS.puzzlePool,
     },
   ];
   return (

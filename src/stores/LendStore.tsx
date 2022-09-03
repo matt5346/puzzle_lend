@@ -1,7 +1,7 @@
 /* eslint-disable no-return-assign */
 import RootStore from '@src/stores/RootStore';
 import { makeAutoObservable, reaction, action } from 'mobx';
-import { LENDS_CONTRACTS, TTokenStatistics, createITokenStat } from '@src/common/constants';
+import { LENDS_CONTRACTS, TTokenStatistics, createITokenStat, poolsTitles } from '@src/common/constants';
 
 export interface ISerializedLendStore {
   watchList: string[];
@@ -13,6 +13,7 @@ export default class LendStore {
   constructor(rootStore: RootStore, initState?: ISerializedLendStore) {
     this.rootStore = rootStore;
     makeAutoObservable(this);
+    this.setActivePoolOnLoad();
     this.watchList = initState?.watchList ?? [];
   }
 
@@ -26,7 +27,7 @@ export default class LendStore {
 
   dashboardModalStep = 0;
 
-  activePoolContract = LENDS_CONTRACTS.wavesPool;
+  activePoolContract = '';
 
   get activePoolName(): string {
     let poolName: any =
@@ -38,6 +39,14 @@ export default class LendStore {
     if (poolName && poolName.length) poolName = poolName[0];
 
     return poolName;
+  }
+
+  get activePoolTitle(): string {
+    const object = Object.entries(poolsTitles).filter(([key, value]) => {
+      return key === this.activePoolName ? value : false;
+    })[0];
+
+    return object ? object[1] : '';
   }
 
   choosenToken: TTokenStatistics = createITokenStat();
@@ -60,6 +69,17 @@ export default class LendStore {
 
   @action.bound setActivePool = (pool: string) => {
     this.activePoolContract = pool;
+  };
+
+  // todo: remake on more optimal way for retrieving id on LOAD
+  @action.bound setActivePoolOnLoad = () => {
+    const url = window.location.toString();
+    const params = url?.split('/');
+    let poolId = '';
+
+    if (params[params.length - 2] === 'pool') poolId = params[params.length - 1];
+    console.log(poolId, 'poolId');
+    this.activePoolContract = poolId || LENDS_CONTRACTS.mainPool;
   };
 
   @action.bound setDashboardModalOpened = (state: boolean, id: string, step: number) => {

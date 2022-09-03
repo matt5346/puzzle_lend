@@ -13,7 +13,6 @@ import { SizedBox } from '@src/UIKit/SizedBox';
 import { LOGIN_TYPE } from '@src/stores/AccountStore';
 import UserInfo from '@src/pages/dashboard/UserInfo';
 import LoginSideView from '@src/pages/dashboard/LoginSideView';
-import { Route, Routes, Navigate, useParams } from 'react-router-dom';
 
 // images
 import DashOne from '@src/common/assets/dashboard/dash1.png';
@@ -113,7 +112,8 @@ const Dashboard: React.FC = () => {
     <DashboardVMProvider>
       <Container>
         <TitleH>
-          Earn interest, borrow assets. Total liquidity: <b>&nbsp;$ {currentPoolData?.poolTotal.toFixed(2)}</b>
+          {lendStore && lendStore.activePoolTitle ? lendStore.activePoolTitle : ''} Total liquidity:{' '}
+          <b>&nbsp;$ {currentPoolData?.poolTotal.toFixed(2)}</b>
         </TitleH>
 
         <SubTitleWrap>

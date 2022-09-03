@@ -36,11 +36,20 @@ export default class TokenStore {
 
   userCollateral = 0;
 
-  private setPoolData = (poolStatsArr: PoolDataType) => {
-    const poolIndex = this.poolStatsArr.indexOf(poolStatsArr);
+  private setPoolData = (poolStats: PoolDataType) => {
+    console.log(poolStats, 'poolStats 1');
+    const getPool = this.poolStatsArr.find((item) => item.contractId === poolStats.contractId);
 
-    if (poolIndex >= 0) this.poolStatsArr.splice(poolIndex, 1);
-    else this.poolStatsArr.push(poolStatsArr);
+    if (getPool) {
+      this.poolStatsArr.forEach((item, key) => {
+        item.contractId === poolStats.contractId ? Object.assign(this.poolStatsArr[key], poolStats) : null;
+      });
+    }
+
+    if (!getPool) {
+      this.poolStatsArr.push(poolStats);
+    }
+    console.log(this.poolStatsArr, 'this.poolStatsArr2');
   };
 
   private setInitialized = (v: boolean) => (this.initialized = v);
@@ -49,13 +58,12 @@ export default class TokenStore {
 
   private setUserHealth = (v: number) => {
     if (v > 100) {
-      this.userHealth = 100;
-    }
-    if (v < 0) {
-      this.userHealth = 0;
+      return 100;
     }
 
-    this.userHealth = +v.toFixed(2);
+    if (v < 0) {
+      return 0;
+    }
 
     return +v.toFixed();
   };
@@ -164,15 +172,16 @@ export default class TokenStore {
   // loading all data about tokens, their apy/apr, supply/borrow and evth
   public syncTokenStatistics = async (contractId?: string) => {
     const { accountStore, lendStore } = this.rootStore;
-    const contractPoolId = lendStore.poolNameById(contractId) || lendStore.activePoolContract;
+    const contractPoolId = contractId || lendStore.activePoolContract;
+    const contractPoolName = lendStore.poolNameById(contractPoolId);
     console.log(
       lendStore.poolNameById(contractId || lendStore.activePoolContract),
       'endStore.poolNameById(contractId)'
     );
-    const assets = TOKENS_LIST(contractPoolId).map(({ assetId }) => assetId);
+    const assets = TOKENS_LIST(contractPoolName).map(({ assetId }) => assetId);
     console.log(assets, 'ASSETS');
-    console.log(contractId, 'lendStore.activePoolContract 2');
-    const stats = await wavesCapService.getAssetsStats(assets, accountStore.address!, contractId).catch((e) => {
+    console.log(contractPoolId, 'lendStore.activePoolContract 2');
+    const stats = await wavesCapService.getAssetsStats(assets, accountStore.address!, contractPoolId).catch((e) => {
       // notifi\cationStore.notify(e.message ?? e.toString(), {
       //   type: 'error',
       // });

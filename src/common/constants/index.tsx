@@ -6,8 +6,13 @@ import tokensWavesList from '@src/common/constants/tokens_wavesPool.json';
 import BN from '@src/common/utils/BN';
 
 const tokensList = {
-  mainPool: tokensPuzzleList,
-  wavesPool: tokensWavesList,
+  mainPool: tokensWavesList,
+  puzzlePool: tokensPuzzleList,
+};
+
+export const poolsTitles = {
+  mainPool: 'Earn interest, borrow assets.',
+  puzzlePool: 'PUZZLE Pool.',
 };
 
 export type PoolDataType = {
@@ -143,8 +148,8 @@ export const CONTRACT_ADDRESSES = {
 };
 
 export const LENDS_CONTRACTS = {
-  mainPool: '3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT',
-  wavesPool: '3P6dkRGSqgsNpQFbSYn9m8n4Dd8KRaj5TUU',
+  mainPool: '3P6dkRGSqgsNpQFbSYn9m8n4Dd8KRaj5TUU',
+  puzzlePool: '3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT',
 };
 
 export const ROUTES = {

@@ -105,6 +105,8 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
         <Column crossAxisSize="max">
           <Text textAlign="right">$ {Number(dailyIncome).toFixed(8)}</Text>
         </Column>
+      ) : selfSupply && +selfSupply > 0 ? (
+        <Text textAlign="right">0</Text>
       ) : null}
 
       {totalBorrow != null && rate ? (

@@ -31,6 +31,8 @@ const wavesCapService = {
           expr: `getUserCollateral(false, "${userId}", true)`,
         },
       });
+      console.log(response, 'response');
+      console.log(contractAddress, 'getUserExtraStats');
 
       // eslint-disable-next-line no-underscore-dangle
       userCollateral = response?.data?.result?.value?._2?.value;
@@ -211,8 +213,15 @@ const wavesCapService = {
         const UR = itemData.total_borrow / itemData.total_supply;
         console.log(itemData.setup_interest, 'itemData.setup_interest');
         const supplyInterest = +itemData.setup_interest * UR;
+        console.log(supplyInterest, UR, '----supplyInterest, UR');
         const supplyAPY = ((1 + supplyInterest) ** 365 - 1) * 100;
         const dailyIncome = supplyInterest * (itemData.self_supply / 10 ** itemData.precision);
+        console.log(
+          dailyIncome,
+          itemData.self_supply,
+          itemData.precision,
+          '----dailyIncome itemData.self_supply, itemData.precision'
+        );
 
         itemData.self_daily_income = dailyIncome || null;
         itemData.setup_supply_apy = supplyAPY || null;
