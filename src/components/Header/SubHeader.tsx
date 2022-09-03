@@ -1,13 +1,12 @@
 import styled from '@emotion/styled';
 import React, { useState } from 'react';
-import puzzleLogo from '@src/common/assets/logo.svg';
+import { useStores } from '@src/stores';
 import { Column, Row } from '@src/common/styles/Flex';
-import { SizedBox } from '@src/UIKit/SizedBox';
-import Wallet from '@components/Wallet/Wallet';
-import { ROUTES } from '@src/common/constants';
-import { useLocation, Link } from 'react-router-dom';
-import { Anchor } from '@src/UIKit/Anchor';
+import { Text } from '@src/UIKit/Text';
+import { ROUTES, LENDS_CONTRACTS } from '@src/common/constants';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
+import TokenStore from '@src/stores/TokenStore';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IProps {}
@@ -83,23 +82,40 @@ const Desktop = styled.div`
 
 const isRoutesEquals = (a: string, b: string) => a.replaceAll('/', '') === b.replaceAll('/', '');
 
-const poolId = 'TURBO_PUZZLE_Pool';
+const poolId = 'waves_pool';
 
 const Header: React.FC<IProps> = () => {
+  const navigate = useNavigate();
   const location = useLocation();
+  const { lendStore, tokenStore } = useStores();
 
   const menuItems = [
-    { name: 'Main Pool', link: ROUTES.DASHBOARD },
-    // { name: 'TURBO PUZZLE Pool', link: `/dashboard/pool/${poolId}`, poolId },
+    { name: 'Main Pool', link: ROUTES.DASHBOARD, poolContract: LENDS_CONTRACTS.mainPool },
+    {
+      name: 'Waves Pool',
+      link: `/dashboard/pool/${LENDS_CONTRACTS.wavesPool}`,
+      poolId,
+      poolContract: LENDS_CONTRACTS.wavesPool,
+    },
   ];
   return (
     <Root>
       <TopMenu>
         <Row alignItems="center" crossAxisSize="max">
           <Desktop>
-            {menuItems.map(({ name, link }) => (
+            {menuItems.map(({ name, link, poolContract }) => (
               <MenuItem key={name} selected={isRoutesEquals(link, location.pathname)}>
-                <Link to={link}>{name}</Link>
+                <Text
+                  style={{
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => {
+                    lendStore.setActivePool(poolContract);
+                    tokenStore.syncTokenStatistics(lendStore.activePoolName);
+                    navigate(link, { replace: true });
+                  }}>
+                  {name}
+                </Text>
               </MenuItem>
             ))}
           </Desktop>

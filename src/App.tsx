@@ -33,13 +33,17 @@ const Root = styled(Column)`
 
 const App: React.FC = () => {
   const { accountStore } = useStores();
+
   return (
     <Root>
       <Header />
       <Routes>
         {/* Base */}
         <Route path={ROUTES.HOME} element={<Navigate to="/dashboard" />} />
+        {/* for main pool with default route */}
         <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
+        {/* for other pools with ids routes */}
+        <Route path={ROUTES.DASHBOARD_POOl} element={<Dashboard />} />
         <Route path={ROUTES.DASHBOARD_TOKEN} element={<DashboardToken />} />
       </Routes>
       <WalletModal onClose={() => accountStore.setWalletModalOpened(false)} visible={accountStore.walletModalOpened} />

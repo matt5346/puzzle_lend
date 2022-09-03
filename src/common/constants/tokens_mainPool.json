@@ -21,16 +21,5 @@
       "defi",
       "global"
     ]
-  },
-  {
-    "assetId": "Ajso6nTTjptu2UHLx6hfSXVtHFtRBJCkKYd5SAyj7zf5",
-    "name": "Pluto",
-    "symbol": "PLUTO",
-    "decimals": 8,
-    "startPrice": 1,
-    "category": [
-      "global",
-      "defi"
-    ]
   }
 ]

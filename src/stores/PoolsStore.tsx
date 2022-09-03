@@ -133,7 +133,7 @@ export default class PoolsStore {
       return pool.currentPrice(assetId, usdn, coefficient);
     }
     if (pool.tokens.some(({ assetId }) => assetId === puzzle)) {
-      const puzzleRate = tokenStore.statisticsByAssetId[puzzle]?.currentPrice;
+      const puzzleRate = tokenStore.poolDataTokensWithStats[puzzle]?.currentPrice;
       const priceInPuzzle = pool.currentPrice(assetId, puzzle, coefficient);
       return priceInPuzzle != null && puzzleRate != null ? priceInPuzzle.times(puzzleRate) : null;
     }
@@ -210,7 +210,7 @@ export default class PoolsStore {
     });
 
   private syncPuzzleRate = () =>
-    wavesCapService.getAssetRate(TOKENS_BY_SYMBOL.PUZZLE.assetId).then((rate) => {
+    wavesCapService.getAssetRate(TOKENS_BY_SYMBOL?.PUZZLE?.assetId).then((rate) => {
       rate != null && this.setPuzzleRate(rate);
       this.pools.forEach((pool) => pool.setPuzzleRate(rate ?? BN.ZERO));
     });

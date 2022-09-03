@@ -9,7 +9,7 @@ import { LOGIN_TYPE } from '@src/stores/AccountStore';
 import centerEllipsis from '@src/common/utils/centerEllipsis';
 import BN from '@src/common/utils/BN';
 import wavesCapService from '@src/common/services/wavesCapService';
-import { CONTRACT_ADDRESSES, TOKENS_LIST } from '@src/common/constants';
+import { TOKENS_LIST } from '@src/common/constants';
 
 const ctx = React.createContext<DashboardWalletVM | null>(null);
 
@@ -65,13 +65,13 @@ class DashboardWalletVM {
     lendStore.setDashboardModalOpened(false, '', lendStore.dashboardModalStep);
   };
 
-  submitBorrow = async (amount: any, assetId: any) => {
+  submitBorrow = async (amount: any, assetId: any, contractAddress: string) => {
     const { accountStore, lendStore, tokenStore } = this.rootStore;
     console.log(amount.toString(), assetId, 'token');
 
     await accountStore
       .invoke({
-        dApp: CONTRACT_ADDRESSES.ltv1,
+        dApp: contractAddress,
         payment: [],
         call: {
           function: 'borrow',
@@ -89,18 +89,18 @@ class DashboardWalletVM {
       })
       .then(() => {
         accountStore.updateAccountAssets(true);
-        tokenStore.syncTokenStatistics();
+        tokenStore.syncTokenStatistics(lendStore.activePoolName);
         lendStore.setDashboardModalOpened(false, '', 0);
       });
   };
 
-  submitSupply = async (amount: any, assetId: any) => {
+  submitSupply = async (amount: any, assetId: any, contractAddress: string) => {
     const { accountStore, lendStore, tokenStore } = this.rootStore;
-    console.log(amount.toString(), assetId, 'token');
+    console.log(amount.toString(), contractAddress, assetId, 'token');
 
     await accountStore
       .invoke({
-        dApp: CONTRACT_ADDRESSES.ltv1,
+        dApp: contractAddress,
         payment: [
           {
             assetId,
@@ -120,18 +120,18 @@ class DashboardWalletVM {
       })
       .then(() => {
         accountStore.updateAccountAssets(true);
-        tokenStore.syncTokenStatistics();
+        tokenStore.syncTokenStatistics(lendStore.activePoolName);
         lendStore.setDashboardModalOpened(false, '', 0);
       });
   };
 
-  submitWithdraw = async (amount: any, assetId: any) => {
+  submitWithdraw = async (amount: any, assetId: any, contractAddress: string) => {
     const { accountStore, lendStore, tokenStore } = this.rootStore;
     console.log(amount.toString(), assetId, 'token');
 
     await accountStore
       .invoke({
-        dApp: CONTRACT_ADDRESSES.ltv1,
+        dApp: contractAddress,
         payment: [],
         call: {
           function: 'withdraw',
@@ -149,18 +149,18 @@ class DashboardWalletVM {
       })
       .then(() => {
         accountStore.updateAccountAssets(true);
-        tokenStore.syncTokenStatistics();
+        tokenStore.syncTokenStatistics(lendStore.activePoolName);
         lendStore.setDashboardModalOpened(false, '', 0);
       });
   };
 
-  submitRepay = async (amount: any, assetId: any) => {
+  submitRepay = async (amount: any, assetId: any, contractAddress: string) => {
     const { accountStore, lendStore, tokenStore } = this.rootStore;
     console.log(amount.toString(), assetId, 'token');
 
     await accountStore
       .invoke({
-        dApp: CONTRACT_ADDRESSES.ltv1,
+        dApp: contractAddress,
         payment: [
           {
             assetId,
@@ -180,7 +180,7 @@ class DashboardWalletVM {
       })
       .then(() => {
         accountStore.updateAccountAssets(true);
-        tokenStore.syncTokenStatistics();
+        tokenStore.syncTokenStatistics(lendStore.activePoolName);
         lendStore.setDashboardModalOpened(false, '', 0);
       });
   };
@@ -205,11 +205,12 @@ class DashboardWalletVM {
   }
 
   get balances() {
-    const { accountStore } = this.rootStore;
-    return TOKENS_LIST.map((t) => {
-      const balance = accountStore.findBalanceByAssetId(t.assetId);
-      return balance ?? new Balance(t);
-    })
+    const { accountStore, lendStore } = this.rootStore;
+    return TOKENS_LIST(lendStore.activePoolName)
+      .map((t) => {
+        const balance = accountStore.findBalanceByAssetId(t.assetId);
+        return balance ?? new Balance(t);
+      })
       .filter(({ balance }) => balance && !balance.eq(0))
       .sort((a, b) => {
         if (a.usdnEquivalent == null && b.usdnEquivalent == null) return 0;

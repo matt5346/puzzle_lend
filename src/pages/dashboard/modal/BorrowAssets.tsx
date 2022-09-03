@@ -3,6 +3,7 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState, useEffect, useCallback } from 'react';
+import { useStores } from '@src/stores';
 import { useNavigate } from 'react-router-dom';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import { observer } from 'mobx-react-lite';
@@ -39,7 +40,7 @@ interface IProps {
   setAmount?: (amount: BN) => void;
   onMaxClick?: (amount?: BN) => void;
   onClose?: () => void;
-  onSubmit?: (amount: BN, assetId: string) => void;
+  onSubmit?: (amount: BN, assetId: string, contractAddress: string) => void;
   onChange: (agreement: boolean) => void;
   usdnEquivalent?: string;
   error?: boolean;
@@ -103,18 +104,34 @@ const BorrowAssets: React.FC<IProps> = (props) => {
   const navigate = useNavigate();
   const [focused, setFocused] = useState(false);
   const [amount, setAmount] = useState<BN>(props.amount);
+  const { lendStore } = useStores();
 
   const formatVal = (val: BN, decimal: number) => {
     return BN.formatUnits(val, decimal).toSignificant(6).toString();
   };
 
   const userMaximumToBorrowBN = (userColatteral: number, rate: BN) => {
-    const val = (userColatteral / 10 ** 6 / +rate.toFormat(4)) * 10 ** props.decimals;
-    return BN.formatUnits(val, 0);
+    const maximum = userColatteral / 10 ** 6 / +rate.toFormat(4);
+    const totalReserves = +formatVal(props.totalSupply, props.decimals) - +formatVal(props.totalBorrow, props.decimals);
+
+    // cause if market liquidity lower, asset cant provide requested amount of money to user
+    if (totalReserves < maximum) {
+      return BN.formatUnits(totalReserves * 10 ** props.decimals, 0);
+    }
+
+    return BN.formatUnits(maximum * 10 ** props.decimals, 0);
   };
 
   const userMaximumToBorrow = (userColatteral: number, rate: BN) => {
-    return (userColatteral / 10 ** 6 / +rate.toFormat(4)).toFixed(4);
+    const maximum = userColatteral / 10 ** 6 / +rate.toFormat(4);
+    const totalReserves = +formatVal(props.totalSupply, props.decimals) - +formatVal(props.totalBorrow, props.decimals);
+
+    // cause if market liquidity lower, asset cant provide requested amount of money to user
+    if (totalReserves < maximum) {
+      return (+totalReserves - +formatVal(amount, props.decimals)).toFixed(2);
+    }
+
+    return (maximum - +formatVal(amount, props.decimals)).toFixed(4);
   };
 
   useEffect(() => {
@@ -241,7 +258,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           Borrowed
         </Text>
         <Text size="medium" fitContent>
-          {formatVal(props.selfBorrow, props.decimals)}
+          {props.selfBorrow ? formatVal(props.selfBorrow, props.decimals) : 0}
         </Text>
       </Row>
       <SizedBox height={12} />
@@ -264,9 +281,9 @@ const BorrowAssets: React.FC<IProps> = (props) => {
       <SizedBox height={24} />
       <Footer>
         <Button
-          disabled={!props.isAgree}
+          disabled={!props.isAgree || +amount === 0}
           fixed
-          onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId)}
+          onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId, lendStore.activePoolContract)}
           size="large">
           Borrow
         </Button>

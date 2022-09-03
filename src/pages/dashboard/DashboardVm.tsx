@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { useVM } from '@src/hooks/useVM';
 import { makeAutoObservable } from 'mobx';
 import { RootStore, useStores } from '@src/stores';
-import { TOKENS_LIST } from '@src/common/constants';
+import { IToken, TOKENS_LIST } from '@src/common/constants';
 
 const ctx = React.createContext<DashboardVM | null>(null);
 
@@ -30,25 +30,6 @@ class DashboardVM {
   tokenUserFilter = 0;
 
   setUserFilter = (v: number) => (this.tokenUserFilter = v);
-
-  get assetsWithStats() {
-    const { statisticsByAssetId } = this.rootStore.tokenStore;
-    return TOKENS_LIST.filter(({ assetId }) => Object.keys(statisticsByAssetId).includes(assetId));
-  }
-
-  get top3Gainers() {
-    return this.rootStore.tokenStore.statistics
-      .slice()
-      .sort((a, b) => (a.change24H.gt(b.change24H) ? -1 : 1))
-      .slice(0, 3);
-  }
-
-  get top3Losers() {
-    return this.rootStore.tokenStore.statistics
-      .slice()
-      .sort((a, b) => (a.change24H.gt(b.change24H) ? 1 : -1))
-      .slice(0, 3);
-  }
 
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;

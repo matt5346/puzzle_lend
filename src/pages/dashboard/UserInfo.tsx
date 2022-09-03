@@ -31,9 +31,9 @@ const HealthWrap = styled.div`
 
 const UserInfo: React.FC<IProps> = () => {
   const vm = useDashboardVM();
-  console.log(vm, 'VM-----');
-  const { tokenStore } = vm.rootStore;
-  console.log(tokenStore, 'tokenStore-----');
+  const { tokenStore, lendStore } = vm.rootStore;
+  const currentPoolData = tokenStore.poolStatsByContractId[lendStore.activePoolContract];
+  console.log(currentPoolData, 'currentPoolData');
 
   return (
     <Card
@@ -51,7 +51,7 @@ const UserInfo: React.FC<IProps> = () => {
         <PercentageCircleBar
           size={250}
           strokeWidth={10}
-          percentage={tokenStore && tokenStore.userHealth ? tokenStore.userHealth : 100}
+          percentage={currentPoolData && currentPoolData.userHealth ? currentPoolData.userHealth : 100}
           color="purple"
         />
       </HealthWrap>
@@ -60,8 +60,8 @@ const UserInfo: React.FC<IProps> = () => {
         <Text fitContent margin="0 0 10px 0" type="secondary" size="medium-2">
           Supply balance
         </Text>
-        {tokenStore.supplyUserTotal != null ? (
-          <Text fitContent>$ {tokenStore.supplyUserTotal.toFixed(4)}</Text>
+        {currentPoolData && currentPoolData.supplyUserTotal != null ? (
+          <Text fitContent>$ {currentPoolData.supplyUserTotal.toFixed(4)}</Text>
         ) : (
           <Text>-</Text>
         )}
@@ -70,8 +70,8 @@ const UserInfo: React.FC<IProps> = () => {
         <Text fitContent margin="0 0 10px 0" type="secondary" size="medium-2">
           Borrow balance
         </Text>
-        {tokenStore.borrowUserTotal != null ? (
-          <Text fitContent>$ {tokenStore.borrowUserTotal.toFixed(4)}</Text>
+        {currentPoolData && currentPoolData.borrowUserTotal != null ? (
+          <Text fitContent>$ {currentPoolData.borrowUserTotal.toFixed(4)}</Text>
         ) : (
           <Text>-</Text>
         )}
@@ -81,9 +81,9 @@ const UserInfo: React.FC<IProps> = () => {
         <Text fitContent margin="10px 0" type="secondary" size="medium-2">
           NET APY
         </Text>
-        {tokenStore.netAPY ? (
+        {currentPoolData && currentPoolData.netAPY ? (
           <Text fitContent margin="10px 0">
-            {tokenStore.netAPY.toFixed(2)}%
+            {currentPoolData.netAPY.toFixed(2)}%
           </Text>
         ) : (
           <Text fitContent margin="10px 0">

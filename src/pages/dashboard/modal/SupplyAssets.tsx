@@ -3,6 +3,7 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState, useEffect, useCallback } from 'react';
+import { useStores } from '@src/stores';
 import { useNavigate } from 'react-router-dom';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import { observer } from 'mobx-react-lite';
@@ -36,7 +37,7 @@ interface IProps {
   setAmount?: (amount: BN) => void;
   onMaxClick?: () => void;
   onClose?: () => void;
-  onSubmit?: (amount: BN, assetId: string) => void;
+  onSubmit?: (amount: BN, assetId: string, contractAddress: string) => void;
   usdnEquivalent?: string;
   error?: boolean;
 }
@@ -99,6 +100,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
   const navigate = useNavigate();
   const [focused, setFocused] = useState(false);
   const [amount, setAmount] = useState<BN>(props.amount);
+  const { lendStore } = useStores();
 
   const formatVal = (val: BN, decimal: number) => {
     return BN.formatUnits(val, decimal).toSignificant(6).toFormat(2);
@@ -241,9 +243,9 @@ const SupplyAssets: React.FC<IProps> = (props) => {
       <SizedBox height={24} />
       <Footer>
         <Button
-          disabled={!props.isAgree}
+          disabled={!props.isAgree || +amount === 0}
           fixed
-          onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId)}
+          onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId, lendStore.activePoolContract)}
           size="large">
           Supply
         </Button>

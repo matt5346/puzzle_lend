@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import React, { useMemo, useEffect } from 'react';
 import { useStores } from '@src/stores';
 import styled from '@emotion/styled';
 import { Row, Column } from '@src/common/styles/Flex';
@@ -9,10 +10,10 @@ import { Text } from '@src/UIKit/Text';
 import { Dropdown } from '@src/UIKit/Dropdown';
 import { observer } from 'mobx-react-lite';
 import { SizedBox } from '@src/UIKit/SizedBox';
-import { LoginTypesRender } from '@src/components/Wallet/LoginModal';
 import { LOGIN_TYPE } from '@src/stores/AccountStore';
 import UserInfo from '@src/pages/dashboard/UserInfo';
 import LoginSideView from '@src/pages/dashboard/LoginSideView';
+import { Route, Routes, Navigate, useParams } from 'react-router-dom';
 
 // images
 import DashOne from '@src/common/assets/dashboard/dash1.png';
@@ -97,20 +98,22 @@ const FAQ = styled.div`
 `;
 
 const Dashboard: React.FC = () => {
-  const { accountStore, tokenStore } = useStores();
+  const { accountStore, tokenStore, lendStore } = useStores();
   const { address } = accountStore;
   const isKeeperDisabled = !accountStore.isWavesKeeperInstalled;
 
   const handleLogin = (loginType: LOGIN_TYPE) => {
-    console.log(loginType, 'LOGIN');
     accountStore.login(loginType);
   };
+
+  const currentPoolData = tokenStore.poolStatsByContractId[lendStore.activePoolContract];
+  console.log(currentPoolData, 'currentPoolData');
 
   return (
     <DashboardVMProvider>
       <Container>
         <TitleH>
-          Earn interest, borrow assets. Total liquidity: <b>&nbsp;$ {tokenStore.poolTotal.toFixed(2)}</b>
+          Earn interest, borrow assets. Total liquidity: <b>&nbsp;$ {currentPoolData?.poolTotal.toFixed(2)}</b>
         </TitleH>
 
         <SubTitleWrap>

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable array-callback-return */
 import React, { useMemo, useState } from 'react';
@@ -50,12 +49,18 @@ const DashboardTable: React.FC<IProps> = () => {
   };
 
   useMemo(() => {
-    const data = vm.assetsWithStats;
+    const poolsData = tokenStore.poolDataTokens;
+
+    if (poolsData.every((item) => +tokenStore.poolDataTokensWithStats[item.assetId].selfBorrow === 0))
+      showSupplyTable(false);
+    if (poolsData.every((item) => +tokenStore.poolDataTokensWithStats[item.assetId].selfSupply === 0))
+      showBorrowTable(false);
 
     // filtering USER supply/borrow values
     // for showing or hiding supply/borrow TABLES
-    data.forEach((t) => {
-      const stats = tokenStore.statisticsByAssetId[t.assetId];
+    poolsData.forEach((t) => {
+      const stats = tokenStore.poolDataTokensWithStats[t.assetId];
+      console.log(stats, 'STATS');
 
       if (showBorrow === false && Number(stats.selfBorrow) > 0) {
         showBorrowTable(true);
@@ -65,16 +70,10 @@ const DashboardTable: React.FC<IProps> = () => {
         showSupplyTable(true);
       }
     });
+    console.log(poolsData, '---FILTERED');
 
-    setFilteredTokens(data);
-  }, [
-    accountStore.assetBalances,
-    tokenStore.statisticsByAssetId,
-    vm.assetsWithStats,
-    vm.tokenCategoryFilter,
-    vm.tokenNameFilter,
-    vm.tokenUserFilter,
-  ]);
+    setFilteredTokens(poolsData);
+  }, [showBorrow, tokenStore.poolDataTokensWithStats, tokenStore.poolDataTokens]);
 
   return (
     <Root>

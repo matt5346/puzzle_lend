@@ -36,7 +36,7 @@ const TableTitle: React.FC<{
   </Row>
 );
 
-const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClick }) => {
+const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClick }) => {
   const [sort, setSort] = useState<'borrowapr' | 'repay'>('repay');
   const [sortMode, setSortMode] = useState<'descending' | 'ascending'>('descending');
   const { tokenStore } = useStores();
@@ -66,10 +66,10 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
           </TableTitle>
         </div>
         {filteredTokens.map((t) => {
-          const stats = tokenStore.statisticsByAssetId[t.assetId];
+          const stats = tokenStore.poolDataTokensWithStats[t.assetId];
+          console.log(+stats.selfBorrow, '-------STATS');
 
           if (Number(stats.selfBorrow) > 0) {
-            console.log(stats, 'STATS');
             return (
               <DesktopTokenTableRow
                 token={t}
@@ -89,4 +89,4 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
   );
 };
 
-export default observer(AllAssetsTable);
+export default observer(MyBorrowTable);

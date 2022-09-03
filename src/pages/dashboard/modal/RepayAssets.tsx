@@ -4,13 +4,13 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useStores } from '@src/stores';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import { observer } from 'mobx-react-lite';
 import styled from '@emotion/styled';
 import { Text } from '@src/UIKit/Text';
 import { Button } from '@src/UIKit/Button';
 import { MaxButton } from '@src/UIKit/MaxButton';
-import { useStores } from '@src/stores';
 import { BigNumberInput } from '@src/UIKit/BigNumberInput';
 import { AmountInput } from '@src/UIKit/AmountInput';
 import { Row, Column } from '@src/common/styles/Flex';
@@ -35,7 +35,7 @@ interface IProps {
   setAmount?: (amount: BN) => void;
   onMaxClick?: (amount?: BN) => void;
   onClose?: () => void;
-  onSubmit?: (amount: BN, assetId: string) => void;
+  onSubmit?: (amount: BN, assetId: string, contractAddress: string) => void;
   usdnEquivalent?: string;
   error?: boolean;
 }
@@ -98,6 +98,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
   const navigate = useNavigate();
   const [focused, setFocused] = useState(false);
   const [amount, setAmount] = useState<BN>(props.amount);
+  const { lendStore } = useStores();
 
   useEffect(() => {
     props.amount && setAmount(props.amount);
@@ -223,7 +224,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           Borrow APR
         </Text>
         <Text size="medium" fitContent>
-          {props.setupBorrowAPR}%
+          {props.setupBorrowAPR ? (+props.setupBorrowAPR).toFixed(2) : 0}%
         </Text>
       </Row>
       <SizedBox height={12} />
@@ -232,7 +233,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           Borrowed
         </Text>
         <Text size="medium" fitContent>
-          {formatVal(props.selfBorrow, props.decimals)}
+          {props.selfBorrow ? formatVal(props.selfBorrow, props.decimals) : 0}
         </Text>
       </Row>
       <SizedBox height={12} />
@@ -249,7 +250,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
         <Button
           disabled={+amount === 0}
           fixed
-          onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId)}
+          onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId, lendStore.activePoolContract)}
           size="large">
           Repay
         </Button>

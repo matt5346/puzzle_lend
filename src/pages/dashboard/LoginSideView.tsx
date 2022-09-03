@@ -32,11 +32,6 @@ const LoginHeader = styled.div`
 `;
 
 const UserInfo: React.FC<IProps> = ({ handleLogin, isKeeperDisabled }) => {
-  const vm = useDashboardVM();
-  console.log(vm, 'VM-----');
-  const { tokenStore } = vm.rootStore;
-  console.log(tokenStore, 'tokenStore-----');
-
   return (
     <Card
       style={{

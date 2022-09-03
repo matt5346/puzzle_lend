@@ -57,25 +57,26 @@ const DashboardToken: React.FC = () => {
   const [tokenIData, setIToken] = useState<IToken>();
   const [tokenFullData, setFilteredTokens] = useState<TTokenStatistics>();
   const { assetId } = useParams<{ assetId: string }>();
-  const { tokenStore } = useStores();
-  const { statisticsByAssetId } = tokenStore;
+  const { tokenStore, lendStore } = useStores();
+  const { poolDataTokensWithStats } = tokenStore;
 
   const formatVal = (val: BN, decimal: number) => {
     return BN.formatUnits(val, decimal).toSignificant(6).toFormat(5);
   };
 
   useMemo(() => {
-    console.log(statisticsByAssetId, TOKENS_LIST, assetId, 'data----111-');
-    const iData: IToken = TOKENS_LIST.find((item) => item.assetId === assetId) || createIToken();
+    console.log(poolDataTokensWithStats, assetId, 'data----111-');
+    const iData: IToken =
+      TOKENS_LIST(lendStore.activePoolName).find((item) => item.assetId === assetId) || createIToken();
     let data: TTokenStatistics = createITokenStat();
 
-    if (assetId) data = tokenStore.statisticsByAssetId[assetId];
+    if (assetId) data = tokenStore.poolDataTokensWithStats[assetId];
 
     console.log(data, iData, 'data-----');
 
     setFilteredTokens(data);
     setIToken(iData);
-  }, [assetId, tokenStore.statisticsByAssetId, statisticsByAssetId]);
+  }, [assetId, lendStore.activePoolName, tokenStore.poolDataTokensWithStats, poolDataTokensWithStats]);
 
   return (
     <Root>

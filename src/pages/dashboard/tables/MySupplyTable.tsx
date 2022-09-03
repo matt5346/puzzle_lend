@@ -40,12 +40,7 @@ const TableTitle: React.FC<{
   </Row>
 );
 
-const Root = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClick }) => {
+const MySupplyTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClick }) => {
   const [sort, setSort] = useState<'income' | 'supplyapy' | 'supply'>('income');
   const [sortMode, setSortMode] = useState<'descending' | 'ascending'>('descending');
   const { tokenStore } = useStores();
@@ -78,9 +73,10 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
           </TableTitle>
         </div>
         {filteredTokens.map((t) => {
-          const stats = tokenStore.statisticsByAssetId[t.assetId];
+          console.log(filteredTokens, tokenStore.poolDataTokensWithStats, 'filteredTokens SUPPLY');
+          const stats = tokenStore.poolDataTokensWithStats[t.assetId];
+          console.log(stats, 'STATS SUPPLY');
           if (Number(stats.selfSupply) > 0) {
-            console.log(stats, 'STATS');
             return (
               <DesktopTokenTableRow
                 token={t}
@@ -101,4 +97,4 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
   );
 };
 
-export default observer(AllAssetsTable);
+export default observer(MySupplyTable);

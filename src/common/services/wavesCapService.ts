@@ -17,11 +17,11 @@ interface IAssetResponse {
 }
 
 const wavesCapService = {
-  getUserExtraStats: async (userId: string): Promise<any> => {
+  getUserExtraStats: async (userId: string, contractAddress: string): Promise<any> => {
     let userCollateral = 0;
 
     try {
-      const tokensRatesUrl = 'http://nodes.wavesnodes.com/utils/script/evaluate/3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT';
+      const tokensRatesUrl = `http://nodes.wavesnodes.com/utils/script/evaluate/${contractAddress}`;
       const response = await axios(tokensRatesUrl, {
         method: 'POST',
         headers: {
@@ -38,7 +38,7 @@ const wavesCapService = {
       //   total_suppliers: `.*_supplied_${assetId}`,
       // });
 
-      // const urlSupply = `https://nodes.wavesnodes.com/addresses/data/3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT?${stringParams}`;
+      // const urlSupply = `https://nodes.wavesnodes.com/addresses/data/${contractAddress}?${stringParams}`;
       // const responseAssets = await axios.get(urlSupply);
       // console.log(responseAssets, '.*_supplied_USDN');
       // data = responseAssets.data;
@@ -48,10 +48,11 @@ const wavesCapService = {
 
     return userCollateral;
   },
-  getAssetsStats: async (assetsId: string[], address?: string): Promise<IAssetResponse[]> => {
+  getAssetsStats: async (assetsId: string[], address?: string, contractAddress?: string): Promise<IAssetResponse[]> => {
     const params = new URLSearchParams();
+    console.log(contractAddress, 'contractAddress');
 
-    for (let i = 0; i < assetsId.length - 1; i++) {
+    for (let i = 0; i <= assetsId.length - 1; i++) {
       params.append('assetIds[]=', assetsId[i]);
     }
     const url = `https://wavescap.com/api/assets-info.php?${params.toString()}`;
@@ -61,7 +62,8 @@ const wavesCapService = {
     let setupRate: any = {};
 
     try {
-      const tokensRatesUrl = 'http://nodes.wavesnodes.com/utils/script/evaluate/3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT';
+      const tokensRatesUrl = `http://nodes.wavesnodes.com/utils/script/evaluate/${contractAddress}`;
+
       tokensRates = await axios(tokensRatesUrl, {
         method: 'POST',
         headers: {
@@ -76,7 +78,7 @@ const wavesCapService = {
     }
 
     try {
-      const tokensInterestUrl = 'http://nodes.wavesnodes.com/utils/script/evaluate/3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT';
+      const tokensInterestUrl = `http://nodes.wavesnodes.com/utils/script/evaluate/${contractAddress}`;
       setupRate = await axios(tokensInterestUrl, {
         method: 'POST',
         headers: {
@@ -112,7 +114,7 @@ const wavesCapService = {
           address_borrow: `${address}_borrowed_${itemId}`,
         });
 
-        const urlSupply = `https://nodes.wavesnodes.com/addresses/data/3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT?${stringParams}`;
+        const urlSupply = `https://nodes.wavesnodes.com/addresses/data/${contractAddress}?${stringParams}`;
         const responseAssets = await axios.get(urlSupply);
         console.log(responseAssets, 'SUUPLY');
         return { [itemId]: responseAssets.data };

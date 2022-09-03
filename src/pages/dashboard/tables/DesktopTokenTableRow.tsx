@@ -78,7 +78,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
 
       {setupLtv != null ? (
         <Column crossAxisSize="max">
-          <Text textAlign="right">{setupLtv}%</Text>
+          <Text textAlign="right">{(+setupLtv).toFixed(2)}%</Text>
         </Column>
       ) : null}
 

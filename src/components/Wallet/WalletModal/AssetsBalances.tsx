@@ -31,7 +31,7 @@ const AssetsBalances: React.FC<IProps> = () => {
   return (
     <Root>
       {vm.balances.length !== 0 ? (
-        vm.balances.map((b) => {
+        vm.balances.map((b: any) => {
           const rate = poolsStore.usdnRate(b.assetId)?.toFormat(2);
           const rateChange = vm.balanceAssetsStats && vm.balanceAssetsStats[b.assetId];
           return (

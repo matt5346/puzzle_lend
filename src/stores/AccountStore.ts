@@ -9,7 +9,7 @@ import { Signer } from '@waves/signer';
 import { ProviderWeb } from '@waves.exchange/provider-web';
 import { ProviderCloud } from '@waves.exchange/provider-cloud';
 import { ProviderKeeper } from '@waves/provider-keeper';
-import { NODE_URL, TOKENS_LIST } from '@src/common/constants';
+import { NODE_URL, TOKENS_LIST_FULL } from '@src/common/constants';
 import { action, autorun, makeAutoObservable, reaction } from 'mobx';
 import Balance from '@src/common/entities/Balance';
 import { getCurrentBrowser } from '@src/common/utils/getCurrentBrowser';
@@ -227,7 +227,7 @@ class AccountStore {
 
     const { address } = this;
     const data = await nodeService.getAddressBalances(address);
-    const assetBalances = TOKENS_LIST.map((asset) => {
+    const assetBalances = TOKENS_LIST_FULL.map((asset) => {
       const t = data.find(({ assetId }) => asset.assetId === assetId);
       const balance = new BN(t != null ? t.balance : 0);
       const rate = this.rootStore.poolsStore.usdnRate(asset.assetId, 1) ?? BN.ZERO;

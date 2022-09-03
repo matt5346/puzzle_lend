@@ -94,7 +94,7 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
           </Column>
         )}
         {filteredTokens.map((t) => {
-          const stats = tokenStore.statisticsByAssetId[t.assetId];
+          const stats = tokenStore.poolDataTokensWithStats[t.assetId];
           console.log(stats, 'STATS');
           return (
             <DesktopTokenTableRow

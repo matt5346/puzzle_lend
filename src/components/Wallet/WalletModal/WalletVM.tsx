@@ -73,11 +73,12 @@ class WalletVM {
   }
 
   get balances() {
-    const { accountStore } = this.rootStore;
-    return TOKENS_LIST.map((t) => {
-      const balance = accountStore.findBalanceByAssetId(t.assetId);
-      return balance ?? new Balance(t);
-    })
+    const { accountStore, lendStore } = this.rootStore;
+    return TOKENS_LIST(lendStore.activePoolName)
+      .map((t) => {
+        const balance = accountStore.findBalanceByAssetId(t.assetId);
+        return balance ?? new Balance(t);
+      })
       .filter(({ balance }) => balance && !balance.eq(0))
       .sort((a, b) => {
         if (a.usdnEquivalent == null && b.usdnEquivalent == null) return 0;
@@ -93,10 +94,9 @@ class WalletVM {
   }
 
   getAssetsStats = async () => {
-    if (this.balances.length === 0) return;
-    const { statisticsByAssetId } = this.rootStore.tokenStore;
-    const data = TOKENS_LIST.filter(({ assetId }) => Object.keys(statisticsByAssetId).includes(assetId));
-    this.setAssetsStats(data);
+    const { tokenStore } = this.rootStore;
+    const poolsData = tokenStore.poolDataTokens;
+    this.setAssetsStats(poolsData);
   };
 
   getBalanceAssetsStats = async () => {

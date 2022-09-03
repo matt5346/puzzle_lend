@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import { useParams, Link } from 'react-router-dom';
 import { useStores } from '@src/stores';
 import { observer } from 'mobx-react-lite';
-import { TOKENS_LIST, ROUTES, TTokenStatistics, createITokenStat, IToken } from '@src/common/constants';
+import { TTokenStatistics, createITokenStat, IToken } from '@src/common/constants';
 import { Text } from '@src/UIKit/Text';
 import Card from '@src/common/styles/Card';
 import BN from '@src/common/utils/BN';
@@ -42,23 +42,19 @@ const TokenData: React.FC<IProps> = ({
 }) => {
   const [filteredTokens, setFilteredTokens] = useState<TTokenStatistics>();
   const { assetId } = useParams<{ assetId: string }>();
-  console.log(assetId, 'aassetIdsset');
+  console.log(assetId, 'assetId-----');
   const { tokenStore } = useStores();
-  const { statisticsByAssetId } = tokenStore;
-
-  const formatVal = (val: BN, decimal: number) => {
-    return BN.formatUnits(val, decimal).toSignificant(6).toFormat(5);
-  };
+  const { poolDataTokensWithStats } = tokenStore;
 
   useMemo(() => {
-    console.log(Object.keys(statisticsByAssetId), TOKENS_LIST, assetId, 'data----111-');
+    console.log(Object.keys(poolDataTokensWithStats), assetId, 'data----111-');
     let data: TTokenStatistics = createITokenStat();
 
-    if (assetId) data = tokenStore.statisticsByAssetId[assetId];
+    if (assetId) data = tokenStore.poolDataTokensWithStats[assetId];
     console.log(data, 'data-----');
 
     setFilteredTokens(data);
-  }, [assetId, tokenStore.statisticsByAssetId, statisticsByAssetId]);
+  }, [assetId, tokenStore.poolDataTokensWithStats, poolDataTokensWithStats]);
 
   return (
     <Root>

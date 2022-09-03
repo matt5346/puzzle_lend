@@ -1,6 +1,25 @@
+/* eslint-disable prettier/prettier */
 import tokenLogos from '@src/common/constants/tokenLogos';
-import tokensList from '@src/common/constants/tokens.json';
+import tokenFullList from '@src/common/constants/tokens_full.json';
+import tokensPuzzleList from '@src/common/constants/tokens_mainPool.json';
+import tokensWavesList from '@src/common/constants/tokens_wavesPool.json';
 import BN from '@src/common/utils/BN';
+
+const tokensList = {
+  mainPool: tokensPuzzleList,
+  wavesPool: tokensWavesList,
+};
+
+export type PoolDataType = {
+  netAPY: number;
+  userHealth: number;
+  supplyUserTotal: number;
+  borrowUserTotal: number;
+  poolTotal: number;
+  userCollateral: number;
+  contractId: string;
+  tokens: Array<TTokenStatistics>;
+};
 
 export interface ISerializedTokenStore {
   watchList: string[];
@@ -121,7 +140,11 @@ export const CONTRACT_ADDRESSES = {
   nfts: '3PFQjjDMiZKQZdu5JqTHD7HwgSXyp9Rw9By',
   createArtefacts: '3PFkgvC9y6zHy64zEAscKKgaNY3yipiLqbW',
   boost: '3PAeY7RgwuNUZNscGqahqJxFTFDkh7fbNwJ',
-  ltv1: '3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT',
+};
+
+export const LENDS_CONTRACTS = {
+  mainPool: '3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT',
+  wavesPool: '3P6dkRGSqgsNpQFbSYn9m8n4Dd8KRaj5TUU',
 };
 
 export const ROUTES = {
@@ -132,7 +155,25 @@ export const ROUTES = {
   NOT_FOUND: '/404',
 };
 
-export const TOKENS_LIST: Array<IToken> = Object.values(tokensList).map((t) => ({
+// loading tokens depend on poolName, some pools could have 2 tokens, some 20
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export function TOKENS_LIST(poolName: string): IToken[] {
+  const object = Object.entries(tokensList).filter(([key, value]) => {
+    return key === poolName ? value : false
+  })[0]
+
+  if (object && object.length) {
+    return Object.values(object[1]).map((t: any) => ({
+      ...t,
+      logo: tokenLogos[t.symbol],
+    }));
+  }
+
+  return []
+}
+
+export const TOKENS_LIST_FULL: Array<IToken> = Object.values(tokenFullList).map((t) => ({
   ...t,
   logo: tokenLogos[t.symbol],
 }));
@@ -140,8 +181,11 @@ export const TOKENS_LIST: Array<IToken> = Object.values(tokensList).map((t) => (
 export const NODE_URL = 'https://nodes-puzzle.wavesnodes.com';
 export const EXPLORER_URL = 'https://new.wavesexplorer.com';
 
-export const TOKENS_BY_SYMBOL: Record<string, IToken> = TOKENS_LIST.reduce((acc, t) => ({ ...acc, [t.symbol]: t }), {});
-export const TOKENS_BY_ASSET_ID: Record<string, IToken> = TOKENS_LIST.reduce(
+export const TOKENS_BY_SYMBOL: Record<string, IToken> = TOKENS_LIST_FULL.reduce(
+  (acc, t) => ({ ...acc, [t.symbol]: t }),
+  {}
+);
+export const TOKENS_BY_ASSET_ID: Record<string, IToken> = TOKENS_LIST_FULL.reduce(
   (acc, t) => ({ ...acc, [t.assetId]: t }),
   {}
 );

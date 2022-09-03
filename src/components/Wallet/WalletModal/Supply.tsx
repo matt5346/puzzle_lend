@@ -39,7 +39,7 @@ const Supply: React.FC = () => {
           </Column>
         )}
         {vm.assetsStats.map((t) => {
-          const stats = tokenStore.statisticsByAssetId[t.assetId];
+          const stats = tokenStore.poolDataTokensWithStats[t.assetId];
           return (
             <SupplyTokensRow
               token={t}
