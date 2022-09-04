@@ -211,10 +211,10 @@ const SupplyAssets: React.FC<IProps> = (props) => {
           Daily Income
         </Text>
         <Text size="medium" fitContent>
-          {props.supplyInterest ? (+props.supplyInterest * +formatVal(amount, props.decimals)).toFixed(6) : 0}
+          $ {props.supplyInterest ? (+props.supplyInterest * +formatVal(amount, props.decimals)).toFixed(6) : 0}
         </Text>
       </Row>
-      <SizedBox height={24} />
+      <SizedBox height={14} />
       <Row justifyContent="space-between">
         <Text size="medium" type="secondary" fitContent>
           Supply APY
@@ -229,7 +229,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
           Transaction fee
         </Text>
         <Text size="medium" fitContent>
-          0,005 WAVES
+          0.005 WAVES
         </Text>
       </Row>
       <SizedBox height={24} />

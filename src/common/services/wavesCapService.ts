@@ -204,6 +204,7 @@ const wavesCapService = {
         // for simplicity
         // all values gonna be convert to real numbers with decimals only in TEMPLATE
         console.log(poolValue, 'poolValue.setup_interest');
+        const currentPrice = new BN(itemData.data?.['lastPrice_usd-n'] ?? 0);
         if (poolValue) itemData.total_supply = poolValue.value * itemData.supply_rate;
         if (poolBorrowed) itemData.total_borrow = poolBorrowed.value * itemData.borrow_rate;
 
@@ -211,11 +212,12 @@ const wavesCapService = {
         if (selfBorrowed) itemData.self_borrowed = selfBorrowed.value * itemData.borrow_rate;
 
         const UR = itemData.total_borrow / itemData.total_supply;
-        console.log(itemData.setup_interest, 'itemData.setup_interest');
         const supplyInterest = +itemData.setup_interest * UR;
-        console.log(supplyInterest, UR, '----supplyInterest, UR');
         const supplyAPY = ((1 + supplyInterest) ** 365 - 1) * 100;
-        const dailyIncome = supplyInterest * (itemData.self_supply / 10 ** itemData.precision);
+        const dailyIncome = supplyInterest * ((itemData.self_supply / 10 ** itemData.precision) * +currentPrice);
+
+        console.log(itemData.setup_interest, +currentPrice, 'itemData.setup_interest');
+        console.log(supplyInterest, UR, '----supplyInterest, UR');
         console.log(
           dailyIncome,
           itemData.self_supply,

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable array-callback-return */
 import React, { useMemo, useState } from 'react';
@@ -10,10 +9,12 @@ import Card from '@src/common/styles/Card';
 import { Row, Column } from '@src/common/styles/Flex';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import { Text } from '@src/UIKit/Text';
-import { IToken } from '@src/common/constants';
+import { IToken, TTokenStatistics } from '@src/common/constants';
+import DesktopTokenTableRow from '@src/pages/dashboard/tables/DesktopTokenTableRow';
+import BN from '@src/common/utils/BN';
+
 import { ReactComponent as SortDownIcon } from '@src/common/assets/icons/sortDown.svg';
 import { ReactComponent as NotFoundIcon } from '@src/common/assets/icons/notFound.svg';
-import DesktopTokenTableRow from '@src/pages/dashboard/tables/DesktopTokenTableRow';
 
 interface IProps {
   filteredTokens: IToken[];
@@ -46,44 +47,73 @@ const Root = styled.div`
 `;
 
 const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClick }) => {
-  const [sort, setSort] = useState<'supplyapy' | 'supply' | 'borrow' | 'ltv' | 'borrowapr'>('supplyapy');
-  const [sortMode, setSortMode] = useState<'descending' | 'ascending'>('descending');
-  const { tokenStore, accountStore } = useStores();
+  const [sort, setActiveSort] = useState<'totalAssetSupply' | 'setupSupplyAPY' | 'totalAssetBorrow' | 'setupBorrowAPR'>(
+    'totalAssetSupply'
+  );
+  const [sortMode, setActiveSortMode] = useState<'descending' | 'ascending'>('descending');
+  const { tokenStore } = useStores();
+  const [sortedTokens, setSortedTokens] = useState<IToken[]>([]);
 
-  const selectSort = (v: 'supplyapy' | 'supply' | 'borrow' | 'ltv' | 'borrowapr') => {
+  const selectSort = (v: 'totalAssetSupply' | 'setupSupplyAPY' | 'totalAssetBorrow' | 'setupBorrowAPR') => {
     if (sort === v) {
-      setSortMode(sortMode === 'ascending' ? 'descending' : 'ascending');
+      setActiveSortMode(sortMode === 'ascending' ? 'descending' : 'ascending');
     } else {
-      setSort(v);
-      setSortMode('descending');
+      setActiveSort(v);
+      setActiveSortMode('descending');
     }
   };
+
+  useMemo(() => {
+    const data = filteredTokens.sort((a, b) => {
+      const stats1: TTokenStatistics | undefined = tokenStore.poolDataTokensWithStats[a.assetId];
+      const stats2: TTokenStatistics | undefined = tokenStore.poolDataTokensWithStats[b.assetId];
+      let key: keyof TTokenStatistics | undefined;
+      if (sort === 'totalAssetSupply') key = 'totalAssetSupply';
+      if (sort === 'setupSupplyAPY') key = 'setupSupplyAPY';
+      if (sort === 'totalAssetBorrow') key = 'totalAssetBorrow';
+      if (sort === 'setupBorrowAPR') key = 'setupBorrowAPR';
+      if (key == null) return 0;
+
+      if (stats1 == null && stats2 == null) return 0;
+      if (stats1[key] == null && stats2[key] != null) {
+        return sortMode === 'descending' ? 1 : -1;
+      }
+      if (stats1[key] == null && stats2[key] == null) {
+        return sortMode === 'descending' ? -1 : 1;
+      }
+      return sortMode === 'descending'
+        ? BN.formatUnits(stats1[key], 0).lt(stats2[key])
+          ? 1
+          : -1
+        : BN.formatUnits(stats1[key], 0).lt(stats2[key])
+        ? -1
+        : 1;
+    });
+    setSortedTokens(data);
+  }, [filteredTokens, sort, sortMode, tokenStore.poolDataTokensWithStats]);
 
   return (
     <Card style={{ padding: 0, overflow: 'auto' }} justifyContent="center">
       <GridTable
         style={{ width: 'fit-content', minWidth: '100%' }}
-        desktopTemplate="2fr 0.5fr 1fr 1fr 1fr 1fr 2.5fr"
+        desktopTemplate="2fr 1fr 1fr 1fr 1fr 2fr"
         mobileTemplate="2fr 1fr">
         <div className="gridTitle">
           <div>Asset</div>
-          <TableTitle onClick={() => selectSort('ltv')} mode={sortMode} sort={sort === 'ltv'}>
-            LTV
-          </TableTitle>
-          <TableTitle onClick={() => selectSort('supply')} mode={sortMode} sort={sort === 'supply'}>
+          <TableTitle onClick={() => selectSort('totalAssetSupply')} mode={sortMode} sort={sort === 'totalAssetSupply'}>
             Total supply
           </TableTitle>
-          <TableTitle onClick={() => selectSort('supplyapy')} mode={sortMode} sort={sort === 'supplyapy'}>
+          <TableTitle onClick={() => selectSort('setupSupplyAPY')} mode={sortMode} sort={sort === 'setupSupplyAPY'}>
             Supply APY
           </TableTitle>
-          <TableTitle onClick={() => selectSort('borrow')} mode={sortMode} sort={sort === 'borrow'}>
+          <TableTitle onClick={() => selectSort('totalAssetBorrow')} mode={sortMode} sort={sort === 'totalAssetBorrow'}>
             Total borrow
           </TableTitle>
-          <TableTitle onClick={() => selectSort('borrowapr')} mode={sortMode} sort={sort === 'borrowapr'}>
+          <TableTitle onClick={() => selectSort('setupBorrowAPR')} mode={sortMode} sort={sort === 'setupBorrowAPR'}>
             Borrow APR
           </TableTitle>
         </div>
-        {filteredTokens.length === 0 && (
+        {sortedTokens.length === 0 && (
           <Column justifyContent="center" alignItems="center" crossAxisSize="max">
             <SizedBox height={24} />
             <NotFoundIcon style={{ marginBottom: 24 }} />
@@ -93,22 +123,26 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
             <SizedBox height={24} />
           </Column>
         )}
-        {filteredTokens.map((t) => {
+        {sortedTokens.map((t) => {
           const stats = tokenStore.poolDataTokensWithStats[t.assetId];
-          console.log(stats, 'STATS');
-          return (
-            <DesktopTokenTableRow
-              token={t}
-              key={t.assetId}
-              rate={stats.currentPrice}
-              setupBorrowAPR={stats.setupBorrowAPR}
-              setupSupplyAPY={stats.setupSupplyAPY}
-              setupLtv={stats.setupLtv}
-              totalSupply={stats.totalAssetSupply}
-              totalBorrow={stats.totalAssetBorrow}
-              handleSupplyAssetClick={handleSupplyAssetClick}
-            />
-          );
+
+          if (stats) {
+            return (
+              <DesktopTokenTableRow
+                token={t}
+                key={t.assetId}
+                rate={stats.currentPrice}
+                setupBorrowAPR={stats.setupBorrowAPR}
+                setupSupplyAPY={stats.setupSupplyAPY}
+                setupLtv={stats.setupLtv}
+                totalSupply={stats.totalAssetSupply}
+                totalBorrow={stats.totalAssetBorrow}
+                handleSupplyAssetClick={handleSupplyAssetClick}
+              />
+            );
+          }
+
+          return null;
         })}
       </GridTable>
     </Card>

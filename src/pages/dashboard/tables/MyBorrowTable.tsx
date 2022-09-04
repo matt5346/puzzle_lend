@@ -7,9 +7,10 @@ import { useStores } from '@src/stores';
 import GridTable from '@src/common/styles/GridTable';
 import Card from '@src/common/styles/Card';
 import { Row, Column } from '@src/common/styles/Flex';
-import { IToken } from '@src/common/constants';
+import { IToken, TTokenStatistics } from '@src/common/constants';
 import { ReactComponent as SortDownIcon } from '@src/common/assets/icons/sortDown.svg';
 import DesktopTokenTableRow from '@src/pages/dashboard/tables/DesktopTokenTableRow';
+import BN from '@src/common/utils/BN';
 
 interface IProps {
   filteredTokens: IToken[];
@@ -37,11 +38,12 @@ const TableTitle: React.FC<{
 );
 
 const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClick }) => {
-  const [sort, setSort] = useState<'borrowapr' | 'repay'>('repay');
+  const [sort, setSort] = useState<'selfBorrow' | 'setupBorrowAPR'>('selfBorrow');
   const [sortMode, setSortMode] = useState<'descending' | 'ascending'>('descending');
   const { tokenStore } = useStores();
+  const [sortedTokens, setSortedTokens] = useState<IToken[]>([]);
 
-  const selectSort = (v: 'repay' | 'borrowapr') => {
+  const selectSort = (v: 'selfBorrow' | 'setupBorrowAPR') => {
     if (sort === v) {
       setSortMode(sortMode === 'ascending' ? 'descending' : 'ascending');
     } else {
@@ -49,6 +51,33 @@ const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
       setSortMode('descending');
     }
   };
+
+  useMemo(() => {
+    const data = filteredTokens.sort((a, b) => {
+      const stats1: TTokenStatistics | undefined = tokenStore.poolDataTokensWithStats[a.assetId];
+      const stats2: TTokenStatistics | undefined = tokenStore.poolDataTokensWithStats[b.assetId];
+      let key: keyof TTokenStatistics | undefined;
+      if (sort === 'selfBorrow') key = 'selfBorrow';
+      if (sort === 'setupBorrowAPR') key = 'setupBorrowAPR';
+      if (key == null) return 0;
+
+      if (stats1 == null && stats2 == null) return 0;
+      if (stats1[key] == null && stats2[key] != null) {
+        return sortMode === 'descending' ? 1 : -1;
+      }
+      if (stats1[key] == null && stats2[key] == null) {
+        return sortMode === 'descending' ? -1 : 1;
+      }
+      return sortMode === 'descending'
+        ? BN.formatUnits(stats1[key], 0).lt(stats2[key])
+          ? 1
+          : -1
+        : BN.formatUnits(stats1[key], 0).lt(stats2[key])
+        ? -1
+        : 1;
+    });
+    setSortedTokens(data);
+  }, [filteredTokens, sort, sortMode, tokenStore.poolDataTokensWithStats]);
 
   return (
     <Card style={{ padding: 0, overflow: 'auto' }} justifyContent="center">
@@ -58,32 +87,33 @@ const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
         mobileTemplate="2fr 1fr">
         <div className="gridTitle">
           <div>Asset</div>
-          <TableTitle onClick={() => selectSort('repay')} mode={sortMode} sort={sort === 'repay'}>
+          <TableTitle onClick={() => selectSort('selfBorrow')} mode={sortMode} sort={sort === 'selfBorrow'}>
             To be repaid
           </TableTitle>
-          <TableTitle onClick={() => selectSort('borrowapr')} mode={sortMode} sort={sort === 'borrowapr'}>
+          <TableTitle onClick={() => selectSort('setupBorrowAPR')} mode={sortMode} sort={sort === 'setupBorrowAPR'}>
             Borrow APR
           </TableTitle>
         </div>
-        {filteredTokens.map((t) => {
-          const stats = tokenStore.poolDataTokensWithStats[t.assetId];
-          console.log(+stats.selfBorrow, '-------STATS');
+        {sortedTokens &&
+          sortedTokens.length &&
+          sortedTokens.map((t) => {
+            const stats = tokenStore.poolDataTokensWithStats[t.assetId];
 
-          if (Number(stats.selfBorrow) > 0) {
-            return (
-              <DesktopTokenTableRow
-                token={t}
-                key={t.assetId}
-                rate={stats.currentPrice}
-                selfBorrow={stats.selfBorrow}
-                setupBorrowAPR={stats.setupBorrowAPR}
-                handleSupplyAssetClick={handleSupplyAssetClick}
-              />
-            );
-          }
+            if (stats && Number(stats.selfBorrow) > 0) {
+              return (
+                <DesktopTokenTableRow
+                  token={t}
+                  key={t.assetId}
+                  rate={stats.currentPrice}
+                  selfBorrow={stats.selfBorrow}
+                  setupBorrowAPR={stats.setupBorrowAPR}
+                  handleSupplyAssetClick={handleSupplyAssetClick}
+                />
+              );
+            }
 
-          return null;
-        })}
+            return null;
+          })}
       </GridTable>
     </Card>
   );

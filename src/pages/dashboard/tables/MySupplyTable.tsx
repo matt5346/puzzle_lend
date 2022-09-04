@@ -10,10 +10,12 @@ import Card from '@src/common/styles/Card';
 import { Row, Column } from '@src/common/styles/Flex';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import { Text } from '@src/UIKit/Text';
-import { IToken } from '@src/common/constants';
+import { IToken, TTokenStatistics } from '@src/common/constants';
+import BN from '@src/common/utils/BN';
+import DesktopTokenTableRow from '@src/pages/dashboard/tables/DesktopTokenTableRow';
+
 import { ReactComponent as SortDownIcon } from '@src/common/assets/icons/sortDown.svg';
 import { ReactComponent as NotFoundIcon } from '@src/common/assets/icons/notFound.svg';
-import DesktopTokenTableRow from '@src/pages/dashboard/tables/DesktopTokenTableRow';
 
 interface IProps {
   filteredTokens: IToken[];
@@ -41,11 +43,12 @@ const TableTitle: React.FC<{
 );
 
 const MySupplyTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClick }) => {
-  const [sort, setSort] = useState<'income' | 'supplyapy' | 'supply'>('income');
+  const [sort, setSort] = useState<'totalAssetSupply' | 'setupSupplyAPY' | 'selfDailyIncome'>('selfDailyIncome');
   const [sortMode, setSortMode] = useState<'descending' | 'ascending'>('descending');
   const { tokenStore } = useStores();
+  const [sortedTokens, setSortedTokens] = useState<IToken[]>([]);
 
-  const selectSort = (v: 'income' | 'supplyapy' | 'supply') => {
+  const selectSort = (v: 'totalAssetSupply' | 'setupSupplyAPY' | 'selfDailyIncome') => {
     if (sort === v) {
       setSortMode(sortMode === 'ascending' ? 'descending' : 'ascending');
     } else {
@@ -54,44 +57,73 @@ const MySupplyTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
     }
   };
 
+  useMemo(() => {
+    const data = filteredTokens.sort((a, b) => {
+      const stats1: TTokenStatistics | undefined = tokenStore.poolDataTokensWithStats[a.assetId];
+      const stats2: TTokenStatistics | undefined = tokenStore.poolDataTokensWithStats[b.assetId];
+      let key: keyof TTokenStatistics | undefined;
+      if (sort === 'totalAssetSupply') key = 'totalAssetSupply';
+      if (sort === 'setupSupplyAPY') key = 'setupSupplyAPY';
+      if (sort === 'selfDailyIncome') key = 'selfDailyIncome';
+      if (key == null) return 0;
+
+      if (stats1 == null && stats2 == null) return 0;
+      if (stats1[key] == null && stats2[key] != null) {
+        return sortMode === 'descending' ? 1 : -1;
+      }
+      if (stats1[key] == null && stats2[key] == null) {
+        return sortMode === 'descending' ? -1 : 1;
+      }
+      return sortMode === 'descending'
+        ? BN.formatUnits(stats1[key], 0).lt(stats2[key])
+          ? 1
+          : -1
+        : BN.formatUnits(stats1[key], 0).lt(stats2[key])
+        ? -1
+        : 1;
+    });
+    setSortedTokens(data);
+  }, [filteredTokens, sort, sortMode, tokenStore.poolDataTokensWithStats]);
+
   return (
     <Card style={{ padding: 0, overflow: 'auto' }} justifyContent="center">
       <GridTable
         style={{ width: 'fit-content', minWidth: '100%' }}
-        desktopTemplate="6fr 2fr 2fr 2fr 4fr"
+        desktopTemplate="5fr 2fr 2fr 2.5fr 4fr"
         mobileTemplate="2fr 1fr">
         <div className="gridTitle">
           <div>Asset</div>
-          <TableTitle onClick={() => selectSort('supply')} mode={sortMode} sort={sort === 'supply'}>
+          <TableTitle onClick={() => selectSort('totalAssetSupply')} mode={sortMode} sort={sort === 'totalAssetSupply'}>
             Supplied
           </TableTitle>
-          <TableTitle onClick={() => selectSort('supplyapy')} mode={sortMode} sort={sort === 'supplyapy'}>
+          <TableTitle onClick={() => selectSort('setupSupplyAPY')} mode={sortMode} sort={sort === 'setupSupplyAPY'}>
             Supply APY
           </TableTitle>
-          <TableTitle onClick={() => selectSort('income')} mode={sortMode} sort={sort === 'income'}>
+          <TableTitle onClick={() => selectSort('selfDailyIncome')} mode={sortMode} sort={sort === 'selfDailyIncome'}>
             Daily Income
           </TableTitle>
         </div>
-        {filteredTokens.map((t) => {
-          console.log(filteredTokens, tokenStore.poolDataTokensWithStats, 'filteredTokens SUPPLY');
-          const stats = tokenStore.poolDataTokensWithStats[t.assetId];
-          console.log(stats, 'STATS SUPPLY');
-          if (Number(stats.selfSupply) > 0) {
-            return (
-              <DesktopTokenTableRow
-                token={t}
-                key={t.assetId}
-                rate={stats.currentPrice}
-                selfSupply={stats.selfSupply}
-                setupSupplyAPY={stats.setupSupplyAPY}
-                dailyIncome={stats.selfDailyIncome}
-                handleSupplyAssetClick={handleSupplyAssetClick}
-              />
-            );
-          }
+        {sortedTokens &&
+          sortedTokens.length &&
+          sortedTokens.map((t) => {
+            const stats = tokenStore.poolDataTokensWithStats[t.assetId];
 
-          return null;
-        })}
+            if (stats && Number(stats.selfSupply) > 0) {
+              return (
+                <DesktopTokenTableRow
+                  token={t}
+                  key={t.assetId}
+                  rate={stats.currentPrice}
+                  selfSupply={stats.selfSupply}
+                  setupSupplyAPY={stats.setupSupplyAPY}
+                  dailyIncome={stats.selfDailyIncome}
+                  handleSupplyAssetClick={handleSupplyAssetClick}
+                />
+              );
+            }
+
+            return null;
+          })}
       </GridTable>
     </Card>
   );

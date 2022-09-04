@@ -49,8 +49,8 @@ const UserInfo: React.FC<IProps> = () => {
       </Text>
       <HealthWrap>
         <PercentageCircleBar
-          size={250}
-          strokeWidth={10}
+          size={100}
+          strokeWidth={3}
           percentage={currentPoolData && currentPoolData.userHealth ? currentPoolData.userHealth : 100}
           color="purple"
         />

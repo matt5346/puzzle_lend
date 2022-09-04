@@ -3,7 +3,6 @@ import React, { useMemo } from 'react';
 import { useVM } from '@src/hooks/useVM';
 import { makeAutoObservable } from 'mobx';
 import { RootStore, useStores } from '@src/stores';
-import { IToken, TOKENS_LIST } from '@src/common/constants';
 
 const ctx = React.createContext<DashboardVM | null>(null);
 

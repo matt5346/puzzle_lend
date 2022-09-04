@@ -56,7 +56,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
         alignItems="center"
         onClick={() => navigate(`/dashboard/token/${token.assetId}`)}
         style={{ cursor: 'pointer' }}>
-        <SquareTokenIcon src={tokenLogos[token.symbol]} />
+        <SquareTokenIcon size="small" src={tokenLogos[token.symbol]} />
         <SizedBox width={18} />
         <Text nowrap weight={500} fitContent>
           {token.name}
@@ -76,11 +76,11 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
         </Column>
       ) : null}
 
-      {setupLtv != null ? (
+      {/* {setupLtv != null ? (
         <Column crossAxisSize="max">
           <Text textAlign="right">{setupLtv}%</Text>
         </Column>
-      ) : null}
+      ) : null} */}
 
       {totalSupply != null && rate ? (
         <Column crossAxisSize="max">
@@ -101,9 +101,14 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
         <Text textAlign="right">0%</Text>
       )}
 
-      {dailyIncome != null ? (
+      {dailyIncome && rate != null ? (
         <Column crossAxisSize="max">
-          <Text textAlign="right">$ {Number(dailyIncome).toFixed(8)}</Text>
+          <Text textAlign="right" size="medium">
+            {(+dailyIncome / +rate).toFixed(6)} {token.symbol}
+          </Text>
+          <Text textAlign="right" size="small" type="secondary">
+            $ {Number(dailyIncome).toFixed(8)}
+          </Text>
         </Column>
       ) : selfSupply && +selfSupply > 0 ? (
         <Text textAlign="right">0</Text>

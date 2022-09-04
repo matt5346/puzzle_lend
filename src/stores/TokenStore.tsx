@@ -11,7 +11,6 @@ import {
   PoolDataType,
   IToken,
 } from '@src/common/constants';
-import { useParams } from 'react-router-dom';
 import wavesCapService from '@src/common/services/wavesCapService';
 import BN from '@src/common/utils/BN';
 
@@ -57,6 +56,7 @@ export default class TokenStore {
   private setNetAPY = (v: number) => (this.netAPY = v);
 
   private setUserHealth = (v: number) => {
+    console.log('accountHealth', v);
     if (v > 100) {
       return 100;
     }
@@ -65,7 +65,7 @@ export default class TokenStore {
       return 0;
     }
 
-    return +v.toFixed();
+    return +v.toFixed(2);
   };
 
   private setUserCollateral = (v: number, contractId: string) => {
@@ -226,12 +226,12 @@ export default class TokenStore {
       const changeStr = `${changePrefix} $${formatChange24HUsd} (${formatChange24H}%)`;
 
       // pool Total
-      poolTotal += details.total_supply / 10 ** details.precision;
+      poolTotal += (details.total_supply / 10 ** details.precision) * +currentPrice;
 
       // net APY
-      supplyAmountApy += (details.self_supply / 10 ** details.precision) * details.setup_supply_apy;
-      borrowedAmountApr += (details.self_borrowed / 10 ** details.precision) * details.setup_borrow_apr;
-      baseAmount += details.self_supply / 10 ** details.precision;
+      supplyAmountApy += (details.self_supply / 10 ** details.precision) * +currentPrice * details.setup_supply_apy;
+      borrowedAmountApr += (details.self_borrowed / 10 ** details.precision) * +currentPrice * details.setup_borrow_apr;
+      baseAmount += (details.self_supply / 10 ** details.precision) * +currentPrice;
 
       // count balance supply/borrow
       console.log(
@@ -267,16 +267,21 @@ export default class TokenStore {
       //     (borrowedAmountApr * Number(details.data?.['firstPrice_usd-n'])) / (details.setup_ltv / 100);
       // }
 
+      console.log(
+        details.self_supply,
+        details.setup_ltv,
+        details.self_borrowed,
+        +currentPrice,
+        details.name,
+        '(details.self_supply * details.setup_ltv) / details.self_borrowed'
+      );
+
       // count USER HEALTH for SAME ASSETS
+      if (details.self_supply > 0) {
+        borrowCapacity += (details.self_supply / 10 ** details.precision) * +currentPrice * (details.setup_ltv / 100);
+      }
+
       if (details.self_borrowed > 0) {
-        console.log(
-          details.self_supply,
-          details.setup_ltv,
-          details.self_borrowed,
-          +currentPrice,
-          '(details.self_supply * details.setup_ltv) / details.self_borrowed'
-        );
-        borrowCapacity += (details.self_supply / 10 ** details.precision) * (details.setup_ltv / 100) * +currentPrice;
         borrowCapacityUsed += (details.self_borrowed / 10 ** details.precision) * +currentPrice;
       }
 
@@ -310,7 +315,7 @@ export default class TokenStore {
     console.log(borrowCapacity, borrowCapacityUsed, 'borrowCapacity borrowCapacityUsed');
 
     const netAPY: number = (supplyAmountApy - borrowedAmountApr) / baseAmount;
-    const accountHealth: number = borrowCapacity / borrowCapacityUsed;
+    const accountHealth: number = (borrowCapacity / borrowCapacityUsed) * 100;
 
     console.log(netAPY, accountHealth, 'netapy accountHealth');
 

@@ -267,7 +267,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           Transaction fee
         </Text>
         <Text size="medium" fitContent>
-          0,005 WAVES
+          0.005 WAVES
         </Text>
       </Row>
       <SizedBox height={24} />

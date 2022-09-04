@@ -6,7 +6,6 @@ import styled from '@emotion/styled';
 import { useStores } from '@src/stores';
 import { Text } from '@src/UIKit/Text';
 import { IToken } from '@src/common/constants';
-import { useDashboardVM } from '@src/pages/dashboard/DashboardVm';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import DashboardModal from '@src/pages/dashboard/modal';
 import AllAssetsTable from '@src/pages/dashboard/tables/AllAssetsTable';
@@ -40,7 +39,6 @@ const DashboardTable: React.FC<IProps> = () => {
   const [filteredTokens, setFilteredTokens] = useState<IToken[]>([]);
   const [showBorrow, showBorrowTable] = useState<boolean>(false);
   const [showSupply, showSupplyTable] = useState<boolean>(false);
-  const vm = useDashboardVM();
 
   const { address } = accountStore;
 
