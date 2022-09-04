@@ -100,7 +100,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
   const navigate = useNavigate();
   const [focused, setFocused] = useState(false);
   const [amount, setAmount] = useState<BN>(props.amount);
-  const { lendStore } = useStores();
+  const { lendStore, accountStore } = useStores();
 
   const formatVal = (val: BN, decimal: number) => {
     return BN.formatUnits(val, decimal).toSignificant(6).toFormat(2);
@@ -242,13 +242,25 @@ const SupplyAssets: React.FC<IProps> = (props) => {
       </Row>
       <SizedBox height={24} />
       <Footer>
-        <Button
-          disabled={!props.isAgree || +amount === 0}
-          fixed
-          onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId, lendStore.activePoolContract)}
-          size="large">
-          Supply
-        </Button>
+        {accountStore && accountStore.address ? (
+          <Button
+            disabled={!props.isAgree || +amount === 0}
+            fixed
+            onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId, lendStore.activePoolContract)}
+            size="large">
+            Supply
+          </Button>
+        ) : (
+          <Button
+            fixed
+            onClick={() => {
+              accountStore.setLoginModalOpened(true);
+              lendStore.setDashboardModalOpened(false, '', lendStore.dashboardModalStep);
+            }}
+            size="large">
+            Login
+          </Button>
+        )}
       </Footer>
     </Root>
   );

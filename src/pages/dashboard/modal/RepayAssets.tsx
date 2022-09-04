@@ -98,7 +98,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
   const navigate = useNavigate();
   const [focused, setFocused] = useState(false);
   const [amount, setAmount] = useState<BN>(props.amount);
-  const { lendStore } = useStores();
+  const { lendStore, accountStore } = useStores();
 
   useEffect(() => {
     props.amount && setAmount(props.amount);
@@ -253,13 +253,25 @@ const BorrowAssets: React.FC<IProps> = (props) => {
       </Row>
       <SizedBox height={16} />
       <Footer>
-        <Button
-          disabled={+amount === 0}
-          fixed
-          onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId, lendStore.activePoolContract)}
-          size="large">
-          Repay
-        </Button>
+        {accountStore && accountStore.address ? (
+          <Button
+            disabled={+amount === 0}
+            fixed
+            onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId, lendStore.activePoolContract)}
+            size="large">
+            Repay
+          </Button>
+        ) : (
+          <Button
+            fixed
+            onClick={() => {
+              accountStore.setLoginModalOpened(true);
+              lendStore.setDashboardModalOpened(false, '', lendStore.dashboardModalStep);
+            }}
+            size="large">
+            Login
+          </Button>
+        )}
       </Footer>
     </Root>
   );

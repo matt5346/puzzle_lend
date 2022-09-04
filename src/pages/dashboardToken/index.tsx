@@ -105,6 +105,7 @@ const DashboardToken: React.FC = () => {
           Back to Main Pool
         </Text>
       </Link>
+      <SizedBox height={24} />
       {tokenIData && tokenFullData && (
         <Column>
           <Row alignItems="center">

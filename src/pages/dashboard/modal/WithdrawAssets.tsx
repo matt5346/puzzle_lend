@@ -98,7 +98,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
   const navigate = useNavigate();
   const [focused, setFocused] = useState(false);
   const [amount, setAmount] = useState<BN>(props.amount);
-  const { lendStore } = useStores();
+  const { lendStore, accountStore } = useStores();
 
   const formatVal = (val: BN, decimal: number) => {
     return BN.formatUnits(val, decimal).toSignificant(6).toString();
@@ -228,13 +228,25 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
       </Row>
       <SizedBox height={16} />
       <Footer>
-        <Button
-          disabled={+amount === 0}
-          fixed
-          onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId, lendStore.activePoolContract)}
-          size="large">
-          Withdraw
-        </Button>
+        {accountStore && accountStore.address ? (
+          <Button
+            disabled={+amount === 0}
+            fixed
+            onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId, lendStore.activePoolContract)}
+            size="large">
+            Withdraw
+          </Button>
+        ) : (
+          <Button
+            fixed
+            onClick={() => {
+              accountStore.setLoginModalOpened(true);
+              lendStore.setDashboardModalOpened(false, '', lendStore.dashboardModalStep);
+            }}
+            size="large">
+            Login
+          </Button>
+        )}
       </Footer>
     </Root>
   );
