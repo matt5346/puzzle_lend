@@ -199,7 +199,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
           {props.setupSupplyAPY ? (+props.setupSupplyAPY).toFixed(2) : 0}%
         </Text>
       </Row>
-      <SizedBox height={12} />
+      <SizedBox height={14} />
       <Row justifyContent="space-between">
         <Text size="medium" type="secondary" fitContent>
           Supplied
@@ -208,7 +208,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
           {formatVal(props.selfSupply, props.decimals)}
         </Text>
       </Row>
-      <SizedBox height={12} />
+      <SizedBox height={14} />
       <Row justifyContent="space-between">
         <Text size="medium" type="secondary" fitContent>
           Market supply
@@ -217,7 +217,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
           {(+formatVal(props.totalSupply, props.decimals) - +formatVal(props.totalBorrow, props.decimals)).toFixed(2)}
         </Text>
       </Row>
-      <SizedBox height={12} />
+      <SizedBox height={14} />
       <Row justifyContent="space-between">
         <Text size="medium" type="secondary" fitContent>
           Transaction fee

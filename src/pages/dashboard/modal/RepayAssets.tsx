@@ -157,6 +157,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
             <Back
               style={{
                 minWidth: '16px',
+                maxWidth: '16px',
                 transform: 'rotate(180deg)',
               }}
             />
@@ -211,19 +212,6 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           </Text>
         </TokenToDollar>
       </InputContainer>
-      <SizedBox height={8} />
-      <Row justifyContent="space-between">
-        <Text size="medium" type="secondary" fitContent>
-          Wallet Balance
-        </Text>
-        <Text size="medium" fitContent>
-          {props.userBalance
-            ? (+formatVal(props.userBalance, props.decimals) - +formatVal(amount, props.decimals)).toFixed(2)
-            : 0}
-          <>&nbsp;</>
-          {props.assetName}
-        </Text>
-      </Row>
       <SizedBox height={24} />
       <Row justifyContent="space-between">
         <Text size="medium" type="secondary" fitContent>
@@ -233,7 +221,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           {props.setupBorrowAPR ? (+props.setupBorrowAPR).toFixed(2) : 0}%
         </Text>
       </Row>
-      <SizedBox height={12} />
+      <SizedBox height={14} />
       <Row justifyContent="space-between">
         <Text size="medium" type="secondary" fitContent>
           Borrowed
@@ -242,7 +230,20 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           {props.selfBorrow ? formatVal(props.selfBorrow, props.decimals) : 0}
         </Text>
       </Row>
-      <SizedBox height={12} />
+      <SizedBox height={14} />
+      <Row justifyContent="space-between">
+        <Text size="medium" type="secondary" fitContent>
+          Wallet Balance
+        </Text>
+        <Text size="medium" fitContent>
+          {props.userBalance
+            ? (+formatVal(props.userBalance, props.decimals) - +formatVal(amount, props.decimals)).toFixed(4)
+            : 0}
+          <>&nbsp;</>
+          {props.assetName}
+        </Text>
+      </Row>
+      <SizedBox height={14} />
       <Row justifyContent="space-between">
         <Text size="medium" type="secondary" fitContent>
           Transaction fee

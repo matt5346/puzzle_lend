@@ -27,6 +27,7 @@ const Root = styled(Column)`
 `;
 
 const TopMenu = styled.header`
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -35,9 +36,20 @@ const TopMenu = styled.header`
   padding: 0 16px;
   max-width: 1440px;
   z-index: 103;
-  border-bottom: 1px solid #f1f2fe;
   box-sizing: border-box;
   background: #ffffff;
+
+  &:after {
+    display: block;
+    content: '';
+    position: absolute;
+    width: 100vw;
+    height: 1px;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #f1f2fe;
+  }
 
   @media (min-width: 880px) {
     height: 80px;

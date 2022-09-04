@@ -106,6 +106,7 @@ const Header: React.FC<IProps> = () => {
             {menuItems.map(({ name, link, poolContract }) => (
               <MenuItem key={name} selected={isRoutesEquals(link, location.pathname)}>
                 <Text
+                  weight={500}
                   style={{
                     cursor: 'pointer',
                   }}

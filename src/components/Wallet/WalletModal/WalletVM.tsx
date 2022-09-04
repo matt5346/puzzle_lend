@@ -42,7 +42,7 @@ class WalletVM {
     //   this.getAssetsStats
     // );
     // reaction(() => this.rootStore.accountStore?.address, this.getAssetsStats);
-    setInterval(this.getAssetsStats, 15 * 1000);
+    setInterval(this.getAssetsStats, 60 * 1000);
   }
 
   handleCopyAddress = () => {

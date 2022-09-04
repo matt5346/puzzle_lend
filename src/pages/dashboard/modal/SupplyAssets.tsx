@@ -151,6 +151,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
             <Back
               style={{
                 minWidth: '16px',
+                maxWidth: '16px',
                 transform: 'rotate(180deg)',
               }}
             />
@@ -215,15 +216,6 @@ const SupplyAssets: React.FC<IProps> = (props) => {
           $ {props.supplyInterest ? (+props.supplyInterest * +formatVal(amount, props.decimals)).toFixed(6) : 0}
         </Text>
       </Row>
-      <SizedBox height={12} />
-      <Row justifyContent="space-between">
-        <Text size="medium" type="secondary" fitContent>
-          Borrowed
-        </Text>
-        <Text size="medium" fitContent>
-          {props.selfBorrow ? formatVal(props.selfBorrow, props.decimals) : 0}
-        </Text>
-      </Row>
       <SizedBox height={14} />
       <Row justifyContent="space-between">
         <Text size="medium" type="secondary" fitContent>
@@ -231,6 +223,15 @@ const SupplyAssets: React.FC<IProps> = (props) => {
         </Text>
         <Text size="medium" fitContent>
           {props.setupSupplyAPY ? (+props.setupSupplyAPY).toFixed(2) : 0}%
+        </Text>
+      </Row>
+      <SizedBox height={14} />
+      <Row justifyContent="space-between">
+        <Text size="medium" type="secondary" fitContent>
+          Borrowed
+        </Text>
+        <Text size="medium" fitContent>
+          {props.selfBorrow ? formatVal(props.selfBorrow, props.decimals) : 0}
         </Text>
       </Row>
       <SizedBox height={14} />

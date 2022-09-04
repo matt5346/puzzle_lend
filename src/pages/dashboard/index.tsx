@@ -142,61 +142,65 @@ const Dashboard: React.FC = () => {
         </Row>
 
         <SizedBox height={96} />
-        <TitleH>What is Puzzle Lend?</TitleH>
-        <Row justifyContent="space-between">
-          <Card>
-            <CardImg src={DashOne} />
-            <CardText>
-              <Text type="primary" weight={500}>
-                Deposit assets
-              </Text>
-              <SizedBox height={14} />
-              <Text size="medium">
-                You can pick any tokens from the <span>Waves Ecosystem</span> to put them into markets and start earning
-                Supply rewards.
-              </Text>
-            </CardText>
-          </Card>
-          <Card>
-            <CardImg src={DashTwo} />
-            <CardText>
-              <Text type="primary" weight={500}>
-                Borrow funds
-              </Text>
-              <SizedBox height={14} />
-              <Text size="medium">
-                You can borrow assets from the market to use for <span>extending your DeFi experience.</span> Take into
-                account that you will pay Borrow interest for it.
-              </Text>
-            </CardText>
-          </Card>
-          <Card>
-            <CardImg src={DashThree} />
-            <CardText>
-              <Text type="primary" weight={500}>
-                Leverage position
-              </Text>
-              <SizedBox height={14} />
-              <Text size="medium">
-                You can use lending protocol <br /> to take long or short positions with an{' '}
-                <span>upto 3x leverage.</span>
-              </Text>
-            </CardText>
-          </Card>
-          <Card>
-            <CardImg src={DashFour} />
-            <CardText>
-              <Text type="primary" weight={500}>
-                Avoid liquidations
-              </Text>
-              <SizedBox height={14} />
-              <Text size="medium">
-                Use an advanced Oracle system based on the TWAP model, which guarantees that the
-                <span>market cannot be manipulated</span> to liquidate safe positions.
-              </Text>
-            </CardText>
-          </Card>
-        </Row>
+        {address == null ? (
+          <Column>
+            <TitleH>What is Puzzle Lend?</TitleH>
+            <Row justifyContent="space-between">
+              <Card>
+                <CardImg src={DashOne} />
+                <CardText>
+                  <Text type="primary" weight={500}>
+                    Deposit assets
+                  </Text>
+                  <SizedBox height={14} />
+                  <Text size="medium">
+                    You can pick any tokens from the <span>Waves Ecosystem</span> to put them into markets and start
+                    earning Supply rewards.
+                  </Text>
+                </CardText>
+              </Card>
+              <Card>
+                <CardImg src={DashTwo} />
+                <CardText>
+                  <Text type="primary" weight={500}>
+                    Borrow funds
+                  </Text>
+                  <SizedBox height={14} />
+                  <Text size="medium">
+                    You can borrow assets from the market to use for <span>extending your DeFi experience.</span> Take
+                    into account that you will pay Borrow interest for it.
+                  </Text>
+                </CardText>
+              </Card>
+              <Card>
+                <CardImg src={DashThree} />
+                <CardText>
+                  <Text type="primary" weight={500}>
+                    Leverage position
+                  </Text>
+                  <SizedBox height={14} />
+                  <Text size="medium">
+                    You can use lending protocol <br /> to take long or short positions with an{' '}
+                    <span>upto 3x leverage.</span>
+                  </Text>
+                </CardText>
+              </Card>
+              <Card>
+                <CardImg src={DashFour} />
+                <CardText>
+                  <Text type="primary" weight={500}>
+                    Avoid liquidations
+                  </Text>
+                  <SizedBox height={14} />
+                  <Text size="medium">
+                    Use an advanced Oracle system based on the TWAP model, which guarantees that the
+                    <span>market cannot be manipulated</span> to liquidate safe positions.
+                  </Text>
+                </CardText>
+              </Card>
+            </Row>
+          </Column>
+        ) : null}
 
         <SizedBox height={106} />
 
