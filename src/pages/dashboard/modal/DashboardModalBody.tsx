@@ -95,6 +95,7 @@ const WalletModalBody: React.FC<IProps> = ({ filteredTokens }) => {
             assetName={tokenFilteredData?.name}
             assetSymbol={tokenFilteredData?.symbol}
             rate={lendStore.choosenToken?.currentPrice}
+            selfBorrow={lendStore.choosenToken?.selfBorrow}
             supplyInterest={lendStore.choosenToken?.supplyInterest}
             userBalance={getTokenBalance()}
             decimals={lendStore.choosenToken?.decimals}

@@ -33,6 +33,7 @@ interface IProps {
   supplyInterest: string;
   setupSupplyAPY?: string;
   rate: BN;
+  selfBorrow: BN;
   onChange: (agreement: boolean) => void;
   setAmount?: (amount: BN) => void;
   onMaxClick?: () => void;
@@ -212,6 +213,15 @@ const SupplyAssets: React.FC<IProps> = (props) => {
         </Text>
         <Text size="medium" fitContent>
           $ {props.supplyInterest ? (+props.supplyInterest * +formatVal(amount, props.decimals)).toFixed(6) : 0}
+        </Text>
+      </Row>
+      <SizedBox height={12} />
+      <Row justifyContent="space-between">
+        <Text size="medium" type="secondary" fitContent>
+          Borrowed
+        </Text>
+        <Text size="medium" fitContent>
+          {props.selfBorrow ? formatVal(props.selfBorrow, props.decimals) : 0}
         </Text>
       </Row>
       <SizedBox height={14} />
