@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable no-return-assign */
 import React, { useMemo } from 'react';
 import { useVM } from '@src/hooks/useVM';
@@ -9,7 +10,7 @@ import { LOGIN_TYPE } from '@src/stores/AccountStore';
 import centerEllipsis from '@src/common/utils/centerEllipsis';
 import BN from '@src/common/utils/BN';
 import wavesCapService from '@src/common/services/wavesCapService';
-import { TOKENS_LIST } from '@src/common/constants';
+import { TOKENS_LIST, EXPLORER_URL } from '@src/common/constants';
 
 const ctx = React.createContext<DashboardWalletVM | null>(null);
 
@@ -66,7 +67,7 @@ class DashboardWalletVM {
   };
 
   submitBorrow = async (amount: any, assetId: any, contractAddress: string) => {
-    const { accountStore, lendStore, tokenStore } = this.rootStore;
+    const { accountStore, lendStore, tokenStore, notificationStore } = this.rootStore;
     console.log(amount.toString(), assetId, 'token');
 
     await accountStore
@@ -82,20 +83,33 @@ class DashboardWalletVM {
         },
       })
       .then((txId) => {
-        console.log(txId, '---tx');
         lendStore.setDashboardModalOpened(false, '', 0);
+        txId &&
+          notificationStore.notify(
+            `Congrats, You successfully borrowed some money! You can track the transaction on Waves Explorer.`,
+            {
+              type: 'success',
+              title: `Success`,
+              link: `${EXPLORER_URL}/tx/${txId}`,
+              linkTitle: 'View on Explorer',
+            }
+          );
       })
       .catch((e) => {
         console.log(e, '---e');
+        notificationStore.notify(e.message ?? JSON.stringify(e), {
+          type: 'error',
+          title: 'Oops, transaction is not completed',
+        });
       })
       .then(() => {
         accountStore.updateAccountAssets(true);
-        tokenStore.syncTokenStatistics(lendStore.activePoolName);
+        tokenStore.syncTokenStatistics(lendStore.activePoolContract);
       });
   };
 
   submitSupply = async (amount: any, assetId: any, contractAddress: string) => {
-    const { accountStore, lendStore, tokenStore } = this.rootStore;
+    const { accountStore, lendStore, tokenStore, notificationStore } = this.rootStore;
     console.log(amount.toString(), contractAddress, assetId, 'token');
 
     await accountStore
@@ -113,20 +127,33 @@ class DashboardWalletVM {
         },
       })
       .then((txId) => {
-        console.log(txId, '---tx');
         lendStore.setDashboardModalOpened(false, '', 0);
+        txId &&
+          notificationStore.notify(
+            `Congrats with successfull supply! You can track the transaction on Waves Explorer.`,
+            {
+              type: 'success',
+              title: `Success`,
+              link: `${EXPLORER_URL}/tx/${txId}`,
+              linkTitle: 'View on Explorer',
+            }
+          );
       })
       .catch((e) => {
         console.log(e, '---e');
+        notificationStore.notify(e.message ?? JSON.stringify(e), {
+          type: 'error',
+          title: 'Oops, transaction is not completed',
+        });
       })
       .then(() => {
         accountStore.updateAccountAssets(true);
-        tokenStore.syncTokenStatistics(lendStore.activePoolName);
+        tokenStore.syncTokenStatistics(lendStore.activePoolContract);
       });
   };
 
   submitWithdraw = async (amount: any, assetId: any, contractAddress: string) => {
-    const { accountStore, lendStore, tokenStore } = this.rootStore;
+    const { accountStore, lendStore, tokenStore, notificationStore } = this.rootStore;
     console.log(amount.toString(), assetId, 'token');
 
     await accountStore
@@ -142,20 +169,33 @@ class DashboardWalletVM {
         },
       })
       .then((txId) => {
-        console.log(txId, '---tx');
         lendStore.setDashboardModalOpened(false, '', 0);
+        txId &&
+          notificationStore.notify(
+            `Congrats, it's successfull Withdraw! You can track the transaction on Waves Explorer.`,
+            {
+              type: 'success',
+              title: `Success`,
+              link: `${EXPLORER_URL}/tx/${txId}`,
+              linkTitle: 'View on Explorer',
+            }
+          );
       })
       .catch((e) => {
         console.log(e, '---e');
+        notificationStore.notify(e.message ?? JSON.stringify(e), {
+          type: 'error',
+          title: 'Oops, transaction is not completed',
+        });
       })
       .then(() => {
         accountStore.updateAccountAssets(true);
-        tokenStore.syncTokenStatistics(lendStore.activePoolName);
+        tokenStore.syncTokenStatistics(lendStore.activePoolContract);
       });
   };
 
   submitRepay = async (amount: any, assetId: any, contractAddress: string) => {
-    const { accountStore, lendStore, tokenStore } = this.rootStore;
+    const { accountStore, lendStore, tokenStore, notificationStore } = this.rootStore;
     console.log(amount.toString(), assetId, 'token');
 
     await accountStore
@@ -173,15 +213,28 @@ class DashboardWalletVM {
         },
       })
       .then((txId) => {
-        console.log(txId, '---tx');
         lendStore.setDashboardModalOpened(false, '', 0);
+        txId &&
+          notificationStore.notify(
+            `Congrats, successfully Repaid you'r loan! You can track the transaction on Waves Explorer.`,
+            {
+              type: 'success',
+              title: `Success`,
+              link: `${EXPLORER_URL}/tx/${txId}`,
+              linkTitle: 'View on Explorer',
+            }
+          );
       })
       .catch((e) => {
         console.log(e, '---e');
+        notificationStore.notify(e.message ?? JSON.stringify(e), {
+          type: 'error',
+          title: 'Oops, transaction is not completed',
+        });
       })
       .then(() => {
         accountStore.updateAccountAssets(true);
-        tokenStore.syncTokenStatistics(lendStore.activePoolName);
+        tokenStore.syncTokenStatistics(lendStore.activePoolContract);
       });
   };
 
@@ -206,7 +259,7 @@ class DashboardWalletVM {
 
   get balances() {
     const { accountStore, lendStore } = this.rootStore;
-    return TOKENS_LIST(lendStore.activePoolName)
+    return TOKENS_LIST('allTokens')
       .map((t) => {
         const balance = accountStore.findBalanceByAssetId(t.assetId);
         return balance ?? new Balance(t);

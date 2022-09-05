@@ -171,8 +171,10 @@ export default class TokenStore {
 
   // loading all data about tokens, their apy/apr, supply/borrow and evth
   public syncTokenStatistics = async (contractId?: string) => {
+    console.log(this.poolStatsArr, 'syncTokenStatistics 1!');
     const { accountStore, lendStore } = this.rootStore;
     const contractPoolId = contractId || lendStore.activePoolContract;
+    console.log(contractPoolId, lendStore.activePoolContract, '------lendStore.activePoolContract');
     const contractPoolName = lendStore.poolNameById(contractPoolId);
     console.log(
       lendStore.poolNameById(contractId || lendStore.activePoolContract),
@@ -181,7 +183,7 @@ export default class TokenStore {
     const assets = TOKENS_LIST(contractPoolName).map(({ assetId }) => assetId);
     console.log(assets, 'ASSETS');
     console.log(contractPoolId, 'lendStore.activePoolContract 2');
-    const stats = await wavesCapService.getAssetsStats(assets, accountStore.address!, contractPoolId).catch((e) => {
+    const stats = await wavesCapService.getPoolsStats(assets, accountStore.address!, contractPoolId).catch((e) => {
       // notifi\cationStore.notify(e.message ?? e.toString(), {
       //   type: 'error',
       // });
@@ -297,6 +299,7 @@ export default class TokenStore {
         selfSupply: BN.formatUnits(details.self_supply, 0),
         selfBorrow: BN.formatUnits(details.self_borrowed, 0),
         selfDailyIncome: details.self_daily_income,
+        selfDailyBorrowInterest: details.self_daily_borrow_interest,
         supplyInterest: details.supply_interest,
         selfSupplyRate: details.supply_rate,
         totalAssetBorrow: BN.formatUnits(details.total_borrow, 0),
@@ -332,6 +335,7 @@ export default class TokenStore {
 
     this.setPoolData(poolData);
 
+    console.log(statistics, 'syncTokenStatistics 2!');
     this.setNetAPY(netAPY);
     this.setSupplyBorrow(supplyAmountCurrent, borrowedAmountCurrent);
     this.setPoolTotal(poolTotal);
@@ -339,6 +343,7 @@ export default class TokenStore {
 
     console.log(this.poolStatsByContractId, 'poolStatsByAssetId');
     Object.values(LENDS_CONTRACTS).map((item) => this.loadUserDetails(item));
+    console.log(this.poolStatsArr, 'syncTokenStatistics 3!');
   };
 
   constructor(rootStore: RootStore, initState?: ISerializedTokenStore) {

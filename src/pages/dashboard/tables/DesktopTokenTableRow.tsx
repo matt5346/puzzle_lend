@@ -19,7 +19,7 @@ interface IProps {
   selfSupply?: BN;
   selfBorrow?: BN;
   dailyIncome?: string;
-  setupLtv?: string;
+  selfDailyBorrowInterest?: string;
   setupBorrowAPR?: string;
   setupSupplyAPY?: string;
   totalSupply?: BN;
@@ -41,7 +41,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
   dailyIncome,
   totalSupply,
   totalBorrow,
-  setupLtv,
+  selfDailyBorrowInterest,
   setupBorrowAPR,
   setupSupplyAPY,
 }) => {
@@ -139,6 +139,17 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
       {setupBorrowAPR != null ? (
         <Column crossAxisSize="max">
           <Text textAlign="right">{(+setupBorrowAPR).toFixed(2)}%</Text>
+        </Column>
+      ) : null}
+
+      {selfDailyBorrowInterest && rate != null ? (
+        <Column crossAxisSize="max">
+          <Text textAlign="right" size="medium">
+            {(+selfDailyBorrowInterest / +rate).toFixed(6)} {token.symbol}
+          </Text>
+          <Text textAlign="right" size="small" type="secondary">
+            $ {Number(selfDailyBorrowInterest).toFixed(8)}
+          </Text>
         </Column>
       ) : null}
 

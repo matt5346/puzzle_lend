@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from '@emotion/styled';
 import Dialog from '@components/Dialog';
 import { LOGIN_TYPE } from '@src/stores/AccountStore';
 import seed from '@src/common/assets/icons/seed.svg';
@@ -9,6 +10,7 @@ import { useStores } from '@src/stores';
 import { Row, Column } from '@src/common/styles/Flex';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import { Text } from '@src/UIKit/Text';
+import { Anchor } from '@src/UIKit/Anchor';
 import LoginType from './LoginType';
 
 interface IProps {
@@ -35,6 +37,26 @@ const loginTypes = [
   },
 ];
 
+const LinkItem = styled(Anchor)<{ selected?: boolean }>`
+  display: inline-block;
+  text-decoration: none;
+  color: #7075e9;
+
+  &:hover {
+    text-decoration: underline;
+    color: #8082c5;
+  }
+`;
+
+const Desktop = styled.div`
+  display: none;
+  min-width: fit-content;
+  @media (min-width: 880px) {
+    height: 100%;
+    display: flex;
+  }
+`;
+
 export const LoginTypesRender: React.FC<{
   isKeeperDisabled: boolean;
   handleLogin: (type: LOGIN_TYPE) => void;
@@ -49,7 +71,12 @@ export const LoginTypesRender: React.FC<{
     )}
     <SizedBox height={24} />
     <Text textAlign="center" size="medium">
-      New to Waves blockchain? Learn more about wallets
+      New to Waves blockchain?{' '}
+      <LinkItem
+        target="_blank"
+        href="https://docs.waves.exchange/en/waves-exchange/waves-exchange-online-desktop/online-desktop-account/online-desktop-creation">
+        Learn more about wallets
+      </LinkItem>
     </Text>
     <SizedBox height={24} />
   </Column>

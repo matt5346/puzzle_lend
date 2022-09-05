@@ -122,14 +122,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
   };
 
   const getMax = (v: BN) => {
-    console.log(+v, +props.selfBorrow, 'handleChangeAmount11111111');
-    let val = +v;
-
-    // todo:
-    // bug with 1 integer num
-    if (val === 1) val += 1;
-
-    return BN.formatUnits(Math.ceil(val), 0);
+    return BN.formatUnits(Math.ceil(+v + 1), 0);
   };
 
   const formatVal = (val: BN, decimal: number) => {

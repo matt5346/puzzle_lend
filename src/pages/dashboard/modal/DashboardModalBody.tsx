@@ -37,8 +37,8 @@ const ListWrapper = styled.div<{ headerExpanded: boolean }>`
 
 const WalletModalBody: React.FC<IProps> = ({ filteredTokens }) => {
   const [tokenFilteredData, setFilteredToken] = useState<IToken>();
-  const [isAgree, setAgree] = useState<boolean>(false);
-  const [isBorrowAgree, setBorrowAgree] = useState<boolean>(false);
+  const [isAgree, setAgree] = useState<boolean>(true);
+  const [isBorrowAgree, setBorrowAgree] = useState<boolean>(true);
   const vm = DashboardWalletUseVM();
   const { lendStore, tokenStore } = vm.rootStore;
 

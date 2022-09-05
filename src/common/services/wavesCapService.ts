@@ -50,7 +50,20 @@ const wavesCapService = {
 
     return userCollateral;
   },
-  getAssetsStats: async (assetsId: string[], address?: string, contractAddress?: string): Promise<IAssetResponse[]> => {
+  getAssetsStats: async (assetsId: string[]): Promise<IAssetResponse[]> => {
+    const params = new URLSearchParams();
+    for (let i = 0; i < assetsId.length - 1; i++) {
+      params.append('assetIds[]=', assetsId[i]);
+    }
+    const url = `https://wavescap.com/api/assets-info.php?${params.toString()}`;
+    const response = await axios.get(url);
+    return response.data.assets != null ? response.data.assets.filter((v: any) => v != null) : [];
+  },
+  // loading assets data for current pool
+  // assetsId: any number of assets
+  // address: CURRENT USER
+  // contractAddress: contract Address of POOL
+  getPoolsStats: async (assetsId: string[], address?: string, contractAddress?: string): Promise<IAssetResponse[]> => {
     const params = new URLSearchParams();
     console.log(contractAddress, 'contractAddress');
 
@@ -142,6 +155,7 @@ const wavesCapService = {
         self_supply: 0,
         self_borrowed: 0,
         self_daily_income: 0,
+        self_daily_borrow_interest: 0,
         // sRate, need for counting SUPPLY compound on front
         supply_rate: 0,
         // bRate, need for counting BORROW compound on front
@@ -192,8 +206,8 @@ const wavesCapService = {
           }
         });
 
-        console.log(poolValue, poolBorrowed, '--poolValue, poolBorrowed---spply');
-        console.log(selfSupply, selfBorrowed, '--selfSupply, selfBorrowe---spply');
+        console.log(poolValue, poolBorrowed, itemData.supply_rate, '--poolValue, poolBorrowed---spply');
+        console.log(selfSupply, selfBorrowed, itemData.borrow_rate, '--selfSupply, selfBorrowe---spply');
         console.log(
           itemData.name,
           itemData.supply_rate,
@@ -214,7 +228,11 @@ const wavesCapService = {
         const UR = itemData.total_borrow / itemData.total_supply;
         const supplyInterest = +itemData.setup_interest * UR;
         const supplyAPY = ((1 + supplyInterest) ** 365 - 1) * 100;
+
+        // borrow daily interest && daily INCOME
         const dailyIncome = supplyInterest * ((itemData.self_supply / 10 ** itemData.precision) * +currentPrice);
+        const dailyBorrowInterest =
+          supplyInterest * ((itemData.self_borrowed / 10 ** itemData.precision) * +currentPrice);
 
         console.log(itemData.setup_interest, +currentPrice, 'itemData.setup_interest');
         console.log(supplyInterest, UR, '----supplyInterest, UR');
@@ -225,6 +243,7 @@ const wavesCapService = {
           '----dailyIncome itemData.self_supply, itemData.precision'
         );
 
+        itemData.self_daily_borrow_interest = dailyBorrowInterest || null;
         itemData.self_daily_income = dailyIncome || null;
         itemData.setup_supply_apy = supplyAPY || null;
         itemData.supply_interest = supplyInterest;

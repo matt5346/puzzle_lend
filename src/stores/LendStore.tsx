@@ -52,13 +52,17 @@ export default class LendStore {
   choosenToken: TTokenStatistics = createITokenStat();
 
   poolNameById = (contractId?: string) => {
-    let poolName: any =
-      Object.entries(LENDS_CONTRACTS).filter(([key, value]) => {
-        return value === contractId ? key : false;
-      })[0] || 'mainPool';
+    let poolName: any = Object.entries(LENDS_CONTRACTS).filter(([key, value]) => {
+      console.log(key, value, contractId, '-------key, value[0]=====');
+      return value === contractId ? key : false;
+    })[0] || ['mainPool'];
 
     // eslint-disable-next-line prefer-destructuring
-    if (poolName && poolName.length) poolName = poolName[0];
+    if (poolName && poolName.length) {
+      console.log(poolName, '-------poolName[0]=====');
+      // eslint-disable-next-line prefer-destructuring
+      poolName = poolName[0];
+    }
 
     return poolName;
   };

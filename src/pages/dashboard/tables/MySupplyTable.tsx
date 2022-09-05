@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable array-callback-return */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import styled from '@emotion/styled';
 import { useStores } from '@src/stores';
@@ -57,7 +57,7 @@ const MySupplyTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
     }
   };
 
-  useMemo(() => {
+  useEffect(() => {
     const data = filteredTokens.sort((a, b) => {
       const stats1: TTokenStatistics | undefined = tokenStore.poolDataTokensWithStats[a.assetId];
       const stats2: TTokenStatistics | undefined = tokenStore.poolDataTokensWithStats[b.assetId];

@@ -1,13 +1,15 @@
 /* eslint-disable prettier/prettier */
 import tokenLogos from '@src/common/constants/tokenLogos';
-import tokenFullList from '@src/common/constants/tokens_full.json';
+import BN from '@src/common/utils/BN';
+
 import tokensPuzzleList from '@src/common/constants/tokens_mainPool.json';
 import tokensWavesList from '@src/common/constants/tokens_wavesPool.json';
-import BN from '@src/common/utils/BN';
+import tokensFullList from '@src/common/constants/tokens_full.json';
 
 const tokensList = {
   mainPool: tokensWavesList,
   puzzlePool: tokensPuzzleList,
+  allTokens: tokensFullList,
 };
 
 export const poolsTitles = {
@@ -42,6 +44,7 @@ export type TTokenStatistics = {
   selfBorrow: BN;
   selfSupplyRate: string;
   selfDailyIncome: string;
+  selfDailyBorrowInterest: string;
   supplyInterest: string;
   totalSupply: BN;
   totalAssetSupply: BN;
@@ -71,6 +74,7 @@ export function createITokenStat(): TTokenStatistics {
     selfSupply: BN.ZERO,
     selfBorrow: BN.ZERO,
     selfDailyIncome: '',
+    selfDailyBorrowInterest: '',
     supplyInterest: '',
     totalSupply: BN.ZERO,
     totalAssetSupply: BN.ZERO,
@@ -178,7 +182,7 @@ export function TOKENS_LIST(poolName: string): IToken[] {
   return []
 }
 
-export const TOKENS_LIST_FULL: Array<IToken> = Object.values(tokenFullList).map((t) => ({
+export const TOKENS_LIST_FULL: Array<IToken> = Object.values(tokensFullList).map((t) => ({
   ...t,
   logo: tokenLogos[t.symbol],
 }));

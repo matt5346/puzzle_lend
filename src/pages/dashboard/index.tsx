@@ -141,9 +141,9 @@ const Dashboard: React.FC = () => {
           )}
         </Row>
 
-        <SizedBox height={96} />
         {address == null ? (
           <Column>
+            <SizedBox height={96} />
             <TitleH>What is Puzzle Lend?</TitleH>
             <Row justifyContent="space-between">
               <Card>

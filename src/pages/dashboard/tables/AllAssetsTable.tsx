@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable array-callback-return */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import styled from '@emotion/styled';
 import { useStores } from '@src/stores';
@@ -63,7 +63,7 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
     }
   };
 
-  useMemo(() => {
+  useEffect(() => {
     const data = filteredTokens.sort((a, b) => {
       const stats1: TTokenStatistics | undefined = tokenStore.poolDataTokensWithStats[a.assetId];
       const stats2: TTokenStatistics | undefined = tokenStore.poolDataTokensWithStats[b.assetId];
@@ -134,7 +134,6 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
                 rate={stats.currentPrice}
                 setupBorrowAPR={stats.setupBorrowAPR}
                 setupSupplyAPY={stats.setupSupplyAPY}
-                setupLtv={stats.setupLtv}
                 totalSupply={stats.totalAssetSupply}
                 totalBorrow={stats.totalAssetBorrow}
                 handleSupplyAssetClick={handleSupplyAssetClick}

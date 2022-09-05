@@ -73,8 +73,8 @@ class WalletVM {
   }
 
   get balances() {
-    const { accountStore, lendStore } = this.rootStore;
-    return TOKENS_LIST(lendStore.activePoolName)
+    const { accountStore } = this.rootStore;
+    return TOKENS_LIST('allTokens')
       .map((t) => {
         const balance = accountStore.findBalanceByAssetId(t.assetId);
         return balance ?? new Balance(t);
