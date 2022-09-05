@@ -232,7 +232,7 @@ const wavesCapService = {
         // borrow daily interest && daily INCOME
         const dailyIncome = supplyInterest * ((itemData.self_supply / 10 ** itemData.precision) * +currentPrice);
         const dailyBorrowInterest =
-          supplyInterest * ((itemData.self_borrowed / 10 ** itemData.precision) * +currentPrice);
+          +itemData.setup_interest * ((itemData.self_borrowed / 10 ** itemData.precision) * +currentPrice);
 
         console.log(itemData.setup_interest, +currentPrice, 'itemData.setup_interest');
         console.log(supplyInterest, UR, '----supplyInterest, UR');
