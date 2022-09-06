@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-implied-eval */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable no-return-assign */
 import RootStore from '@src/stores/RootStore';
@@ -115,6 +116,26 @@ export default class TokenStore {
     });
   }
 
+  // get ACTIVE POOL TOKENS without STATS for userStats
+  filterPoolDataTokens(contractId?: string): IToken[] {
+    const { lendStore } = this.rootStore;
+
+    return TOKENS_LIST(lendStore.activePoolName).filter(({ assetId }) => {
+      const poolData = this.poolStatsByContractId[contractId || lendStore.activePoolContract];
+
+      if (poolData && poolData.tokens) {
+        const tokensById = poolData.tokens.reduce(
+          (acc, stats) => ({ ...acc, [stats.assetId]: stats }),
+          {} as Record<string, TTokenStatistics>
+        );
+
+        return Object.keys(tokensById).includes(assetId);
+      }
+
+      return false;
+    });
+  }
+
   // get ACTIVE POOL TOKENS with STATS
   get poolDataTokensWithStats(): Record<string, TTokenStatistics> {
     let activePoolTokensWithStats: Record<string, TTokenStatistics>;
@@ -170,12 +191,14 @@ export default class TokenStore {
   };
 
   // loading all data about tokens, their apy/apr, supply/borrow and evth
-  public syncTokenStatistics = async (contractId?: string) => {
+  public syncTokenStatistics = async (contractId?: string, userId?: string) => {
     console.log(this.poolStatsArr, 'syncTokenStatistics 1!');
     const { accountStore, lendStore } = this.rootStore;
     const contractPoolId = contractId || lendStore.activePoolContract;
     console.log(contractPoolId, lendStore.activePoolContract, '------lendStore.activePoolContract');
     const contractPoolName = lendStore.poolNameById(contractPoolId);
+    const userContract = userId || accountStore.address;
+
     console.log(
       lendStore.poolNameById(contractId || lendStore.activePoolContract),
       'endStore.poolNameById(contractId)'
@@ -183,7 +206,7 @@ export default class TokenStore {
     const assets = TOKENS_LIST(contractPoolName).map(({ assetId }) => assetId);
     console.log(assets, 'ASSETS');
     console.log(contractPoolId, 'lendStore.activePoolContract 2');
-    const stats = await wavesCapService.getPoolsStats(assets, accountStore.address!, contractPoolId).catch((e) => {
+    const stats = await wavesCapService.getPoolsStats(assets, userContract!, contractPoolId).catch((e) => {
       // notifi\cationStore.notify(e.message ?? e.toString(), {
       //   type: 'error',
       // });
@@ -315,10 +338,10 @@ export default class TokenStore {
         volume24: new BN(details['24h_vol_usd-n']),
       };
     });
-    console.log(borrowCapacity, borrowCapacityUsed, 'borrowCapacity borrowCapacityUsed');
+    console.log(borrowCapacityUsed / borrowCapacity, 'borrowCapacity borrowCapacityUsed');
 
     const netAPY: number = (supplyAmountApy - borrowedAmountApr) / baseAmount;
-    const accountHealth: number = (borrowCapacity / borrowCapacityUsed) * 100;
+    const accountHealth: number = (1 - borrowCapacityUsed / borrowCapacity) * 100;
 
     console.log(netAPY, accountHealth, 'netapy accountHealth');
 
@@ -350,10 +373,13 @@ export default class TokenStore {
     this.rootStore = rootStore;
     makeAutoObservable(this);
     this.watchList = initState?.watchList ?? [];
-    Promise.all([Object.values(LENDS_CONTRACTS).map((item) => this.syncTokenStatistics(item))]).then(() =>
-      this.setInitialized(true)
-    );
-    setInterval(this.syncTokenStatistics, 60 * 2000);
+    Promise.all([
+      Object.values(LENDS_CONTRACTS).map((item) => this.syncTokenStatistics(item, rootStore.accountStore.address!)),
+    ]).then(() => this.setInitialized(true));
+
+    setInterval(() => {
+      this.syncTokenStatistics(rootStore.lendStore.activePoolContract, rootStore.accountStore.address!);
+    }, 60 * 2000);
   }
 
   serialize = (): ISerializedTokenStore => ({

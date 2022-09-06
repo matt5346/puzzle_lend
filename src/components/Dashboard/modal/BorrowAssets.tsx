@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import { observer } from 'mobx-react-lite';
 import styled from '@emotion/styled';
+import { Emoji } from '@src/UIKit/Emoji';
 import { Text } from '@src/UIKit/Text';
 import { Button } from '@src/UIKit/Button';
 import { MaxButton } from '@src/UIKit/MaxButton';
@@ -110,6 +111,10 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     return BN.formatUnits(val, decimal).toSignificant(6).toString();
   };
 
+  const getReserves = () => {
+    return +formatVal(props.totalSupply, props.decimals) - +formatVal(props.totalBorrow, props.decimals);
+  };
+
   const userMaximumToBorrowBN = (userColatteral: number, rate: BN) => {
     const maximum = userColatteral / 10 ** 6 / +rate.toFormat(4);
     const totalReserves = +formatVal(props.totalSupply, props.decimals) - +formatVal(props.totalBorrow, props.decimals);
@@ -196,6 +201,11 @@ const BorrowAssets: React.FC<IProps> = (props) => {
         </Column>
       </Row>
       <SizedBox height={16} />
+      {props.totalSupply && props.totalBorrow && getReserves() === 0 && (
+        <Text size="medium" type="error" fitContent>
+          Not Enough liquidity for Borrowing <Emoji symbol="🥲" label="cry" />
+        </Text>
+      )}
       <InputContainer focused={focused} readOnly={!props.setAmount} error={props.error}>
         {props.onMaxClick && (
           <MaxButton
@@ -234,6 +244,15 @@ const BorrowAssets: React.FC<IProps> = (props) => {
         </TokenToDollar>
       </InputContainer>
       <SizedBox height={24} />
+      <Row justifyContent="space-between">
+        <Text size="medium" type="secondary" fitContent>
+          {props.assetName} liquidity
+        </Text>
+        <Text size="medium" fitContent>
+          {props.totalSupply && props.totalBorrow && getReserves()} {props.assetSymbol}
+        </Text>
+      </Row>
+      <SizedBox height={14} />
       <Row justifyContent="space-between">
         <Text size="medium" type="secondary" fitContent>
           Borrow APR

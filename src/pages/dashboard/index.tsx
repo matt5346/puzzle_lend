@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useStores } from '@src/stores';
+import { IToken } from '@src/common/constants';
 import styled from '@emotion/styled';
 import { Row, Column } from '@src/common/styles/Flex';
 import { DashboardVMProvider } from '@src/pages/dashboard/DashboardVm';
@@ -101,6 +102,39 @@ const Dashboard: React.FC = () => {
   const { address } = accountStore;
   const isKeeperDisabled = !accountStore.isWavesKeeperInstalled;
 
+  const [filteredTokens, setFilteredTokens] = useState<IToken[]>([]);
+  const [showBorrow, showBorrowTable] = useState<boolean>(false);
+  const [showSupply, showSupplyTable] = useState<boolean>(false);
+
+  useMemo(() => {
+    const poolsData = tokenStore.poolDataTokens;
+    console.log(poolsData, 'poolsData');
+    console.log(tokenStore.poolDataTokensWithStats, 'tokenStore.poolDataTokensWithStats');
+
+    if (poolsData.every((item) => +tokenStore.poolDataTokensWithStats[item.assetId].selfBorrow === 0))
+      showBorrowTable(false);
+
+    if (poolsData.every((item) => +tokenStore.poolDataTokensWithStats[item.assetId].selfSupply === 0))
+      showSupplyTable(false);
+
+    // filtering USER supply/borrow values
+    // for showing or hiding supply/borrow TABLES
+    poolsData.forEach((t) => {
+      const stats = tokenStore.poolDataTokensWithStats[t.assetId];
+
+      if (showBorrow === false && Number(stats.selfBorrow) > 0) {
+        showBorrowTable(true);
+      }
+
+      if (showBorrow === false && Number(stats.selfSupply) > 0) {
+        showSupplyTable(true);
+      }
+    });
+    console.log(poolsData, '---FILTERED');
+
+    setFilteredTokens(poolsData);
+  }, [showBorrow, tokenStore.poolDataTokensWithStats, tokenStore.poolDataTokens]);
+
   const handleLogin = (loginType: LOGIN_TYPE) => {
     accountStore.login(loginType);
   };
@@ -125,7 +159,7 @@ const Dashboard: React.FC = () => {
 
         <Row justifyContent="space-between">
           <Column crossAxisSize="max">
-            <DashboardTable />
+            <DashboardTable filteredTokens={filteredTokens} showSupply={showSupply} showBorrow={showBorrow} showAll />
           </Column>
           <SizedBox width={40} />
           {address == null ? (

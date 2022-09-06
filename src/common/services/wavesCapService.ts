@@ -36,13 +36,6 @@ const wavesCapService = {
 
       // eslint-disable-next-line no-underscore-dangle
       userCollateral = response?.data?.result?.value?._2?.value;
-      // const stringParams = buildUrlParams({
-      //   total_suppliers: `.*_supplied_${assetId}`,
-      // });
-
-      // const urlSupply = `https://nodes.wavesnodes.com/addresses/data/${contractAddress}?${stringParams}`;
-      // const responseAssets = await axios.get(urlSupply);
-      // console.log(responseAssets, '.*_supplied_USDN');
       // data = responseAssets.data;
     } catch (err) {
       console.log(err, 'ERR');
@@ -75,6 +68,17 @@ const wavesCapService = {
 
     let tokensRates: any = {};
     let setupRate: any = {};
+
+    const stringParams2 = buildUrlParams(
+      {
+        total_suppliers: `.*_supplied_DG2xFkPdDwKUoBkzGAhQtLpSGzfXLiCYPEzeKH2Ad24p`,
+      },
+      'matches'
+    );
+
+    const urlSupply2 = `https://nodes.wavesnodes.com/addresses/data/${contractAddress}?${stringParams2}`;
+    const responseAssets2 = await axios.get(urlSupply2);
+    console.log(responseAssets2, '.*_supplied_USDN');
 
     try {
       const tokensRatesUrl = `http://nodes.wavesnodes.com/utils/script/evaluate/${contractAddress}`;

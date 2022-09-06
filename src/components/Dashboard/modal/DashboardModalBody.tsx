@@ -5,12 +5,12 @@ import BN from '@src/common/utils/BN';
 import { Column, Row } from '@src/common/styles/Flex';
 import { observer } from 'mobx-react-lite';
 import { SizedBox } from '@src/UIKit/SizedBox';
-import { DashboardWalletUseVM } from '@src/pages/dashboard/modal/DashboardWalletVM';
+import { DashboardWalletUseVM } from '@src/components/Dashboard/modal/DashboardWalletVM';
 import { IToken } from '@src/common/constants';
-import SupplyAssets from '@src/pages/dashboard/modal/SupplyAssets';
-import WithdrawAssets from '@src/pages/dashboard/modal/WithdrawAssets';
-import BorrowAssets from '@src/pages/dashboard/modal/BorrowAssets';
-import RepayAssets from '@src/pages/dashboard/modal/RepayAssets';
+import SupplyAssets from '@src/components/Dashboard/modal/SupplyAssets';
+import WithdrawAssets from '@src/components/Dashboard/modal/WithdrawAssets';
+import BorrowAssets from '@src/components/Dashboard/modal/BorrowAssets';
+import RepayAssets from '@src/components/Dashboard/modal/RepayAssets';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IProps {

@@ -107,6 +107,10 @@ const SupplyAssets: React.FC<IProps> = (props) => {
     return BN.formatUnits(val, decimal).toSignificant(6).toFormat(2);
   };
 
+  const getDailyIncome = () => {
+    return (+props.supplyInterest * +formatVal(amount, props.decimals)).toFixed(6);
+  };
+
   useEffect(() => {
     props.amount && setAmount(props.amount);
   }, [props.amount]);
@@ -209,11 +213,11 @@ const SupplyAssets: React.FC<IProps> = (props) => {
       {/* itemData.self_daily_income = supplyInterest * (itemData.self_supply / 10 ** itemData.precision); */}
       <SizedBox height={24} />
       <Row justifyContent="space-between">
-        <Text size="medium" type="secondary" fitContent>
+        <Text size="medium" type={+getDailyIncome() > 0 ? 'success' : 'secondary'} fitContent>
           Daily Income
         </Text>
-        <Text size="medium" fitContent>
-          $ {props.supplyInterest ? (+props.supplyInterest * +formatVal(amount, props.decimals)).toFixed(6) : 0}
+        <Text size="medium" type={+getDailyIncome() > 0 ? 'success' : 'primary'} fitContent>
+          $ {props.supplyInterest ? getDailyIncome() : 0}
         </Text>
       </Row>
       <SizedBox height={14} />

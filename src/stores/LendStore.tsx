@@ -30,10 +30,9 @@ export default class LendStore {
   activePoolContract = '';
 
   get activePoolName(): string {
-    let poolName: any =
-      Object.entries(LENDS_CONTRACTS).filter(([key, value]) => {
-        return value === this.activePoolContract ? key : false;
-      })[0] || 'mainPool';
+    let poolName: any = Object.entries(LENDS_CONTRACTS).filter(([key, value]) => {
+      return value === this.activePoolContract ? key : false;
+    })[0] || ['mainPool'];
 
     // eslint-disable-next-line prefer-destructuring
     if (poolName && poolName.length) poolName = poolName[0];
@@ -53,7 +52,6 @@ export default class LendStore {
 
   poolNameById = (contractId?: string) => {
     let poolName: any = Object.entries(LENDS_CONTRACTS).filter(([key, value]) => {
-      console.log(key, value, contractId, '-------key, value[0]=====');
       return value === contractId ? key : false;
     })[0] || ['mainPool'];
 
@@ -82,7 +80,6 @@ export default class LendStore {
     let poolId = '';
 
     if (params[params.length - 2] === 'pool') poolId = params[params.length - 1];
-    console.log(poolId, 'poolId');
     this.activePoolContract = poolId || LENDS_CONTRACTS.mainPool;
   };
 

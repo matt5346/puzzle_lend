@@ -1,4 +1,4 @@
-const buildUrlParams = (object) => {
+const buildUrlParams = (object, type) => {
   const parts = [];
 
   Object.keys(object).forEach((objectKey) => {
@@ -16,8 +16,8 @@ const buildUrlParams = (object) => {
           parts.push(`${objectKey}[${item}]=${object[objectKey][item]}`);
         }
       });
-    } else if (object[objectKey] === null) {
-      // do something
+    } else if (type === 'matches') {
+      parts.push(`matches=${object[objectKey]}`);
     } else {
       parts.push(`key=${object[objectKey]}`);
     }

@@ -24,6 +24,7 @@ interface IProps {
   setupSupplyAPY?: string;
   totalSupply?: BN;
   totalBorrow?: BN;
+  isUserStats: boolean;
   handleSupplyAssetClick: (assetId: string, step: number) => void;
 }
 
@@ -35,6 +36,7 @@ const Root = styled.div`
 const DesktopTokenTableRow: React.FC<IProps> = ({
   rate,
   token,
+  isUserStats,
   handleSupplyAssetClick,
   selfBorrow,
   selfSupply,
@@ -51,11 +53,13 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
   };
 
   return (
-    <Root className="gridRow">
-      <Row
-        alignItems="center"
-        onClick={() => navigate(`/dashboard/token/${token.assetId}`)}
-        style={{ cursor: 'pointer' }}>
+    <Root
+      className="gridRow"
+      onClick={(e) => {
+        e.preventDefault();
+        return navigate(`/dashboard/token/${token.assetId}`);
+      }}>
+      <Row alignItems="center" style={{ cursor: 'pointer' }}>
         <SquareTokenIcon size="small" src={tokenLogos[token.symbol]} />
         <SizedBox width={18} />
         <Text nowrap weight={500} fitContent>
@@ -153,11 +157,14 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
         </Column>
       ) : null}
 
-      {selfSupply ? (
+      {selfSupply && !isUserStats ? (
         <Row justifyContent="flex-end">
           <Button
             minWidth="108px"
-            onClick={() => handleSupplyAssetClick(token.assetId, 0)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSupplyAssetClick(token.assetId, 0);
+            }}
             size="medium"
             kind="secondary">
             Supply
@@ -165,7 +172,10 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
           <SizedBox width={12} />
           <Button
             minWidth="108px"
-            onClick={() => handleSupplyAssetClick(token.assetId, 1)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSupplyAssetClick(token.assetId, 1);
+            }}
             size="medium"
             kind="secondary">
             Withdraw
@@ -173,11 +183,14 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
         </Row>
       ) : null}
 
-      {selfBorrow ? (
+      {selfBorrow && !isUserStats ? (
         <Row justifyContent="flex-end">
           <Button
             minWidth="108px"
-            onClick={() => handleSupplyAssetClick(token.assetId, 2)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSupplyAssetClick(token.assetId, 2);
+            }}
             size="medium"
             kind="secondary">
             Borrow
@@ -185,7 +198,10 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
           <SizedBox width={12} />
           <Button
             minWidth="108px"
-            onClick={() => handleSupplyAssetClick(token.assetId, 3)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSupplyAssetClick(token.assetId, 3);
+            }}
             size="medium"
             kind="secondary">
             Repay
@@ -193,11 +209,14 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
         </Row>
       ) : null}
 
-      {totalSupply ? (
+      {totalSupply && !isUserStats ? (
         <Row justifyContent="flex-end">
           <Button
             minWidth="108px"
-            onClick={() => handleSupplyAssetClick(token.assetId, 0)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSupplyAssetClick(token.assetId, 0);
+            }}
             size="medium"
             kind="secondary">
             Supply
@@ -205,7 +224,10 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
           <SizedBox width={12} />
           <Button
             minWidth="108px"
-            onClick={() => handleSupplyAssetClick(token.assetId, 2)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSupplyAssetClick(token.assetId, 2);
+            }}
             size="medium"
             kind="secondary">
             Borrow

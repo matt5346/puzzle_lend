@@ -116,6 +116,10 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
     []
   );
 
+  const getReserves = () => {
+    return +formatVal(props.totalSupply, props.decimals) - +formatVal(props.totalBorrow, props.decimals);
+  };
+
   const handleChangeAmount = (v: BN) => {
     console.log('handleChangeAmount');
     const formattedVal = formatVal(v, props.decimals);
@@ -191,6 +195,15 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
         </TokenToDollar>
       </InputContainer>
       <SizedBox height={24} />
+      <Row justifyContent="space-between">
+        <Text size="medium" type="secondary" fitContent>
+          {props.assetName} liquidity
+        </Text>
+        <Text size="medium" fitContent>
+          {props.totalSupply && props.totalBorrow && getReserves()} {props.assetSymbol}
+        </Text>
+      </Row>
+      <SizedBox height={14} />
       <Row justifyContent="space-between">
         <Text size="medium" type="secondary" fitContent>
           Supply APY

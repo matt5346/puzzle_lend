@@ -11,9 +11,9 @@ import Header from '@components/Header';
 import WalletModal from '@components/Wallet/WalletModal';
 
 // pages
-import Home from '@src/pages/home/Home';
 import Dashboard from '@src/pages/dashboard';
 import DashboardToken from '@src/pages/dashboardToken';
+import UserStats from '@src/pages/userStats';
 
 // css
 import { Column } from '@src/common/styles/Flex';
@@ -44,6 +44,8 @@ const App: React.FC = () => {
         <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
         {/* for other pools with ids routes */}
         <Route path={ROUTES.DASHBOARD_POOl} element={<Dashboard />} />
+        {/* specific USER STATS */}
+        {tokenStore.poolDataTokensWithStats && <Route path={ROUTES.USER_STATS} element={<UserStats />} />}
         {tokenStore.poolDataTokensWithStats && <Route path={ROUTES.DASHBOARD_TOKEN} element={<DashboardToken />} />}
       </Routes>
       <WalletModal onClose={() => accountStore.setWalletModalOpened(false)} visible={accountStore.walletModalOpened} />

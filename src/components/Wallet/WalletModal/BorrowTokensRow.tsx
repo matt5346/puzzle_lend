@@ -54,13 +54,17 @@ const SupplyTokensRow: React.FC<IProps> = ({ vol24, token, rate, selfBorrow, set
         <Text type="primary" className="text" textAlign="center">
           Borrow APR
         </Text>
-        {setupBorrowAPR != null ? <Text type="primary">{setupBorrowAPR}%</Text> : <Text>-</Text>}
+        {setupBorrowAPR != null ? <Text type="primary">{(+setupBorrowAPR).toFixed(2)}%</Text> : <Text>-</Text>}
       </Column>
       <Column>
         <Text type="primary" className="text" textAlign="center">
           To be repaid
         </Text>
-        {selfBorrow != null ? <Text type="primary">{formatVal(selfBorrow, token.decimals)}$</Text> : <Text>-</Text>}
+        {selfBorrow != null ? (
+          <Text type="primary">{(+formatVal(selfBorrow, token.decimals)).toFixed(4)}$</Text>
+        ) : (
+          <Text>-</Text>
+        )}
       </Column>
     </Root>
   );

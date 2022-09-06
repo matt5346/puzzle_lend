@@ -7,10 +7,10 @@ import { useStores } from '@src/stores';
 import { Text } from '@src/UIKit/Text';
 import { IToken } from '@src/common/constants';
 import { SizedBox } from '@src/UIKit/SizedBox';
-import DashboardModal from '@src/pages/dashboard/modal';
-import AllAssetsTable from '@src/pages/dashboard/tables/AllAssetsTable';
-import MyBorrowTable from '@src/pages/dashboard/tables/MyBorrowTable';
-import MySupplyTable from '@src/pages/dashboard/tables/MySupplyTable';
+import DashboardModal from '@src/components/Dashboard/modal';
+import AllAssetsTable from '@src/components/Dashboard/tables/AllAssetsTable';
+import MyBorrowTable from '@src/components/Dashboard/tables/MyBorrowTable';
+import MySupplyTable from '@src/components/Dashboard/tables/MySupplyTable';
 
 // for some time
 export enum TokenCategoriesEnum {
@@ -20,8 +20,13 @@ export enum TokenCategoriesEnum {
   defi = 3,
   ducks = 4,
 }
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface IProps {}
+// isLoggedUser -- case for all users except user whos logged with wallet
+interface IProps {
+  filteredTokens: IToken[];
+  showSupply: boolean;
+  showBorrow: boolean;
+  showAll: boolean;
+}
 
 const Root = styled.div`
   display: flex;
@@ -34,47 +39,13 @@ const Wrap = styled.div`
   flex-direction: column;
 `;
 
-const DashboardTable: React.FC<IProps> = () => {
-  const { lendStore, tokenStore, accountStore } = useStores();
-  const [filteredTokens, setFilteredTokens] = useState<IToken[]>([]);
-  const [showBorrow, showBorrowTable] = useState<boolean>(false);
-  const [showSupply, showSupplyTable] = useState<boolean>(false);
-
+const DashboardTable: React.FC<IProps> = ({ filteredTokens, showSupply, showBorrow, showAll }) => {
+  const { lendStore, accountStore } = useStores();
   const { address } = accountStore;
 
   const handleSupplyAssetClick = (assetId: string, step: number) => {
     lendStore.setDashboardModalOpened(true, assetId, step);
   };
-
-  useMemo(() => {
-    const poolsData = tokenStore.poolDataTokens;
-    console.log(poolsData, 'poolsData');
-    console.log(tokenStore.poolDataTokensWithStats, 'tokenStore.poolDataTokensWithStats');
-
-    if (poolsData.every((item) => +tokenStore.poolDataTokensWithStats[item.assetId].selfBorrow === 0))
-      showBorrowTable(false);
-
-    if (poolsData.every((item) => +tokenStore.poolDataTokensWithStats[item.assetId].selfSupply === 0))
-      showSupplyTable(false);
-
-    // filtering USER supply/borrow values
-    // for showing or hiding supply/borrow TABLES
-    poolsData.forEach((t) => {
-      const stats = tokenStore.poolDataTokensWithStats[t.assetId];
-      console.log(stats, 'STATS');
-
-      if (showBorrow === false && Number(stats.selfBorrow) > 0) {
-        showBorrowTable(true);
-      }
-
-      if (showBorrow === false && Number(stats.selfSupply) > 0) {
-        showSupplyTable(true);
-      }
-    });
-    console.log(poolsData, '---FILTERED');
-
-    setFilteredTokens(poolsData);
-  }, [showBorrow, tokenStore.poolDataTokensWithStats, tokenStore.poolDataTokens]);
 
   return (
     <Root>
@@ -83,30 +54,35 @@ const DashboardTable: React.FC<IProps> = () => {
           <Text weight={500} type="secondary" margin="0 0 10px 0">
             My supply
           </Text>
-          <MySupplyTable filteredTokens={filteredTokens} handleSupplyAssetClick={handleSupplyAssetClick} />
+          <MySupplyTable filteredTokens={filteredTokens} handleSupplyAssetClick={handleSupplyAssetClick} isUserStats />
           <SizedBox height={40} />
         </Wrap>
       ) : null}
+
       {showBorrow && address ? (
         <Wrap>
           <Text weight={500} type="secondary" margin="0 0 10px 0">
             My borrow
           </Text>
-          <MyBorrowTable filteredTokens={filteredTokens} handleSupplyAssetClick={handleSupplyAssetClick} />
+          <MyBorrowTable filteredTokens={filteredTokens} handleSupplyAssetClick={handleSupplyAssetClick} isUserStats />
           <SizedBox height={40} />
         </Wrap>
       ) : null}
-      <Text weight={500} type="secondary" margin="0 0 10px 0">
-        All assets
-      </Text>
 
-      <AllAssetsTable filteredTokens={filteredTokens} handleSupplyAssetClick={handleSupplyAssetClick} />
+      {showAll ? (
+        <Wrap>
+          <Text weight={500} type="secondary" margin="0 0 10px 0">
+            All assets
+          </Text>
+          <AllAssetsTable filteredTokens={filteredTokens} handleSupplyAssetClick={handleSupplyAssetClick} />
 
-      <DashboardModal
-        filteredTokens={filteredTokens}
-        onClose={() => lendStore.setDashboardModalOpened(false, '', lendStore.dashboardModalStep)}
-        visible={lendStore.dashboardModalOpened}
-      />
+          <DashboardModal
+            filteredTokens={filteredTokens}
+            onClose={() => lendStore.setDashboardModalOpened(false, '', lendStore.dashboardModalStep)}
+            visible={lendStore.dashboardModalOpened}
+          />
+        </Wrap>
+      ) : null}
     </Root>
   );
 };

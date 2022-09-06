@@ -53,13 +53,17 @@ const SupplyTokensRow: React.FC<IProps> = ({ vol24, token, rate, setupSupplyAPY,
         <Text type="primary" className="text" textAlign="center">
           Supply APY
         </Text>
-        {setupSupplyAPY != null ? <Text type="primary">{setupSupplyAPY}%</Text> : <Text>-</Text>}
+        {setupSupplyAPY != null ? <Text type="primary">{(+setupSupplyAPY).toFixed(2)}%</Text> : <Text>-</Text>}
       </Column>
       <Column>
         <Text type="primary" className="text" textAlign="center">
           My Supply
         </Text>
-        {selfSupply != null ? <Text type="primary">{formatVal(selfSupply, token.decimals)}$</Text> : <Text>-</Text>}
+        {selfSupply != null ? (
+          <Text type="primary">{(+formatVal(selfSupply, token.decimals)).toFixed(4)}$</Text>
+        ) : (
+          <Text>-</Text>
+        )}
       </Column>
     </Root>
   );

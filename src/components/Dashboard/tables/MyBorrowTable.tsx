@@ -9,11 +9,12 @@ import Card from '@src/common/styles/Card';
 import { Row, Column } from '@src/common/styles/Flex';
 import { IToken, TTokenStatistics } from '@src/common/constants';
 import { ReactComponent as SortDownIcon } from '@src/common/assets/icons/sortDown.svg';
-import DesktopTokenTableRow from '@src/pages/dashboard/tables/DesktopTokenTableRow';
+import DesktopTokenTableRow from '@src/components/Dashboard/tables/DesktopTokenTableRow';
 import BN from '@src/common/utils/BN';
 
 interface IProps {
   filteredTokens: IToken[];
+  isUserStats: boolean;
   handleSupplyAssetClick: (assetId: string, step: number) => void;
 }
 
@@ -37,7 +38,7 @@ const TableTitle: React.FC<{
   </Row>
 );
 
-const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClick }) => {
+const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClick, isUserStats }) => {
   const [sort, setSort] = useState<'selfBorrow' | 'setupBorrowAPR' | 'selfDailyBorrowInterest'>('selfBorrow');
   const [sortMode, setSortMode] = useState<'descending' | 'ascending'>('descending');
   const { tokenStore } = useStores();
@@ -84,7 +85,7 @@ const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
     <Card style={{ padding: 0, overflow: 'auto' }} justifyContent="center">
       <GridTable
         style={{ width: 'fit-content', minWidth: '100%' }}
-        desktopTemplate="5fr 2fr 2fr 2.5fr 4fr"
+        desktopTemplate={isUserStats ? '5fr 2fr 2fr 2.5fr' : '5fr 2fr 2fr 2.5fr 4fr'}
         mobileTemplate="2fr 1fr">
         <div className="gridTitle">
           <div>Asset</div>
@@ -109,6 +110,7 @@ const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
             if (stats && Number(stats.selfBorrow) > 0) {
               return (
                 <DesktopTokenTableRow
+                  isUserStats
                   token={t}
                   key={t.assetId}
                   rate={stats.currentPrice}

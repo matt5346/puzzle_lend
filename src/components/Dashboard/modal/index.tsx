@@ -6,8 +6,8 @@ import { ReactComponent as CloseIcon } from '@src/common/assets/icons/close.svg'
 import { Column, Row } from '@src/common/styles/Flex';
 import { ModalTabs } from '@src/UIKit/ModalTabs';
 import { SizedBox } from '@src/UIKit/SizedBox';
-import DashboardModalBody from '@src/pages/dashboard/modal/DashboardModalBody';
-import { DashboardWalletVMProvider, DashboardWalletUseVM } from '@src/pages/dashboard/modal/DashboardWalletVM';
+import DashboardModalBody from '@src/components/Dashboard/modal/DashboardModalBody';
+import { DashboardWalletVMProvider, DashboardWalletUseVM } from '@src/components/Dashboard/modal/DashboardWalletVM';
 import { observer } from 'mobx-react-lite';
 import { useStores } from '@src/stores';
 import './wallet.css';
