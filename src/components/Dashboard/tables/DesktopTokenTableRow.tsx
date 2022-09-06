@@ -71,7 +71,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
 
       {selfSupply != null && rate ? (
         <Column crossAxisSize="max">
-          <Text textAlign="right" size="medium">
+          <Text weight={500} textAlign="right" size="medium">
             {(+formatVal(selfSupply, token.decimals)).toFixed(4)} {token.symbol}
           </Text>
           <Text textAlign="right" size="small" type="secondary">
@@ -88,7 +88,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
 
       {totalSupply != null && rate ? (
         <Column crossAxisSize="max">
-          <Text textAlign="right" size="medium">
+          <Text weight={500} textAlign="right" size="medium">
             {(+formatVal(totalSupply, token.decimals)).toFixed(2)} {token.symbol}
           </Text>
           <Text textAlign="right" size="small" type="secondary">
@@ -107,7 +107,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
 
       {dailyIncome && rate != null ? (
         <Column crossAxisSize="max">
-          <Text textAlign="right" size="medium">
+          <Text weight={500} textAlign="right" size="medium">
             {(+dailyIncome / +rate).toFixed(6)} {token.symbol}
           </Text>
           <Text textAlign="right" size="small" type="secondary">
@@ -120,7 +120,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
 
       {totalBorrow != null && rate ? (
         <Column crossAxisSize="max">
-          <Text textAlign="right" size="medium">
+          <Text weight={500} textAlign="right" size="medium">
             {(+formatVal(totalBorrow, token.decimals)).toFixed(2)} {token.symbol}
           </Text>
           <Text textAlign="right" size="small" type="secondary">
@@ -131,7 +131,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
 
       {selfBorrow != null && rate ? (
         <Column crossAxisSize="max">
-          <Text textAlign="right" size="medium">
+          <Text weight={500} textAlign="right" size="medium">
             {(+formatVal(selfBorrow, token.decimals)).toFixed(4)} {token.symbol}
           </Text>
           <Text textAlign="right" size="small" type="secondary">
@@ -148,7 +148,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
 
       {selfDailyBorrowInterest && rate != null ? (
         <Column crossAxisSize="max">
-          <Text textAlign="right" size="medium">
+          <Text weight={500} textAlign="right" size="medium">
             {(+selfDailyBorrowInterest / +rate).toFixed(6)} {token.symbol}
           </Text>
           <Text textAlign="right" size="small" type="secondary">
