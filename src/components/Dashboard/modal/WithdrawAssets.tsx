@@ -14,6 +14,7 @@ import { MaxButton } from '@src/UIKit/MaxButton';
 import { BigNumberInput } from '@src/UIKit/BigNumberInput';
 import { AmountInput } from '@src/UIKit/AmountInput';
 import { Column, Row } from '@src/common/styles/Flex';
+import { Emoji } from '@src/UIKit/Emoji';
 import BN from '@src/common/utils/BN';
 import _ from 'lodash';
 
@@ -240,8 +241,13 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
         </Text>
       </Row>
       <SizedBox height={16} />
+      {/* if NO liquidity show ERROR, else withdraw or login */}
       <Footer>
-        {accountStore && accountStore.address ? (
+        {props.totalSupply && props.totalBorrow && getReserves() === 0 ? (
+          <Button fixed disabled size="large">
+            Not Enough liquidity to Withdraw
+          </Button>
+        ) : accountStore && accountStore.address ? (
           <Button
             disabled={+amount === 0}
             fixed

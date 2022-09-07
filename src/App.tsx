@@ -14,6 +14,7 @@ import WalletModal from '@components/Wallet/WalletModal';
 import Dashboard from '@src/pages/dashboard';
 import DashboardToken from '@src/pages/dashboardToken';
 import UserStats from '@src/pages/userStats';
+import UsersList from '@src/pages/usersList';
 
 // css
 import { Column } from '@src/common/styles/Flex';
@@ -46,6 +47,7 @@ const App: React.FC = () => {
         <Route path={ROUTES.DASHBOARD_POOl} element={<Dashboard />} />
         {/* specific USER STATS */}
         {tokenStore.poolDataTokensWithStats && <Route path={ROUTES.USER_STATS} element={<UserStats />} />}
+        {tokenStore.poolDataTokensWithStats && <Route path={ROUTES.BORROW_SUPPLY_USERS} element={<UsersList />} />}
         {tokenStore.poolDataTokensWithStats && <Route path={ROUTES.DASHBOARD_TOKEN} element={<DashboardToken />} />}
       </Routes>
       <WalletModal onClose={() => accountStore.setWalletModalOpened(false)} visible={accountStore.walletModalOpened} />

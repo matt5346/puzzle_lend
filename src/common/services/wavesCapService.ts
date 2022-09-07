@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 import axios from 'axios';
 import BN from '@src/common/utils/BN';
 import buildUrlParams from '@src/common/utils/build-url-params';
@@ -17,6 +18,83 @@ interface IAssetResponse {
 }
 
 const wavesCapService = {
+  getBorrowSupplyUsers: async (contractAddress: string, assetsId: string[]): Promise<any> => {
+    let usersData: any = [];
+
+    try {
+      const userData = await Promise.all(
+        assetsId.map(async (itemId) => {
+          const stringParams = buildUrlParams(
+            {
+              total_suppliers: `.*_(supplied%7Cborrowed)_${itemId}`,
+            },
+            'matches'
+          );
+
+          const urlSupply = `https://nodes.wavesnodes.com/addresses/data/${contractAddress}?${stringParams}`;
+          const responseAssets = await axios.get(urlSupply);
+          console.log(responseAssets, '.responseAssets');
+          return { [itemId]: responseAssets.data };
+        })
+      );
+      console.log(userData, '.supplyData objData');
+
+      const list = assetsId.map((item) => {
+        const val: any = {
+          [item]: [],
+        };
+
+        const assetData: any = userData.find((userDataItem: any) => Object.keys(userDataItem)[0] === item);
+        console.log(assetData, '.*_supplied_USDN assetData');
+
+        Object.values(assetData).forEach((objData: any) => {
+          const suppliedUsers: any = [];
+          const borrowedUsers: any = [];
+
+          objData.forEach((userObj: any) => {
+            const supplyItem = {
+              owner: null,
+              supplied: null,
+              borrowed: null,
+              tokenContract: null,
+            };
+
+            console.log(userObj, '.*_supplied_USDN objData');
+            const objDataSplitted = userObj.key.split('_');
+            if (objDataSplitted[1] === 'supplied') {
+              supplyItem.tokenContract = objDataSplitted[objDataSplitted.length - 1];
+              supplyItem.supplied = userObj.value;
+              supplyItem.owner = objDataSplitted[0];
+              suppliedUsers.push(supplyItem);
+            }
+
+            if (objDataSplitted[1] === 'borrowed') {
+              supplyItem.tokenContract = objDataSplitted[objDataSplitted.length - 1];
+              supplyItem.borrowed = userObj.value;
+              supplyItem.owner = objDataSplitted[0];
+              borrowedUsers.push(supplyItem);
+            }
+          });
+          console.log(borrowedUsers, suppliedUsers, 'users assetData');
+
+          val[item] = {
+            suppliedUsers,
+            borrowedUsers,
+          };
+        });
+
+        return val;
+      });
+      console.log(list, '.list objData');
+      usersData = list;
+      // eslint-disable-next-line no-underscore-dangle
+      // data = responseAssets.data;
+    } catch (err) {
+      console.log(err, 'ERR');
+    }
+
+    return usersData;
+  },
   getUserExtraStats: async (userId: string, contractAddress: string): Promise<any> => {
     let userCollateral = 0;
 
@@ -69,17 +147,6 @@ const wavesCapService = {
     let tokensRates: any = {};
     let setupRate: any = {};
 
-    const stringParams2 = buildUrlParams(
-      {
-        total_suppliers: `.*_supplied_DG2xFkPdDwKUoBkzGAhQtLpSGzfXLiCYPEzeKH2Ad24p`,
-      },
-      'matches'
-    );
-
-    const urlSupply2 = `https://nodes.wavesnodes.com/addresses/data/${contractAddress}?${stringParams2}`;
-    const responseAssets2 = await axios.get(urlSupply2);
-    console.log(responseAssets2, '.*_supplied_USDN');
-
     try {
       const tokensRatesUrl = `http://nodes.wavesnodes.com/utils/script/evaluate/${contractAddress}`;
 
@@ -121,7 +188,6 @@ const wavesCapService = {
 
     const assetsData = await Promise.all(
       assetsId.map(async (itemId) => {
-        // todo: pass pools as const
         const stringParams = buildUrlParams({
           total_supply: `total_supplied_${itemId}`,
           total_borrow: `total_borrowed_${itemId}`,

@@ -201,11 +201,6 @@ const BorrowAssets: React.FC<IProps> = (props) => {
         </Column>
       </Row>
       <SizedBox height={16} />
-      {props.totalSupply && props.totalBorrow && getReserves() === 0 && (
-        <Text size="medium" type="error" fitContent>
-          Not Enough liquidity for Borrowing <Emoji symbol="🥲" label="cry" />
-        </Text>
-      )}
       <InputContainer focused={focused} readOnly={!props.setAmount} error={props.error}>
         {props.onMaxClick && (
           <MaxButton
@@ -301,8 +296,13 @@ const BorrowAssets: React.FC<IProps> = (props) => {
         />
       </Row>
       <SizedBox height={24} />
+      {/* if NO liquidity show ERROR, else borrow or login */}
       <Footer>
-        {accountStore && accountStore.address ? (
+        {props.totalSupply && props.totalBorrow && getReserves() === 0 ? (
+          <Button fixed disabled size="large">
+            Not Enough liquidity to Borrow
+          </Button>
+        ) : accountStore && accountStore.address ? (
           <Button
             disabled={!props.isAgree || +amount === 0}
             fixed

@@ -160,6 +160,7 @@ export const ROUTES = {
   HOME: '/',
   DASHBOARD: '/dashboard',
   USER_STATS: '/user/:userId',
+  BORROW_SUPPLY_USERS: '/users/list',
   DASHBOARD_POOl: '/dashboard/pool/:poolId',
   DASHBOARD_TOKEN: '/dashboard/token/:assetId',
   NOT_FOUND: '/404',
