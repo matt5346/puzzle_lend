@@ -70,6 +70,7 @@ const UserStats: React.FC = () => {
             showBorrow={showSupply}
             showSupply={showSupply}
             showAll={false}
+            isUserStats
           />
         ) : null}
       </Column>

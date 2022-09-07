@@ -159,7 +159,13 @@ const Dashboard: React.FC = () => {
 
         <Row justifyContent="space-between">
           <Column crossAxisSize="max">
-            <DashboardTable filteredTokens={filteredTokens} showSupply={showSupply} showBorrow={showBorrow} showAll />
+            <DashboardTable
+              filteredTokens={filteredTokens}
+              showSupply={showSupply}
+              showBorrow={showBorrow}
+              showAll
+              isUserStats={false}
+            />
           </Column>
           <SizedBox width={40} />
           {address == null ? (

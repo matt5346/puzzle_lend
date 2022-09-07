@@ -20,12 +20,13 @@ export enum TokenCategoriesEnum {
   defi = 3,
   ducks = 4,
 }
-// isLoggedUser -- case for all users except user whos logged with wallet
+// isUserStats -- case for all users except user whos logged with wallet
 interface IProps {
   filteredTokens: IToken[];
   showSupply: boolean;
   showBorrow: boolean;
   showAll: boolean;
+  isUserStats: boolean;
 }
 
 const Root = styled.div`
@@ -39,7 +40,7 @@ const Wrap = styled.div`
   flex-direction: column;
 `;
 
-const DashboardTable: React.FC<IProps> = ({ filteredTokens, showSupply, showBorrow, showAll }) => {
+const DashboardTable: React.FC<IProps> = ({ filteredTokens, showSupply, showBorrow, showAll, isUserStats }) => {
   const { lendStore, accountStore } = useStores();
   const { address } = accountStore;
 
@@ -54,7 +55,11 @@ const DashboardTable: React.FC<IProps> = ({ filteredTokens, showSupply, showBorr
           <Text weight={500} type="secondary" margin="0 0 10px 0">
             My supply
           </Text>
-          <MySupplyTable filteredTokens={filteredTokens} handleSupplyAssetClick={handleSupplyAssetClick} isUserStats />
+          <MySupplyTable
+            filteredTokens={filteredTokens}
+            handleSupplyAssetClick={handleSupplyAssetClick}
+            isUserStats={isUserStats}
+          />
           <SizedBox height={40} />
         </Wrap>
       ) : null}
@@ -64,7 +69,11 @@ const DashboardTable: React.FC<IProps> = ({ filteredTokens, showSupply, showBorr
           <Text weight={500} type="secondary" margin="0 0 10px 0">
             My borrow
           </Text>
-          <MyBorrowTable filteredTokens={filteredTokens} handleSupplyAssetClick={handleSupplyAssetClick} isUserStats />
+          <MyBorrowTable
+            filteredTokens={filteredTokens}
+            handleSupplyAssetClick={handleSupplyAssetClick}
+            isUserStats={isUserStats}
+          />
           <SizedBox height={40} />
         </Wrap>
       ) : null}

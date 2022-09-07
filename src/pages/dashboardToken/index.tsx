@@ -186,14 +186,14 @@ const DashboardToken: React.FC = () => {
       )}
       <SizedBox height={24} />
       <Row>
-        <Anchor href="https://puzzleswap.org/" className="details-link-btn">
+        <Anchor href={`https://puzzleswap.org/trade?asset0=${assetId}`} className="details-link-btn">
           <Button size="medium" kind="secondary">
             <Exchange />
             Trade on Puzzle Swap
           </Button>
         </Anchor>
         <SizedBox width={8} />
-        <Anchor href="https://puzzleswap.org/" className="details-link-btn">
+        <Anchor href={`https://puzzleswap.org/explore/token/${assetId}`} className="details-link-btn">
           <Button size="medium" kind="secondary">
             <Info />
             More info
