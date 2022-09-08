@@ -15,7 +15,7 @@ import {
 import wavesCapService from '@src/common/services/wavesCapService';
 import BN from '@src/common/utils/BN';
 
-export default class TokenStore {
+export default class UsersStore {
   public rootStore: RootStore;
 
   initialized = false;
@@ -36,7 +36,7 @@ export default class TokenStore {
 
   userCollateral = 0;
 
-  private setPoolData = (poolStats: PoolDataType) => {
+  private setUsersPoolData = (poolStats: PoolDataType) => {
     console.log(poolStats, 'poolStats 1');
     const getPool = this.poolStatsArr.find((item) => item.contractId === poolStats.contractId);
 
@@ -176,6 +176,8 @@ export default class TokenStore {
 
     return stats;
   };
+
+  // TODO REMOVE unrequired data
 
   // loading all data about tokens, their apy/apr, supply/borrow and evth
   public syncTokenStatistics = async (contractId?: string, userId?: string) => {
@@ -343,24 +345,18 @@ export default class TokenStore {
       tokens: statistics,
     };
 
-    this.setPoolData(poolData);
+    this.setUsersPoolData(poolData);
 
     console.log(statistics, 'syncTokenStatistics 2!');
 
     Object.values(LENDS_CONTRACTS).map((item) => this.loadUserDetails(item));
+    return stats;
   };
 
   constructor(rootStore: RootStore, initState?: ISerializedTokenStore) {
     this.rootStore = rootStore;
     makeAutoObservable(this);
     this.watchList = initState?.watchList ?? [];
-    Promise.all([
-      Object.values(LENDS_CONTRACTS).map((item) => this.syncTokenStatistics(item, rootStore.accountStore.address!)),
-    ]).then(() => this.setInitialized(true));
-
-    setInterval(() => {
-      this.syncTokenStatistics(rootStore.lendStore.activePoolContract, rootStore.accountStore.address!);
-    }, 60 * 2000);
   }
 
   serialize = (): ISerializedTokenStore => ({

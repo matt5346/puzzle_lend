@@ -14,42 +14,24 @@ import { Column, Row } from '@src/common/styles/Flex';
 import BN from '@src/common/utils/BN';
 
 interface IProps {
-  token: IToken;
-  rate?: BN;
-  selfSupply?: BN;
-  selfBorrow?: BN;
-  dailyIncome?: string;
-  selfDailyBorrowInterest?: string;
-  setupBorrowAPR?: string;
-  setupSupplyAPY?: string;
-  totalSupply?: BN;
-  totalBorrow?: BN;
-  isUserStats: boolean;
-  handleSupplyAssetClick: (assetId: string, step: number) => void;
+  owner?: string;
+  symbol?: string;
+  decimals?: number;
+  totalBorrow?: number;
+  totalSupply?: number;
 }
 
 const Root = styled.div`
   display: flex;
   align-items: center;
+  width: 100%;
 `;
 
-const DesktopTokenTableRow: React.FC<IProps> = ({
-  rate,
-  token,
-  isUserStats,
-  handleSupplyAssetClick,
-  selfBorrow,
-  selfSupply,
-  dailyIncome,
-  totalSupply,
-  totalBorrow,
-  selfDailyBorrowInterest,
-  setupBorrowAPR,
-  setupSupplyAPY,
-}) => {
+const DesktopTokenTableRow: React.FC<IProps> = ({ owner, totalSupply, totalBorrow, symbol, decimals }) => {
   const navigate = useNavigate();
-  const formatVal = (val: BN, decimal: number) => {
-    return BN.formatUnits(val, decimal).toSignificant(6).toFormat(5);
+
+  const formatVal = (val: number, decimal: number) => {
+    return (val / 10 ** decimal).toFixed(2);
   };
 
   return (
@@ -57,183 +39,63 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
       className="gridRow"
       onClick={(e) => {
         e.preventDefault();
-        return navigate(`/dashboard/token/${token.assetId}`);
+        if (owner === 'total') return;
+
+        // eslint-disable-next-line consistent-return
+        return navigate(`/user/${owner}`);
       }}>
-      <Row alignItems="center" style={{ cursor: 'pointer' }}>
-        <SquareTokenIcon size="small" src={tokenLogos[token.symbol]} />
-        <SizedBox width={18} />
-        <Text nowrap weight={500} fitContent>
-          {token.name}
-          <Text>$ {rate?.gte(0.0001) ? rate?.toFormat(4) : rate?.toFormat(8)}</Text>
-        </Text>
-        <SizedBox width={18} />
-      </Row>
-
-      {selfSupply != null && rate ? (
+      {owner != null ? (
         <Column crossAxisSize="max">
-          <Text weight={500} textAlign="right" size="medium">
-            {(+formatVal(selfSupply, token.decimals)).toFixed(4)} {token.symbol}
-          </Text>
-          <Text textAlign="right" size="small" type="secondary">
-            $ {(+formatVal(selfSupply, token.decimals) * +rate).toFixed(4)}
-          </Text>
+          <Text textAlign="left">{owner}</Text>
         </Column>
-      ) : null}
-
-      {/* {setupLtv != null ? (
+      ) : (
         <Column crossAxisSize="max">
-          <Text textAlign="right">{setupLtv}%</Text>
+          <Text textAlign="right" />
         </Column>
-      ) : null} */}
-
-      {totalSupply != null && rate ? (
-        <Column crossAxisSize="max">
-          <Text weight={500} textAlign="right" size="medium">
-            {(+formatVal(totalSupply, token.decimals)).toFixed(2)} {token.symbol}
-          </Text>
-          <Text textAlign="right" size="small" type="secondary">
-            $ {(+formatVal(totalSupply, token.decimals) * +rate).toFixed(2)}
-          </Text>
-        </Column>
-      ) : null}
-
-      {setupSupplyAPY ? (
-        <Column crossAxisSize="max">
-          <Text textAlign="right">{Number(setupSupplyAPY).toFixed(2)}%</Text>
-        </Column>
-      ) : selfBorrow ? null : (
-        <Text textAlign="right">0%</Text>
       )}
 
-      {dailyIncome && rate != null ? (
+      {totalBorrow != null ? (
         <Column crossAxisSize="max">
-          <Text weight={500} textAlign="right" size="medium">
-            {(+dailyIncome / +rate).toFixed(6)} {token.symbol}
-          </Text>
-          <Text textAlign="right" size="small" type="secondary">
-            $ {Number(dailyIncome).toFixed(8)}
+          <Text textAlign="right">
+            {formatVal(totalBorrow, decimals!)} {symbol}
           </Text>
         </Column>
-      ) : selfSupply && +selfSupply > 0 ? (
-        <Text textAlign="right">0</Text>
-      ) : null}
-
-      {totalBorrow != null && rate ? (
+      ) : (
         <Column crossAxisSize="max">
-          <Text weight={500} textAlign="right" size="medium">
-            {(+formatVal(totalBorrow, token.decimals)).toFixed(2)} {token.symbol}
-          </Text>
-          <Text textAlign="right" size="small" type="secondary">
-            $ {(+formatVal(totalBorrow, token.decimals) * +rate).toFixed(2)}
+          <Text textAlign="right" />
+        </Column>
+      )}
+
+      {totalSupply != null ? (
+        <Column crossAxisSize="max">
+          <Text textAlign="right">
+            {formatVal(totalSupply, decimals!)} {symbol}
           </Text>
         </Column>
-      ) : null}
-
-      {selfBorrow != null && rate ? (
+      ) : (
         <Column crossAxisSize="max">
-          <Text weight={500} textAlign="right" size="medium">
-            {(+formatVal(selfBorrow, token.decimals)).toFixed(4)} {token.symbol}
-          </Text>
-          <Text textAlign="right" size="small" type="secondary">
-            $ {(+formatVal(selfBorrow, token.decimals) * +rate).toFixed(4)}
-          </Text>
+          <Text textAlign="right" />
         </Column>
-      ) : null}
+      )}
 
-      {setupBorrowAPR != null ? (
-        <Column crossAxisSize="max">
-          <Text textAlign="right">{(+setupBorrowAPR).toFixed(2)}%</Text>
-        </Column>
-      ) : null}
-
-      {selfDailyBorrowInterest && rate != null ? (
-        <Column crossAxisSize="max">
-          <Text weight={500} textAlign="right" size="medium">
-            {(+selfDailyBorrowInterest / +rate).toFixed(6)} {token.symbol}
-          </Text>
-          <Text textAlign="right" size="small" type="secondary">
-            $ {Number(selfDailyBorrowInterest).toFixed(8)}
-          </Text>
-        </Column>
-      ) : null}
-
-      {selfSupply && isUserStats ? (
+      {owner !== 'total' ? (
         <Row justifyContent="flex-end">
           <Button
             minWidth="108px"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleSupplyAssetClick(token.assetId, 0);
-            }}
             size="medium"
-            kind="secondary">
-            Supply
-          </Button>
-          <SizedBox width={12} />
-          <Button
-            minWidth="108px"
+            kind="secondary"
             onClick={(e) => {
-              e.stopPropagation();
-              handleSupplyAssetClick(token.assetId, 1);
-            }}
-            size="medium"
-            kind="secondary">
-            Withdraw
+              e.preventDefault();
+              return navigate(`/user/${owner}`);
+            }}>
+            Check user
           </Button>
         </Row>
-      ) : null}
-
-      {selfBorrow && isUserStats ? (
-        <Row justifyContent="flex-end">
-          <Button
-            minWidth="108px"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleSupplyAssetClick(token.assetId, 2);
-            }}
-            size="medium"
-            kind="secondary">
-            Borrow
-          </Button>
-          <SizedBox width={12} />
-          <Button
-            minWidth="108px"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleSupplyAssetClick(token.assetId, 3);
-            }}
-            size="medium"
-            kind="secondary">
-            Repay
-          </Button>
-        </Row>
-      ) : null}
-
-      {totalSupply ? (
-        <Row justifyContent="flex-end">
-          <Button
-            minWidth="108px"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleSupplyAssetClick(token.assetId, 0);
-            }}
-            size="medium"
-            kind="secondary">
-            Supply
-          </Button>
-          <SizedBox width={12} />
-          <Button
-            minWidth="108px"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleSupplyAssetClick(token.assetId, 2);
-            }}
-            size="medium"
-            kind="secondary">
-            Borrow
-          </Button>
-        </Row>
-      ) : null}
+      ) : (
+        <Column crossAxisSize="max">
+          <Text textAlign="right" />
+        </Column>
+      )}
     </Root>
   );
 };

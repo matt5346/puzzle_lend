@@ -41,7 +41,7 @@ const TableTitle: React.FC<{
 const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClick, isUserStats }) => {
   const [sort, setSort] = useState<'selfBorrow' | 'setupBorrowAPR' | 'selfDailyBorrowInterest'>('selfBorrow');
   const [sortMode, setSortMode] = useState<'descending' | 'ascending'>('descending');
-  const { tokenStore } = useStores();
+  const { usersStore } = useStores();
   const [sortedTokens, setSortedTokens] = useState<IToken[]>([]);
 
   const selectSort = (v: 'selfBorrow' | 'setupBorrowAPR' | 'selfDailyBorrowInterest') => {
@@ -55,8 +55,8 @@ const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
 
   useEffect(() => {
     const data = filteredTokens.sort((a, b) => {
-      const stats1: TTokenStatistics | undefined = tokenStore.poolDataTokensWithStats[a.assetId];
-      const stats2: TTokenStatistics | undefined = tokenStore.poolDataTokensWithStats[b.assetId];
+      const stats1: TTokenStatistics | undefined = usersStore.poolDataTokensWithStats[a.assetId];
+      const stats2: TTokenStatistics | undefined = usersStore.poolDataTokensWithStats[b.assetId];
       let key: keyof TTokenStatistics | undefined;
       if (sort === 'selfBorrow') key = 'selfBorrow';
       if (sort === 'setupBorrowAPR') key = 'setupBorrowAPR';
@@ -79,7 +79,7 @@ const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
         : 1;
     });
     setSortedTokens(data);
-  }, [filteredTokens, sort, sortMode, tokenStore.poolDataTokensWithStats]);
+  }, [filteredTokens, sort, sortMode, usersStore.poolDataTokensWithStats]);
 
   return (
     <Card style={{ padding: 0, overflow: 'auto' }} justifyContent="center">
@@ -105,7 +105,7 @@ const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
         {sortedTokens &&
           sortedTokens.length &&
           sortedTokens.map((t) => {
-            const stats = tokenStore.poolDataTokensWithStats[t.assetId];
+            const stats = usersStore.poolDataTokensWithStats[t.assetId];
 
             if (stats && Number(stats.selfBorrow) > 0) {
               return (

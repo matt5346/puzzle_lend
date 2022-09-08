@@ -8,9 +8,8 @@ import { Text } from '@src/UIKit/Text';
 import { IToken } from '@src/common/constants';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import DashboardModal from '@src/components/Dashboard/modal';
-import AllAssetsTable from '@src/components/Dashboard/tables/AllAssetsTable';
-import MyBorrowTable from '@src/components/Dashboard/tables/MyBorrowTable';
-import MySupplyTable from '@src/components/Dashboard/tables/MySupplyTable';
+import MyBorrowTable from '@src/pages/userStats/tables/MyBorrowTable';
+import MySupplyTable from '@src/pages/userStats/tables/MySupplyTable';
 
 // for some time
 export enum TokenCategoriesEnum {
@@ -75,21 +74,6 @@ const DashboardTable: React.FC<IProps> = ({ filteredTokens, showSupply, showBorr
             isUserStats={isUserStats}
           />
           <SizedBox height={40} />
-        </Wrap>
-      ) : null}
-
-      {showAll ? (
-        <Wrap>
-          <Text weight={500} type="secondary" margin="0 0 10px 0">
-            All assets
-          </Text>
-          <AllAssetsTable filteredTokens={filteredTokens} handleSupplyAssetClick={handleSupplyAssetClick} />
-
-          <DashboardModal
-            filteredTokens={filteredTokens}
-            onClose={() => lendStore.setDashboardModalOpened(false, '', lendStore.dashboardModalStep)}
-            visible={lendStore.dashboardModalOpened}
-          />
         </Wrap>
       ) : null}
     </Root>

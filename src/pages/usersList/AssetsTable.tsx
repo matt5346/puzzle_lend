@@ -18,7 +18,8 @@ import { ReactComponent as NotFoundIcon } from '@src/common/assets/icons/notFoun
 
 interface IProps {
   filteredTokens: any;
-  handleSupplyAssetClick: (assetId: string, step: number) => void;
+  decimals: number;
+  symbol: string;
 }
 
 const TableTitle: React.FC<{
@@ -41,7 +42,7 @@ const TableTitle: React.FC<{
   </Row>
 );
 
-const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClick }) => {
+const AssetsTable: React.FC<IProps> = ({ filteredTokens, decimals, symbol }) => {
   const [sort, setActiveSort] = useState<'totalAssetSupply' | 'setupSupplyAPY' | 'totalAssetBorrow' | 'setupBorrowAPR'>(
     'totalAssetSupply'
   );
@@ -64,59 +65,44 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
   }, [filteredTokens, sort, sortMode, tokenStore.poolDataTokensWithStats]);
 
   return (
-    <Card style={{ padding: 0, overflow: 'auto' }} justifyContent="center">
+    <Card style={{ padding: 0, overflow: 'auto', width: '100%' }} justifyContent="center">
       <GridTable
-        style={{ width: 'fit-content', minWidth: '100%' }}
-        desktopTemplate="4fr 6fr 6fr"
-        mobileTemplate="2fr 1fr">
+        style={{ width: '100%', minWidth: '100%' }}
+        desktopTemplate="4fr 2fr 2fr 3fr"
+        mobileTemplate="2fr 1fr 2fr 2fr">
         <div className="gridTitle">
           <div>User</div>
           <TableTitle onClick={() => selectSort('totalAssetSupply')} mode={sortMode} sort={sort === 'totalAssetSupply'}>
-            User ID
+            Borrowed
+          </TableTitle>
+          <TableTitle onClick={() => selectSort('totalAssetSupply')} mode={sortMode} sort={sort === 'totalAssetSupply'}>
+            Supplied
           </TableTitle>
           <TableTitle onClick={() => selectSort('setupSupplyAPY')} mode={sortMode} sort={sort === 'setupSupplyAPY'}>
             User Full stats
           </TableTitle>
         </div>
-        {sortedTokens.length === 0 && (
-          <Column justifyContent="center" alignItems="center" crossAxisSize="max">
-            <SizedBox height={24} />
-            <NotFoundIcon style={{ marginBottom: 24 }} />
-            <Text className="text" textAlign="center">
-              Unfortunately, there are no tokens that fit your filters.
-            </Text>
-            <SizedBox height={24} />
-          </Column>
-        )}
-        {sortedTokens &&
-          sortedTokens.length &&
-          sortedTokens.map((t: any) => {
-            const stats = tokenStore.poolDataTokensWithStats[t.assetId];
-            console.log(t, '----t----');
-
-            if (t) {
-              return (
-                <Column>
-                  {/* <DesktopTokenTableRow
-                  isUserStats={false}
-                  token={t}
+        {sortedTokens.map((t: any) => {
+          if (t) {
+            return (
+              <Column crossAxisSize="max">
+                <DesktopTokenTableRow
                   key={t.assetId}
-                  rate={stats.currentPrice}
-                  setupBorrowAPR={stats.setupBorrowAPR}
-                  setupSupplyAPY={stats.setupSupplyAPY}
-                  totalSupply={stats.totalAssetSupply}
-                  totalBorrow={stats.totalAssetBorrow}
-                  handleSupplyAssetClick={handleSupplyAssetClick}
-                /> */}
-                </Column>
-              );
-            }
+                  owner={t.owner}
+                  decimals={decimals}
+                  symbol={symbol}
+                  totalBorrow={t.borrowed}
+                  totalSupply={t.supplied}
+                />
+              </Column>
+            );
+          }
 
-            return null;
-          })}
+          return null;
+        })}
       </GridTable>
     </Card>
   );
 };
 
-export default observer(AllAssetsTable);
+export default observer(AssetsTable);

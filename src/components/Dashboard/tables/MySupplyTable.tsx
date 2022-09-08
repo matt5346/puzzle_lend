@@ -112,7 +112,7 @@ const MySupplyTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
             if (stats && Number(stats.selfSupply) > 0) {
               return (
                 <DesktopTokenTableRow
-                  isUserStats
+                  isUserStats={isUserStats}
                   token={t}
                   key={t.assetId}
                   rate={stats.currentPrice}

@@ -3,14 +3,19 @@
 /* eslint-disable array-callback-return */
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
+import styled from '@emotion/styled';
 import { useStores } from '@src/stores';
 import GridTable from '@src/common/styles/GridTable';
 import Card from '@src/common/styles/Card';
 import { Row, Column } from '@src/common/styles/Flex';
+import { SizedBox } from '@src/UIKit/SizedBox';
+import { Text } from '@src/UIKit/Text';
 import { IToken, TTokenStatistics } from '@src/common/constants';
-import { ReactComponent as SortDownIcon } from '@src/common/assets/icons/sortDown.svg';
-import DesktopTokenTableRow from '@src/components/Dashboard/tables/DesktopTokenTableRow';
 import BN from '@src/common/utils/BN';
+import DesktopTokenTableRow from '@src/components/Dashboard/tables/DesktopTokenTableRow';
+
+import { ReactComponent as SortDownIcon } from '@src/common/assets/icons/sortDown.svg';
+import { ReactComponent as NotFoundIcon } from '@src/common/assets/icons/notFound.svg';
 
 interface IProps {
   filteredTokens: IToken[];
@@ -38,13 +43,13 @@ const TableTitle: React.FC<{
   </Row>
 );
 
-const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClick, isUserStats }) => {
-  const [sort, setSort] = useState<'selfBorrow' | 'setupBorrowAPR' | 'selfDailyBorrowInterest'>('selfBorrow');
+const MySupplyTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClick, isUserStats }) => {
+  const [sort, setSort] = useState<'totalAssetSupply' | 'setupSupplyAPY' | 'selfDailyIncome'>('selfDailyIncome');
   const [sortMode, setSortMode] = useState<'descending' | 'ascending'>('descending');
-  const { tokenStore } = useStores();
+  const { usersStore } = useStores();
   const [sortedTokens, setSortedTokens] = useState<IToken[]>([]);
 
-  const selectSort = (v: 'selfBorrow' | 'setupBorrowAPR' | 'selfDailyBorrowInterest') => {
+  const selectSort = (v: 'totalAssetSupply' | 'setupSupplyAPY' | 'selfDailyIncome') => {
     if (sort === v) {
       setSortMode(sortMode === 'ascending' ? 'descending' : 'ascending');
     } else {
@@ -55,12 +60,12 @@ const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
 
   useEffect(() => {
     const data = filteredTokens.sort((a, b) => {
-      const stats1: TTokenStatistics | undefined = tokenStore.poolDataTokensWithStats[a.assetId];
-      const stats2: TTokenStatistics | undefined = tokenStore.poolDataTokensWithStats[b.assetId];
+      const stats1: TTokenStatistics | undefined = usersStore.poolDataTokensWithStats[a.assetId];
+      const stats2: TTokenStatistics | undefined = usersStore.poolDataTokensWithStats[b.assetId];
       let key: keyof TTokenStatistics | undefined;
-      if (sort === 'selfBorrow') key = 'selfBorrow';
-      if (sort === 'setupBorrowAPR') key = 'setupBorrowAPR';
-      if (sort === 'selfDailyBorrowInterest') key = 'selfDailyBorrowInterest';
+      if (sort === 'totalAssetSupply') key = 'totalAssetSupply';
+      if (sort === 'setupSupplyAPY') key = 'setupSupplyAPY';
+      if (sort === 'selfDailyIncome') key = 'selfDailyIncome';
       if (key == null) return 0;
 
       if (stats1 == null && stats2 == null) return 0;
@@ -79,7 +84,7 @@ const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
         : 1;
     });
     setSortedTokens(data);
-  }, [filteredTokens, sort, sortMode, tokenStore.poolDataTokensWithStats]);
+  }, [filteredTokens, sort, sortMode, usersStore.poolDataTokensWithStats]);
 
   return (
     <Card style={{ padding: 0, overflow: 'auto' }} justifyContent="center">
@@ -89,34 +94,31 @@ const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
         mobileTemplate="2fr 1fr">
         <div className="gridTitle">
           <div>Asset</div>
-          <TableTitle onClick={() => selectSort('selfBorrow')} mode={sortMode} sort={sort === 'selfBorrow'}>
-            To be repaid
+          <TableTitle onClick={() => selectSort('totalAssetSupply')} mode={sortMode} sort={sort === 'totalAssetSupply'}>
+            Supplied
           </TableTitle>
-          <TableTitle onClick={() => selectSort('setupBorrowAPR')} mode={sortMode} sort={sort === 'setupBorrowAPR'}>
-            Borrow APR
+          <TableTitle onClick={() => selectSort('setupSupplyAPY')} mode={sortMode} sort={sort === 'setupSupplyAPY'}>
+            Supply APY
           </TableTitle>
-          <TableTitle
-            onClick={() => selectSort('selfDailyBorrowInterest')}
-            mode={sortMode}
-            sort={sort === 'selfDailyBorrowInterest'}>
-            Daily interest
+          <TableTitle onClick={() => selectSort('selfDailyIncome')} mode={sortMode} sort={sort === 'selfDailyIncome'}>
+            Daily Income
           </TableTitle>
         </div>
         {sortedTokens &&
           sortedTokens.length &&
           sortedTokens.map((t) => {
-            const stats = tokenStore.poolDataTokensWithStats[t.assetId];
+            const stats = usersStore.poolDataTokensWithStats[t.assetId];
 
-            if (stats && Number(stats.selfBorrow) > 0) {
+            if (stats && Number(stats.selfSupply) > 0) {
               return (
                 <DesktopTokenTableRow
                   isUserStats={isUserStats}
                   token={t}
                   key={t.assetId}
                   rate={stats.currentPrice}
-                  selfBorrow={stats.selfBorrow}
-                  setupBorrowAPR={stats.setupBorrowAPR}
-                  selfDailyBorrowInterest={stats.selfDailyBorrowInterest}
+                  selfSupply={stats.selfSupply}
+                  setupSupplyAPY={stats.setupSupplyAPY}
+                  dailyIncome={stats.selfDailyIncome}
                   handleSupplyAssetClick={handleSupplyAssetClick}
                 />
               );
@@ -129,4 +131,4 @@ const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
   );
 };
 
-export default observer(MyBorrowTable);
+export default observer(MySupplyTable);

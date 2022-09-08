@@ -1,16 +1,13 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable array-callback-return */
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import styled from '@emotion/styled';
 import { useStores } from '@src/stores';
 import { Text } from '@src/UIKit/Text';
 import { IToken } from '@src/common/constants';
 import { SizedBox } from '@src/UIKit/SizedBox';
-import DashboardModal from '@src/components/Dashboard/modal';
-import AllAssetsTable from '@src/components/Dashboard/tables/AllAssetsTable';
-import MyBorrowTable from '@src/components/Dashboard/tables/MyBorrowTable';
-import MySupplyTable from '@src/components/Dashboard/tables/MySupplyTable';
+import DashboardTable from '@src/pages/userStats/tables/DashboardTable';
 
 // for some time
 export enum TokenCategoriesEnum {
@@ -22,9 +19,7 @@ export enum TokenCategoriesEnum {
 }
 // isUserStats -- case for all users except user whos logged with wallet
 interface IProps {
-  filteredTokens: IToken[];
-  showSupply: boolean;
-  showBorrow: boolean;
+  poolId: string;
   showAll: boolean;
   isUserStats: boolean;
 }
@@ -40,32 +35,62 @@ const Wrap = styled.div`
   flex-direction: column;
 `;
 
-const DashboardTable: React.FC<IProps> = ({ filteredTokens, showSupply, showBorrow, showAll, isUserStats }) => {
-  const { lendStore, accountStore } = useStores();
-  const { address } = accountStore;
+const UserTable: React.FC<IProps> = ({ poolId, showAll, isUserStats }) => {
+  const { lendStore, accountStore, usersStore } = useStores();
 
-  const handleSupplyAssetClick = (assetId: string, step: number) => {
-    lendStore.setDashboardModalOpened(true, assetId, step);
-  };
+  const [filteredTokens, setFilteredTokens] = useState<IToken[]>([]);
+  const [showBorrow, showBorrowTable] = useState<boolean>(false);
+  const [showSupply, showSupplyTable] = useState<boolean>(false);
+
+  useEffect(() => {
+    console.log(lendStore.activePoolContract, 'lendStore.activePoolContract');
+    const poolsData = usersStore.filterPoolDataTokens(poolId);
+
+    if (poolsData.every((item) => +usersStore.poolDataTokensWithStats[item.assetId].selfBorrow === 0))
+      showBorrowTable(false);
+
+    if (poolsData.every((item) => +usersStore.poolDataTokensWithStats[item.assetId].selfSupply === 0))
+      showSupplyTable(false);
+
+    // filtering USER supply/borrow values
+    // for showing or hiding supply/borrow TABLES
+    poolsData.forEach((t) => {
+      const stats = usersStore.poolDataTokensWithStats[t.assetId];
+      console.log(stats, 'poolsData.stats');
+
+      if (showBorrow === false && Number(stats.selfBorrow) > 0) {
+        showBorrowTable(true);
+      }
+
+      if (showBorrow === false && Number(stats.selfSupply) > 0) {
+        showSupplyTable(true);
+      }
+    });
+    console.log(poolsData, '---FILTERED');
+    setFilteredTokens(poolsData);
+  }, [lendStore.activePoolContract, showBorrow, poolId, usersStore]);
 
   return (
     <Root>
-      {showAll ? (
-        <Wrap>
-          <Text weight={500} type="secondary" margin="0 0 10px 0">
-            All assets
-          </Text>
-          <AllAssetsTable filteredTokens={filteredTokens} handleSupplyAssetClick={handleSupplyAssetClick} />
-
-          <DashboardModal
+      <Wrap>
+        <Text size="large" weight={500} margin="0 0 10px 0">
+          {lendStore.poolNameById(poolId)}
+        </Text>
+        <SizedBox height={12} />
+        {filteredTokens && filteredTokens.length ? (
+          <DashboardTable
             filteredTokens={filteredTokens}
-            onClose={() => lendStore.setDashboardModalOpened(false, '', lendStore.dashboardModalStep)}
-            visible={lendStore.dashboardModalOpened}
+            showBorrow={showSupply}
+            showSupply={showSupply}
+            showAll={false}
+            isUserStats
           />
-        </Wrap>
-      ) : null}
+        ) : (
+          <Text>No assets</Text>
+        )}
+      </Wrap>
     </Root>
   );
 };
 
-export default observer(DashboardTable);
+export default observer(UserTable);

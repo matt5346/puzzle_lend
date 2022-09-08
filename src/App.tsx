@@ -33,7 +33,7 @@ const Root = styled(Column)`
 `;
 
 const App: React.FC = () => {
-  const { accountStore, tokenStore } = useStores();
+  const { accountStore, tokenStore, usersStore } = useStores();
 
   return (
     <Root>
@@ -46,7 +46,7 @@ const App: React.FC = () => {
         {/* for other pools with ids routes */}
         <Route path={ROUTES.DASHBOARD_POOl} element={<Dashboard />} />
         {/* specific USER STATS */}
-        {tokenStore.poolDataTokensWithStats && <Route path={ROUTES.USER_STATS} element={<UserStats />} />}
+        <Route path={ROUTES.USER_STATS} element={<UserStats />} />
         {tokenStore.poolDataTokensWithStats && <Route path={ROUTES.BORROW_SUPPLY_USERS} element={<UsersList />} />}
         {tokenStore.poolDataTokensWithStats && <Route path={ROUTES.DASHBOARD_TOKEN} element={<DashboardToken />} />}
       </Routes>

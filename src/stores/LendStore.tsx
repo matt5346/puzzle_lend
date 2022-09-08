@@ -62,11 +62,7 @@ export default class LendStore {
     })[0] || ['mainPool'];
 
     // eslint-disable-next-line prefer-destructuring
-    if (poolName && poolName.length) {
-      console.log(poolName, '-------poolName[0]=====');
-      // eslint-disable-next-line prefer-destructuring
-      poolName = poolName[0];
-    }
+    if (poolName && poolName.length) poolName = poolName[0];
 
     return poolName;
   };

@@ -157,7 +157,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
         </Column>
       ) : null}
 
-      {selfSupply && isUserStats ? (
+      {selfSupply && !isUserStats ? (
         <Row justifyContent="flex-end">
           <Button
             minWidth="108px"
@@ -183,7 +183,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
         </Row>
       ) : null}
 
-      {selfBorrow && isUserStats ? (
+      {selfBorrow && !isUserStats ? (
         <Row justifyContent="flex-end">
           <Button
             minWidth="108px"
