@@ -88,7 +88,7 @@ const SideViewWrap = styled.div`
   display: flex;
   flex-direction: column;
   position: sticky;
-  top: 0;
+  top: 117px;
   align-self: flex-start;
 `;
 

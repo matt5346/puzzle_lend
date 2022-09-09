@@ -20,9 +20,19 @@ interface IAssetResponse {
 const wavesCapService = {
   getBorrowSupplyUsers: async (contractAddress: string, assetsId: string[]): Promise<any> => {
     let usersData: any = [];
+    const params = new URLSearchParams();
+
+    for (let i = 0; i <= assetsId.length - 1; i++) {
+      params.append('assetIds[]=', assetsId[i]);
+    }
+
+    const url = `https://wavescap.com/api/assets-info.php?${params.toString()}`;
+    const response = await axios.get(url);
+    const tokensData = response.data.assets;
+    console.log(tokensData, '.tokensData');
 
     try {
-      const userData = await Promise.all(
+      const userData: any[] = await Promise.all(
         assetsId.map(async (itemId) => {
           const stringParams = buildUrlParams(
             {
@@ -38,44 +48,70 @@ const wavesCapService = {
         })
       );
       console.log(userData, '.supplyData objData');
+      const users: any = [];
 
       const list = assetsId.map((item) => {
         const val: any = {
           [item]: [],
         };
 
-        const assetData: any = userData.find((userDataItem: any) => Object.keys(userDataItem)[0] === item);
+        const assetData: Record<string, any[]> = userData.find(
+          (userDataItem: any) => Object.keys(userDataItem)[0] === item
+        );
         console.log(assetData, '.*_supplied_USDN assetData');
 
-        Object.values(assetData).forEach((objData: any) => {
+        Object.entries(assetData).forEach(([keyName, objData]) => {
           const suppliedUsers: any = [];
           const borrowedUsers: any = [];
 
-          objData.forEach((userObj: any) => {
-            const supplyItem = {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          objData!.forEach((userObj: any) => {
+            console.log(userObj, 'userObj assetData');
+            const userDataObj = {
               owner: null,
-              supplied: null,
-              borrowed: null,
-              tokenContract: null,
+              supplied: 0,
+              borrowed: 0,
+              poolContract: '',
             };
 
             console.log(userObj, '.*_supplied_USDN objData');
             const objDataSplitted = userObj.key.split('_');
+            const tokenData = tokensData.find((tokenItem: any) => tokenItem.id === keyName);
+            const currentPrice = new BN(tokenData.data?.['lastPrice_usd-n'] ?? 0);
+            console.log(tokenData, '.*tokenItem objData');
+            let userIndex = -1;
+            if (users && users.length)
+              userIndex = users.map((itemObj: any) => itemObj.owner).indexOf(objDataSplitted[0]);
+
+            userDataObj.owner = objDataSplitted[0];
+            userDataObj.poolContract = contractAddress;
+            console.log(userIndex, '.userIndex objData');
+
+            // counting TOTAL SUPPLY for user in dollars
             if (objDataSplitted[1] === 'supplied') {
-              supplyItem.tokenContract = objDataSplitted[objDataSplitted.length - 1];
-              supplyItem.supplied = userObj.value;
-              supplyItem.owner = objDataSplitted[0];
-              suppliedUsers.push(supplyItem);
+              userDataObj.supplied = (userObj.value / 10 ** tokenData.precision) * +currentPrice;
+              suppliedUsers.push(userDataObj);
+
+              if (userIndex >= 0) {
+                users[userIndex].supplied += (userObj.value / 10 ** tokenData.precision) * +currentPrice;
+              } else {
+                users.push(userDataObj);
+              }
             }
 
+            // counting TOTAL BORROW for user in dollars
             if (objDataSplitted[1] === 'borrowed') {
-              supplyItem.tokenContract = objDataSplitted[objDataSplitted.length - 1];
-              supplyItem.borrowed = userObj.value;
-              supplyItem.owner = objDataSplitted[0];
-              borrowedUsers.push(supplyItem);
+              userDataObj.borrowed = (userObj.value / 10 ** tokenData.precision) * +currentPrice;
+              borrowedUsers.push(userDataObj);
+
+              if (users && users.length && userIndex >= 0) {
+                users[userIndex].borrowed += (userObj.value / 10 ** tokenData.precision) * +currentPrice;
+              } else {
+                users.push(userDataObj);
+              }
             }
           });
-          console.log(borrowedUsers, suppliedUsers, 'users assetData');
+          console.log(borrowedUsers, suppliedUsers, 'users assetData1');
 
           val[item] = {
             suppliedUsers,
@@ -85,8 +121,9 @@ const wavesCapService = {
 
         return val;
       });
+      console.log(users, 'users assetData2');
       console.log(list, '.list objData');
-      usersData = list;
+      usersData = users;
       // eslint-disable-next-line no-underscore-dangle
       // data = responseAssets.data;
     } catch (err) {

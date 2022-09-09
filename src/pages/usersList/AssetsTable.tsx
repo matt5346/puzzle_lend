@@ -18,8 +18,6 @@ import { ReactComponent as NotFoundIcon } from '@src/common/assets/icons/notFoun
 
 interface IProps {
   filteredTokens: any;
-  decimals: number;
-  symbol: string;
 }
 
 const TableTitle: React.FC<{
@@ -42,15 +40,13 @@ const TableTitle: React.FC<{
   </Row>
 );
 
-const AssetsTable: React.FC<IProps> = ({ filteredTokens, decimals, symbol }) => {
-  const [sort, setActiveSort] = useState<'totalAssetSupply' | 'setupSupplyAPY' | 'totalAssetBorrow' | 'setupBorrowAPR'>(
-    'totalAssetSupply'
-  );
+const AssetsTable: React.FC<IProps> = ({ filteredTokens }) => {
+  const [sort, setActiveSort] = useState<'borrowed' | 'supplied' | 'totalAssetBorrow' | 'setupBorrowAPR'>('borrowed');
   const [sortMode, setActiveSortMode] = useState<'descending' | 'ascending'>('descending');
   const { tokenStore } = useStores();
   const [sortedTokens, setSortedTokens] = useState<IToken[]>([]);
 
-  const selectSort = (v: 'totalAssetSupply' | 'setupSupplyAPY' | 'totalAssetBorrow' | 'setupBorrowAPR') => {
+  const selectSort = (v: 'borrowed' | 'supplied' | 'totalAssetBorrow' | 'setupBorrowAPR') => {
     if (sort === v) {
       setActiveSortMode(sortMode === 'ascending' ? 'descending' : 'ascending');
     } else {
@@ -72,14 +68,11 @@ const AssetsTable: React.FC<IProps> = ({ filteredTokens, decimals, symbol }) => 
         mobileTemplate="2fr 1fr 2fr 2fr">
         <div className="gridTitle">
           <div>User</div>
-          <TableTitle onClick={() => selectSort('totalAssetSupply')} mode={sortMode} sort={sort === 'totalAssetSupply'}>
+          <TableTitle onClick={() => selectSort('borrowed')} mode={sortMode} sort={sort === 'borrowed'}>
             Borrowed
           </TableTitle>
-          <TableTitle onClick={() => selectSort('totalAssetSupply')} mode={sortMode} sort={sort === 'totalAssetSupply'}>
+          <TableTitle onClick={() => selectSort('supplied')} mode={sortMode} sort={sort === 'supplied'}>
             Supplied
-          </TableTitle>
-          <TableTitle onClick={() => selectSort('setupSupplyAPY')} mode={sortMode} sort={sort === 'setupSupplyAPY'}>
-            User Full stats
           </TableTitle>
         </div>
         {sortedTokens.map((t: any) => {
@@ -89,8 +82,6 @@ const AssetsTable: React.FC<IProps> = ({ filteredTokens, decimals, symbol }) => 
                 <DesktopTokenTableRow
                   key={t.assetId}
                   owner={t.owner}
-                  decimals={decimals}
-                  symbol={symbol}
                   totalBorrow={t.borrowed}
                   totalSupply={t.supplied}
                 />

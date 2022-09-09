@@ -15,8 +15,6 @@ import BN from '@src/common/utils/BN';
 
 interface IProps {
   owner?: string;
-  symbol?: string;
-  decimals?: number;
   totalBorrow?: number;
   totalSupply?: number;
 }
@@ -27,12 +25,12 @@ const Root = styled.div`
   width: 100%;
 `;
 
-const DesktopTokenTableRow: React.FC<IProps> = ({ owner, totalSupply, totalBorrow, symbol, decimals }) => {
+const DesktopTokenTableRow: React.FC<IProps> = ({ owner, totalSupply, totalBorrow }) => {
   const navigate = useNavigate();
 
-  const formatVal = (val: number, decimal: number) => {
-    return (val / 10 ** decimal).toFixed(2);
-  };
+  // const formatVal = (val: number, decimal: number) => {
+  //   return (val / 10 ** decimal).toFixed(2);
+  // };
 
   return (
     <Root
@@ -56,9 +54,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({ owner, totalSupply, totalBorro
 
       {totalBorrow != null ? (
         <Column crossAxisSize="max">
-          <Text textAlign="right">
-            {formatVal(totalBorrow, decimals!)} {symbol}
-          </Text>
+          <Text textAlign="right">$ {totalBorrow.toFixed(2)}</Text>
         </Column>
       ) : (
         <Column crossAxisSize="max">
@@ -68,9 +64,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({ owner, totalSupply, totalBorro
 
       {totalSupply != null ? (
         <Column crossAxisSize="max">
-          <Text textAlign="right">
-            {formatVal(totalSupply, decimals!)} {symbol}
-          </Text>
+          <Text textAlign="right">$ {totalSupply.toFixed(2)}</Text>
         </Column>
       ) : (
         <Column crossAxisSize="max">
