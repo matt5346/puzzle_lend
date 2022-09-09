@@ -110,7 +110,7 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
             Total borrow
           </TableTitle>
           <TableTitle onClick={() => selectSort('setupBorrowAPR')} mode={sortMode} sort={sort === 'setupBorrowAPR'}>
-            Borrow APR
+            Borrow APY
           </TableTitle>
         </div>
         {sortedTokens.length === 0 && (

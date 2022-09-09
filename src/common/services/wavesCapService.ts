@@ -308,7 +308,7 @@ const wavesCapService = {
         assetExtraData[item.id].forEach((pool: any) => {
           // setup_roi === borrow interest
           if (pool.key === 'setup_interest') {
-            itemData.setup_borrow_apr = itemData.setup_interest * 365 * 100;
+            itemData.setup_borrow_apr = ((1 + itemData.setup_interest) ** 365 - 1) * 100;
             // itemData.setup_interest = pool.value / 10 ** 8;
           }
         });
