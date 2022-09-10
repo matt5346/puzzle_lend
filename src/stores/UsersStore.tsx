@@ -18,8 +18,6 @@ import BN from '@src/common/utils/BN';
 export default class UsersStore {
   public rootStore: RootStore;
 
-  initialized = false;
-
   statistics: Array<TTokenStatistics> = [];
 
   poolStatsArr: Array<PoolDataType> = [];
@@ -35,6 +33,8 @@ export default class UsersStore {
   poolTotal = 0;
 
   userCollateral = 0;
+
+  usersStatsByPool: any = [];
 
   private setUsersPoolData = (poolStats: PoolDataType) => {
     console.log(poolStats, 'poolStats 1');
@@ -52,8 +52,6 @@ export default class UsersStore {
     console.log(this.poolStatsArr, 'this.poolStatsArr2');
   };
 
-  private setInitialized = (v: boolean) => (this.initialized = v);
-
   private setUserHealth = (v: number) => {
     console.log('accountHealth', v);
     if (v > 100) {
@@ -65,14 +63,6 @@ export default class UsersStore {
     }
 
     return +v.toFixed(2);
-  };
-
-  private setUserCollateral = (v: number, contractId: string) => {
-    this.userCollateral = v;
-    const value = v || 0;
-    this.poolStatsArr.forEach((item, key) => {
-      item.contractId === contractId ? (this.poolStatsArr[key].userCollateral = value) : false;
-    });
   };
 
   // get FULL POOL DATA by id, poolId: ...data
@@ -145,42 +135,50 @@ export default class UsersStore {
     return activePoolTokensWithStats!;
   }
 
-  public watchList: string[];
+  // for Users LIST page
+  public loadBorrowSupplyUsers = async (contractId: string) => {
+    const { accountStore, notificationStore, lendStore } = this.rootStore;
+    const contractPoolId = contractId || lendStore.activePoolContract;
+    const contractPoolName = lendStore.poolNameById(contractPoolId);
+    const assets = TOKENS_LIST(contractPoolName).map(({ assetId }) => assetId);
 
-  public addToWatchList = (assetId: string) => this.watchList.push(assetId);
-
-  public removeFromWatchList = (assetId: string) => {
-    const index = this.watchList.indexOf(assetId);
-    index !== -1 && this.watchList.splice(index, 1);
-  };
-
-  // currently only for collateral
-  // further can be used for other info
-  // remove to account STORE
-  public loadUserDetails = async (contractId: string) => {
-    const { accountStore, lendStore } = this.rootStore;
     let stats = null;
     if (accountStore.address) {
-      stats = await wavesCapService
-        .getUserExtraStats(accountStore.address, contractId || lendStore.activePoolContract)
-        .catch((e) => {
-          // notificationStore.notify(e.message ?? e.toString(), {
-          //   type: 'error',
-          // });
-          console.log(e, 'getAssetsStats');
-          return [];
+      stats = await wavesCapService.getBorrowSupplyUsers(contractId, assets).catch((e) => {
+        notificationStore.notify(e.message ?? e.toString(), {
+          type: 'error',
         });
+        console.log(e, 'getAssetsStats');
+        return [];
+      });
     }
+    const userData = {
+      contractId: contractPoolId,
+      tokens: stats,
+    };
 
-    this.setUserCollateral(stats, contractId);
-
-    return stats;
+    console.log(userData, '==stat==');
+    this.setUsersStats(userData);
   };
 
-  // TODO REMOVE unrequired data
+  private setUsersStats = (userStats: any) => {
+    console.log(userStats, 'poolStats 1');
+    const getPool = this.usersStatsByPool.find((item: any) => item.contractId === userStats.contractId);
 
-  // loading all data about tokens, their apy/apr, supply/borrow and evth
-  public syncTokenStatistics = async (contractId?: string, userId?: string) => {
+    if (getPool) {
+      this.usersStatsByPool.forEach((item: any, key: any) => {
+        item.contractId === userStats.contractId ? Object.assign(this.usersStatsByPool[key], userStats) : null;
+      });
+    }
+
+    if (!getPool) {
+      this.usersStatsByPool.push(userStats);
+    }
+    console.log(this.usersStatsByPool, 'this.usersStatsByPool');
+  };
+
+  // loading DATA for CUSTOM USER
+  public syncTokenStatistics = async (contractId?: string, userId?: string): Promise<PoolDataType> => {
     console.log(this.poolStatsArr, 'syncTokenStatistics 1!');
     const { accountStore, lendStore } = this.rootStore;
     const contractPoolId = contractId || lendStore.activePoolContract;
@@ -189,12 +187,6 @@ export default class UsersStore {
     console.log(contractPoolId, lendStore.activePoolContract, '------lendStore.activePoolContract');
     const userContract = userId || accountStore.address;
 
-    console.log(
-      lendStore.poolNameById(contractId || lendStore.activePoolContract),
-      'endStore.poolNameById(contractId)'
-    );
-    console.log(assets, 'ASSETS');
-    console.log(contractPoolId, 'lendStore.activePoolContract 2');
     const stats = await wavesCapService.getPoolsStats(assets, userContract!, contractPoolId).catch((e) => {
       // notifi\cationStore.notify(e.message ?? e.toString(), {
       //   type: 'error',
@@ -202,7 +194,6 @@ export default class UsersStore {
       console.log(e, 'getAssetsStats');
       return [];
     });
-    console.log(stats, 'stats ');
 
     // count pool Total
     let poolTotal = 0;
@@ -218,13 +209,10 @@ export default class UsersStore {
     let baseAmount = 0;
     let borrowCapacity = 0;
     let borrowCapacityUsed = 0;
-    // const base =
-    // const net_apy =
 
     const statistics = stats.map((details: any) => {
       const asset = TOKENS_BY_ASSET_ID[details.id] ?? details.precision;
       const { decimals } = asset;
-      console.log(decimals, 'decimal');
       const firstPrice = new BN(details.data?.['firstPrice_usd-n'] ?? 0);
       const currentPrice = new BN(details.data?.['lastPrice_usd-n'] ?? 0);
 
@@ -247,48 +235,9 @@ export default class UsersStore {
       borrowedAmountApr += (details.self_borrowed / 10 ** details.precision) * +currentPrice * details.setup_borrow_apr;
       baseAmount += (details.self_supply / 10 ** details.precision) * +currentPrice;
 
-      // count balance supply/borrow
-      console.log(
-        details.name,
-        details.self_supply / 10 ** details.precision,
-        details.supply_rate,
-        'supplyAmountCurrent'
-      );
-      console.log(
-        details.name,
-        details.self_borrowed / 10 ** details.precision,
-        details.borrow_rate,
-        +currentPrice,
-        'borrowedAmountCurrent'
-      );
+      // user Borrow/Supply Total
       supplyAmountCurrent += (details.self_supply / 10 ** details.precision) * +currentPrice;
       borrowedAmountCurrent += (details.self_borrowed / 10 ** details.precision) * +currentPrice;
-
-      // console.log(
-      //   details.self_borrowed,
-      //   details.setup_ltv,
-      //   supplyAmountApy,
-      //   'details.self_borrowed, details.setup_ltv, suppliedAmount'
-      // );
-
-      // count USER HEALTH
-      // NEXT COMMENTED case for DIFFERENT assets pairs as usdc/waves pool
-      // currently invalid, cause all pools in same pairs
-
-      // if (details.self_borrowed > 0) {
-      //   borrowCapacity += (details.setup_ltv / 100) * 1 * supplyAmountApy * Number(details.data?.['firstPrice_usd-n']);
-      //   borrowCapacityUsed +=
-      //     (borrowedAmountApr * Number(details.data?.['firstPrice_usd-n'])) / (details.setup_ltv / 100);
-      // }
-
-      console.log(
-        details.self_supply,
-        details.setup_ltv,
-        details.self_borrowed,
-        +currentPrice,
-        details.name,
-        '(details.self_supply * details.setup_ltv) / details.self_borrowed'
-      );
 
       // count USER HEALTH for SAME ASSETS
       if (details.self_supply > 0) {
@@ -327,12 +276,9 @@ export default class UsersStore {
         volume24: new BN(details['24h_vol_usd-n']),
       };
     });
-    console.log(borrowCapacityUsed / borrowCapacity, 'borrowCapacity borrowCapacityUsed');
 
     const netAPY: number = (supplyAmountApy - borrowedAmountApr) / baseAmount;
     const accountHealth: number = (1 - borrowCapacityUsed / borrowCapacity) * 100;
-
-    console.log(netAPY, accountHealth, 'netapy accountHealth');
 
     const poolData = {
       netAPY,
@@ -346,20 +292,11 @@ export default class UsersStore {
     };
 
     this.setUsersPoolData(poolData);
-
-    console.log(statistics, 'syncTokenStatistics 2!');
-
-    Object.values(LENDS_CONTRACTS).map((item) => this.loadUserDetails(item));
-    return stats;
+    return poolData;
   };
 
   constructor(rootStore: RootStore, initState?: ISerializedTokenStore) {
     this.rootStore = rootStore;
-    makeAutoObservable(this);
-    this.watchList = initState?.watchList ?? [];
+    Object.values(LENDS_CONTRACTS).map((item) => this.loadBorrowSupplyUsers(item));
   }
-
-  serialize = (): ISerializedTokenStore => ({
-    watchList: this.watchList,
-  });
 }

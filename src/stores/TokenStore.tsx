@@ -2,17 +2,20 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable no-return-assign */
 import RootStore from '@src/stores/RootStore';
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, action } from 'mobx';
 import {
   TOKENS_BY_ASSET_ID,
+  TOKENS_BY_SYMBOL,
   TOKENS_LIST,
   LENDS_CONTRACTS,
   TTokenStatistics,
   ISerializedTokenStore,
   PoolDataType,
   IToken,
+  POOL_CONFIG,
 } from '@src/common/constants';
 import wavesCapService from '@src/common/services/wavesCapService';
+import Pool, { IData, IShortPoolInfo } from '@src/common/entities/Pool';
 import BN from '@src/common/utils/BN';
 
 export default class TokenStore {
@@ -35,6 +38,10 @@ export default class TokenStore {
   poolTotal = 0;
 
   userCollateral = 0;
+
+  pools: Pool[] = [];
+
+  @action.bound setPools = (pools: Pool[]) => (this.pools = pools);
 
   private setPoolData = (poolStats: PoolDataType) => {
     console.log(poolStats, 'poolStats 1');
@@ -103,7 +110,36 @@ export default class TokenStore {
     });
   }
 
-  // get ACTIVE POOL TOKENS without STATS for userStats
+  usdnRate = (tokenAssetId: string, coefficient = 1): BN | null => {
+    const { tokenStore } = this.rootStore;
+    const usdn = TOKENS_BY_SYMBOL.USDN.assetId;
+    const puzzle = TOKENS_BY_SYMBOL.PUZZLE.assetId;
+    const pool = this.pools.find(({ tokens }) => tokens.some((t) => t.assetId === tokenAssetId));
+    const startPrice = TOKENS_BY_ASSET_ID[tokenAssetId]?.startPrice;
+    // todo fix this pizdez !!!
+    if (pool == null && startPrice != null) {
+      return new BN(startPrice ?? 0);
+    }
+    if (pool == null) return null;
+    if (pool.currentPrice(tokenAssetId, puzzle) == null && pool.tokens.some((t) => t.assetId === puzzle)) {
+      return new BN(startPrice ?? 0);
+    }
+    if (pool.currentPrice(tokenAssetId, usdn) == null && pool.tokens.some((t) => t.assetId === usdn)) {
+      return new BN(startPrice ?? 0);
+    }
+
+    if (pool.tokens.some(({ assetId }) => assetId === usdn)) {
+      return pool.currentPrice(tokenAssetId, usdn, coefficient);
+    }
+    if (pool.tokens.some(({ assetId }) => assetId === puzzle)) {
+      const puzzleRate = tokenStore.poolDataTokensWithStats[puzzle]?.currentPrice;
+      const priceInPuzzle = pool.currentPrice(tokenAssetId, puzzle, coefficient);
+      return priceInPuzzle != null && puzzleRate != null ? priceInPuzzle.times(puzzleRate) : null;
+    }
+    return null;
+  };
+
+  // get ACTIVE POOL TOKENS without extra STATS for userStats, with contractId
   filterPoolDataTokens(contractId?: string): IToken[] {
     const { lendStore } = this.rootStore;
 
@@ -121,6 +157,30 @@ export default class TokenStore {
 
       return false;
     });
+  }
+
+  // get POOL TOKENS STATS, with contractId
+  filterPoolDataTokensStats(contractId: string): Record<string, TTokenStatistics> {
+    let activePoolTokensWithStats: Record<string, TTokenStatistics>;
+    const { lendStore } = this.rootStore;
+    const poolName = lendStore.poolNameById(contractId);
+    console.log(contractId, poolName, 'filterPoolDataTokensStats');
+
+    TOKENS_LIST(poolName).forEach(() => {
+      const poolData = this.poolStatsByContractId[contractId];
+      console.log(poolData, this.poolStatsByContractId, 'poolData111');
+
+      if (poolData && poolData.tokens) {
+        const data = poolData.tokens.reduce(
+          (acc, stats) => ({ ...acc, [stats.assetId]: stats }),
+          {} as Record<string, TTokenStatistics>
+        );
+        console.log(data, 'data111');
+        activePoolTokensWithStats = data;
+      }
+    });
+
+    return activePoolTokensWithStats!;
   }
 
   // get ACTIVE POOL TOKENS with STATS
@@ -144,6 +204,32 @@ export default class TokenStore {
 
     return activePoolTokensWithStats!;
   }
+
+  syncPools = async () => {
+    const pools = Object.values(POOL_CONFIG).map((pool) => new Pool({ ...pool, isCustom: false }));
+    this.setPools(pools);
+    await Promise.all(this.pools.map((pool) => pool.syncLiquidity()));
+  };
+
+  // for Token Detailed page
+  public loadTokenUsers = async (contractId: string) => {
+    const { accountStore, notificationStore, lendStore } = this.rootStore;
+    const contractPoolId = contractId || lendStore.activePoolContract;
+    const contractPoolName = lendStore.poolNameById(contractPoolId);
+    const assets = TOKENS_LIST(contractPoolName).map(({ assetId }) => assetId);
+
+    let stats = null;
+
+    stats = await wavesCapService.getAssetUsers(contractId, assets).catch((e) => {
+      notificationStore.notify(e.message ?? e.toString(), {
+        type: 'error',
+      });
+      console.log(e, 'getAssetsStats');
+      return [];
+    });
+
+    return stats;
+  };
 
   public watchList: string[];
 
@@ -354,9 +440,9 @@ export default class TokenStore {
     this.rootStore = rootStore;
     makeAutoObservable(this);
     this.watchList = initState?.watchList ?? [];
-    Promise.all([
-      Object.values(LENDS_CONTRACTS).map((item) => this.syncTokenStatistics(item, rootStore.accountStore.address!)),
-    ]).then(() => this.setInitialized(true));
+    Promise.all(
+      Object.values(LENDS_CONTRACTS).map((item) => this.syncTokenStatistics(item, rootStore.accountStore.address!))
+    ).then(() => this.setInitialized(true));
 
     setInterval(() => {
       this.syncTokenStatistics(rootStore.lendStore.activePoolContract, rootStore.accountStore.address!);

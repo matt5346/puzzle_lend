@@ -250,7 +250,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
       <SizedBox height={14} />
       <Row justifyContent="space-between">
         <Text size="medium" type="secondary" fitContent>
-          Borrow APR
+          Borrow APY
         </Text>
         <Text size="medium" fitContent>
           {props.setupBorrowAPR ? (+props.setupBorrowAPR).toFixed(2) : 0}%

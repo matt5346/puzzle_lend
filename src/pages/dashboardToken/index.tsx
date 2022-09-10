@@ -3,7 +3,15 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useStores } from '@src/stores';
 import { observer } from 'mobx-react-lite';
-import { TOKENS_LIST, ROUTES, TTokenStatistics, createITokenStat, IToken, createIToken } from '@src/common/constants';
+import {
+  TOKENS_LIST,
+  ROUTES,
+  TTokenStatistics,
+  createITokenStat,
+  LENDS_CONTRACTS,
+  IToken,
+  createIToken,
+} from '@src/common/constants';
 import { Text } from '@src/UIKit/Text';
 import { Row, Column } from '@src/common/styles/Flex';
 import { SizedBox } from '@src/UIKit/SizedBox';
@@ -56,46 +64,79 @@ const Root = styled.div`
 const DashboardToken: React.FC = () => {
   const [tokenIData, setIToken] = useState<IToken>();
   const [tokenFullData, setFilteredTokens] = useState<TTokenStatistics>();
+  const [getSupplyUsers, setTotalSupplyUsers] = useState<number>(0);
+  const [getBorrowUsers, setTotalBorrowUsers] = useState<number>(0);
   const { assetId } = useParams<{ assetId: string }>();
-  const { tokenStore, lendStore } = useStores();
+  const { tokenStore, lendStore, usersStore } = useStores();
   const { poolDataTokensWithStats } = tokenStore;
 
   const formatVal = (val: BN, decimal: number) => {
     return BN.formatUnits(val, decimal).toSignificant(6).toFormat(5);
   };
 
-  // useMemo(() => {
-  //   console.log(poolDataTokensWithStats, assetId, 'data----111-');
-  //   const iData: IToken =
-  //     TOKENS_LIST(lendStore.activePoolName).find((item) => item.assetId === assetId) || createIToken();
-  //   let data: TTokenStatistics = createITokenStat();
-
-  //   if (assetId && poolDataTokensWithStats && poolDataTokensWithStats.length)
-  //     data = tokenStore.poolDataTokensWithStats[assetId];
-
-  //   console.log(data, iData, 'data-----');
-
-  //   setFilteredTokens(data);
-  //   setIToken(iData);
-  // }, [assetId, lendStore.activePoolName, tokenStore.poolDataTokensWithStats, poolDataTokensWithStats]);
-
   useEffect(() => {
-    console.log(poolDataTokensWithStats, assetId, lendStore.activePoolName, 'data----111-');
-    const iData: IToken =
-      TOKENS_LIST(lendStore.activePoolName).find((item) => item.assetId === assetId) || createIToken();
-    let data: TTokenStatistics = createITokenStat();
+    console.log(poolDataTokensWithStats, assetId, usersStore, 'data----111-');
+    async function fetchMyAPI() {
+      const response = await Promise.all(
+        Object.values(LENDS_CONTRACTS).map(async (item) => {
+          return { [item]: await tokenStore.loadTokenUsers(item) };
+        })
+      );
+      console.log(usersStore, response, '---usersStore');
+      const poolTokens = response.filter((item) => (item[lendStore.activePoolContract] ? item : false))[0];
+      const currentToken = poolTokens[lendStore.activePoolContract].filter((item: any) =>
+        item[assetId!] ? item : false
+      )[0];
+      console.log(currentToken, 'currentToken');
 
-    if (assetId) {
-      data = tokenStore.poolDataTokensWithStats[assetId];
-      const token = TOKENS_LIST(lendStore.activePoolName).find((item) => item.assetId === assetId)!;
-      console.log(token, 'iData-----');
+      let totalBorrowUsers = 0;
+      let totalSupplyUsers = 0;
+
+      if (currentToken && currentToken[assetId!]) {
+        currentToken[assetId!].forEach((assetObj: any) => {
+          const objDataSplitted = assetObj.key.split('_');
+
+          // counting TOTAL USERS SUPPLIED
+          if (objDataSplitted[1] === 'supplied' && objDataSplitted[0] !== 'total') {
+            totalSupplyUsers += 1;
+          }
+
+          // counting TOTAL USERS BORROWED
+          if (objDataSplitted[1] === 'borrowed' && objDataSplitted[0] !== 'total') {
+            totalBorrowUsers += 1;
+          }
+        });
+      }
+      console.log(totalBorrowUsers, totalSupplyUsers, '---currentToken2');
+
+      const iData: IToken =
+        TOKENS_LIST(lendStore.activePoolName).find((item) => item.assetId === assetId) || createIToken();
+      let data: TTokenStatistics = createITokenStat();
+
+      if (assetId) {
+        data = tokenStore.poolDataTokensWithStats[assetId];
+        const token = TOKENS_LIST(lendStore.activePoolName).find((item) => item.assetId === assetId)!;
+        console.log(token, 'iData-----');
+      }
+
+      console.log(data, iData, TOKENS_LIST(lendStore.activePoolName), 'data-----');
+
+      setTotalSupplyUsers(totalSupplyUsers);
+      setTotalBorrowUsers(totalBorrowUsers);
+      setFilteredTokens(data);
+      setIToken(iData);
     }
 
-    console.log(data, iData, TOKENS_LIST(lendStore.activePoolName), 'data-----');
-
-    setFilteredTokens(data);
-    setIToken(iData);
-  }, [assetId, lendStore.activePoolName, tokenStore.poolDataTokensWithStats, poolDataTokensWithStats]);
+    fetchMyAPI();
+  }, [
+    assetId,
+    tokenStore,
+    lendStore.activePoolName,
+    usersStore,
+    tokenStore.poolDataTokensWithStats,
+    lendStore.activePoolContract,
+    poolDataTokensWithStats,
+  ]);
 
   return (
     <Root>
@@ -162,7 +203,7 @@ const DashboardToken: React.FC = () => {
             <SizedBox width={32} />
             <Column>
               <Text size="medium" type="secondary" fitContent>
-                Borrow APR
+                Borrow APY
               </Text>
               <Text size="medium" type="primary" fitContent>
                 {tokenFullData.setupBorrowAPR ? (+tokenFullData.setupBorrowAPR).toFixed(2) : 0} %
@@ -180,8 +221,8 @@ const DashboardToken: React.FC = () => {
           setupBorrowAPR={tokenFullData.setupBorrowAPR}
           setupSupplyAPY={tokenFullData.setupSupplyAPY}
           setupLtv={tokenFullData.setupLtv}
-          totalSupply={tokenFullData.totalAssetSupply}
-          totalBorrow={tokenFullData.totalAssetBorrow}
+          totalSupply={getSupplyUsers}
+          totalBorrow={getBorrowUsers}
         />
       )}
       <SizedBox height={24} />

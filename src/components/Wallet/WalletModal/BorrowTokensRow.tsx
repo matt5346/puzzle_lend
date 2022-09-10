@@ -52,7 +52,7 @@ const SupplyTokensRow: React.FC<IProps> = ({ vol24, token, rate, selfBorrow, set
       <RoundTokenIcon src={tokenLogos[token.symbol]} />
       <Column>
         <Text type="primary" className="text" textAlign="center">
-          Borrow APR
+          Borrow APY
         </Text>
         {setupBorrowAPR != null ? <Text type="primary">{(+setupBorrowAPR).toFixed(2)}%</Text> : <Text>-</Text>}
       </Column>

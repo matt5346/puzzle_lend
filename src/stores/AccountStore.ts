@@ -230,7 +230,7 @@ class AccountStore {
     const assetBalances = TOKENS_LIST_FULL.map((asset) => {
       const t = data.find(({ assetId }) => asset.assetId === assetId);
       const balance = new BN(t != null ? t.balance : 0);
-      const rate = this.rootStore.poolsStore.usdnRate(asset.assetId, 1) ?? BN.ZERO;
+      const rate = this.rootStore.tokenStore.usdnRate(asset.assetId, 1) ?? BN.ZERO;
       const usdnEquivalent = rate ? rate.times(BN.formatUnits(balance, asset.decimals)) : BN.ZERO;
       return new Balance({ balance, usdnEquivalent, ...asset });
     });

@@ -93,7 +93,7 @@ const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
             To be repaid
           </TableTitle>
           <TableTitle onClick={() => selectSort('setupBorrowAPR')} mode={sortMode} sort={sort === 'setupBorrowAPR'}>
-            Borrow APR
+            Borrow APY
           </TableTitle>
           <TableTitle
             onClick={() => selectSort('selfDailyBorrowInterest')}

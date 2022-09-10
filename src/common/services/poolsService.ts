@@ -1,6 +1,11 @@
 import axios from 'axios';
-import { TPoolState } from '@src/stores/PoolsStore';
 import { IPoolConfigStatistics } from '@src/common/constants';
+import { IData } from '@src/common/entities/Pool';
+
+export type TPoolState = {
+  state: IData[];
+  contractAddress: string;
+};
 
 interface IAssetConfig {
   assetId: string;

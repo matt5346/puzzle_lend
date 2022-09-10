@@ -47,7 +47,7 @@ const App: React.FC = () => {
         <Route path={ROUTES.DASHBOARD_POOl} element={<Dashboard />} />
         {/* specific USER STATS */}
         <Route path={ROUTES.USER_STATS} element={<UserStats />} />
-        {tokenStore.poolDataTokensWithStats && <Route path={ROUTES.BORROW_SUPPLY_USERS} element={<UsersList />} />}
+        {tokenStore.initialized && <Route path={ROUTES.BORROW_SUPPLY_USERS} element={<UsersList />} />}
         {tokenStore.poolDataTokensWithStats && <Route path={ROUTES.DASHBOARD_TOKEN} element={<DashboardToken />} />}
       </Routes>
       <WalletModal onClose={() => accountStore.setWalletModalOpened(false)} visible={accountStore.walletModalOpened} />

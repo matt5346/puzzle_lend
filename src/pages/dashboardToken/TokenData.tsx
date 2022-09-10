@@ -20,8 +20,8 @@ interface IProps {
   setupLtv?: string;
   setupBorrowAPR?: string;
   setupSupplyAPY?: string;
-  totalSupply: BN;
-  totalBorrow: BN;
+  totalSupply: number;
+  totalBorrow: number;
 }
 
 const Root = styled.div`
@@ -65,7 +65,7 @@ const TokenData: React.FC<IProps> = ({
             Number of suppliers
           </Text>
           <Text size="medium" type="secondary" fitContent>
-            ???
+            {totalSupply || 0}
           </Text>
         </Row>
         <SizedBox height={16} />
@@ -74,7 +74,7 @@ const TokenData: React.FC<IProps> = ({
             Number of borrowers
           </Text>
           <Text size="medium" type="secondary" fitContent>
-            ???
+            {totalBorrow || 0}
           </Text>
         </Row>
         <SizedBox height={16} />

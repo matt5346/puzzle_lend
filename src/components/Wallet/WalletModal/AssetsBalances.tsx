@@ -21,7 +21,7 @@ const Root = styled.div`
 
 const AssetsBalances: React.FC<IProps> = () => {
   const vm = useWalletVM();
-  const { accountStore, poolsStore } = useStores();
+  const { accountStore, tokenStore } = useStores();
   if (accountStore.assetBalances === null)
     return (
       <Root style={{ padding: '0 24px' }}>
@@ -32,7 +32,7 @@ const AssetsBalances: React.FC<IProps> = () => {
     <Root>
       {vm.balances.length !== 0 ? (
         vm.balances.map((b: any) => {
-          const rate = poolsStore.usdnRate(b.assetId)?.toFormat(2);
+          const rate = tokenStore.usdnRate(b.assetId)?.toFormat(2);
           const rateChange = vm.balanceAssetsStats && vm.balanceAssetsStats[b.assetId];
           return (
             <InvestRow

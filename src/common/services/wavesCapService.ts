@@ -18,6 +18,34 @@ interface IAssetResponse {
 }
 
 const wavesCapService = {
+  getAssetUsers: async (contractAddress: string, assetsId: string[]): Promise<any> => {
+    let usersData = [];
+
+    try {
+      const usersDataResponse: any[] = await Promise.all(
+        assetsId.map(async (itemId) => {
+          const stringParams = buildUrlParams(
+            {
+              total_suppliers: `.*_(supplied%7Cborrowed)_${itemId}`,
+            },
+            'matches'
+          );
+
+          const urlSupply = `https://nodes.wavesnodes.com/addresses/data/${contractAddress}?${stringParams}`;
+          const responseAssets = await axios.get(urlSupply);
+          console.log(responseAssets, '.responseAssets1');
+          return { [itemId]: responseAssets.data };
+        })
+      );
+      console.log(usersDataResponse, '.userData1');
+
+      usersData = usersDataResponse;
+    } catch (er) {
+      console.log(er, 'error');
+    }
+
+    return usersData;
+  },
   getBorrowSupplyUsers: async (contractAddress: string, assetsId: string[]): Promise<any> => {
     let usersData: any = [];
     const params = new URLSearchParams();
@@ -29,7 +57,6 @@ const wavesCapService = {
     const url = `https://wavescap.com/api/assets-info.php?${params.toString()}`;
     const response = await axios.get(url);
     const tokensData = response.data.assets;
-    console.log(tokensData, '.tokensData');
 
     try {
       const userData: any[] = await Promise.all(
@@ -43,14 +70,12 @@ const wavesCapService = {
 
           const urlSupply = `https://nodes.wavesnodes.com/addresses/data/${contractAddress}?${stringParams}`;
           const responseAssets = await axios.get(urlSupply);
-          console.log(responseAssets, '.responseAssets');
           return { [itemId]: responseAssets.data };
         })
       );
-      console.log(userData, '.supplyData objData');
       const users: any = [];
 
-      const list = assetsId.map((item) => {
+      assetsId.map((item) => {
         const val: any = {
           [item]: [],
         };
@@ -58,7 +83,6 @@ const wavesCapService = {
         const assetData: Record<string, any[]> = userData.find(
           (userDataItem: any) => Object.keys(userDataItem)[0] === item
         );
-        console.log(assetData, '.*_supplied_USDN assetData');
 
         Object.entries(assetData).forEach(([keyName, objData]) => {
           const suppliedUsers: any = [];
@@ -74,18 +98,15 @@ const wavesCapService = {
               poolContract: '',
             };
 
-            console.log(userObj, '.*_supplied_USDN objData');
             const objDataSplitted = userObj.key.split('_');
             const tokenData = tokensData.find((tokenItem: any) => tokenItem.id === keyName);
             const currentPrice = new BN(tokenData.data?.['lastPrice_usd-n'] ?? 0);
-            console.log(tokenData, '.*tokenItem objData');
             let userIndex = -1;
             if (users && users.length)
               userIndex = users.map((itemObj: any) => itemObj.owner).indexOf(objDataSplitted[0]);
 
             userDataObj.owner = objDataSplitted[0];
             userDataObj.poolContract = contractAddress;
-            console.log(userIndex, '.userIndex objData');
 
             // counting TOTAL SUPPLY for user in dollars
             if (objDataSplitted[1] === 'supplied') {
@@ -111,7 +132,6 @@ const wavesCapService = {
               }
             }
           });
-          console.log(borrowedUsers, suppliedUsers, 'users assetData1');
 
           val[item] = {
             suppliedUsers,
@@ -121,8 +141,6 @@ const wavesCapService = {
 
         return val;
       });
-      console.log(users, 'users assetData2');
-      console.log(list, '.list objData');
       usersData = users;
       // eslint-disable-next-line no-underscore-dangle
       // data = responseAssets.data;
@@ -253,7 +271,8 @@ const wavesCapService = {
         setup_ltv: 0,
         // interest rate for supply/borrow interest
         setup_interest: 0,
-        // borrow APR
+        // borrow APY
+        // todo: change to Apy naming
         setup_borrow_apr: 0,
         // supply APY/ supply interest
         setup_supply_apy: 0,
