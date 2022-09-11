@@ -52,6 +52,26 @@ const TitleH = styled.h1`
   }
 `;
 
+const CardsWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  .card {
+    width: 100%;
+    margin-bottom: 24px;
+
+    @media (min-width: 560px) {
+      width: 48%;
+    }
+
+    @media (min-width: 880px) {
+      width: 24%;
+      margin-bottom: 0;
+    }
+  }
+`;
+
 const DashHeader = styled.div`
   display: flex;
   flex-direction: column;
@@ -65,7 +85,6 @@ const Card = styled.div`
   position: relative;
   min-height: 250px;
   display: flex;
-  width: 24%;
   border: 1px solid #f1f2fe;
   border-radius: 16px;
   box-sizing: border-box;
@@ -213,8 +232,8 @@ const Dashboard: React.FC = () => {
           <Column>
             <SizedBox height={96} />
             <TitleH>What is Puzzle Lend?</TitleH>
-            <Row justifyContent="space-between">
-              <Card>
+            <CardsWrapper>
+              <Card className="card">
                 <CardImg src={DashOne} />
                 <CardText>
                   <Text type="primary" weight={500}>
@@ -227,7 +246,7 @@ const Dashboard: React.FC = () => {
                   </Text>
                 </CardText>
               </Card>
-              <Card>
+              <Card className="card">
                 <CardImg src={DashTwo} />
                 <CardText>
                   <Text type="primary" weight={500}>
@@ -240,7 +259,7 @@ const Dashboard: React.FC = () => {
                   </Text>
                 </CardText>
               </Card>
-              <Card>
+              <Card className="card">
                 <CardImg src={DashThree} />
                 <CardText>
                   <Text type="primary" weight={500}>
@@ -253,7 +272,7 @@ const Dashboard: React.FC = () => {
                   </Text>
                 </CardText>
               </Card>
-              <Card>
+              <Card className="card">
                 <CardImg src={DashFour} />
                 <CardText>
                   <Text type="primary" weight={500}>
@@ -266,7 +285,7 @@ const Dashboard: React.FC = () => {
                   </Text>
                 </CardText>
               </Card>
-            </Row>
+            </CardsWrapper>
           </Column>
         ) : null}
 

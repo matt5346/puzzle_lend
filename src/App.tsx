@@ -49,7 +49,8 @@ const App: React.FC = () => {
         {/* for main pool with default route */}
         <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
         {/* for pools on MOBILE */}
-        <Route path={ROUTES.DASHBOARD_MOBILE} element={<Dashboard />} />
+        <Route path={ROUTES.HOME} element={<Navigate to="/dashboard" />} />
+        {windowWidth! < 560 ? <Route path={ROUTES.DASHBOARD_MOBILE} element={<Dashboard />} /> : null}
         {/* for other pools with ids routes */}
         <Route path={ROUTES.DASHBOARD_POOl} element={<Dashboard />} />
         {/* specific USER STATS */}
@@ -65,7 +66,7 @@ const App: React.FC = () => {
       </Routes>
 
       <WalletModal onClose={() => accountStore.setWalletModalOpened(false)} visible={accountStore.walletModalOpened} />
-      {windowWidth! < 880 ? <MobileFooterMenu /> : null}
+      {windowWidth! < 560 ? <MobileFooterMenu /> : null}
     </Root>
   );
 };
