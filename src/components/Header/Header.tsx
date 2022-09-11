@@ -125,9 +125,7 @@ const Header: React.FC<IProps> = () => {
             ))}
           </Desktop>
         </Row>
-        <Desktop>
-          <Wallet />
-        </Desktop>
+        <Wallet />
       </TopMenu>
       <SubMenu />
     </Root>

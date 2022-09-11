@@ -6,10 +6,13 @@ import { observer } from 'mobx-react-lite';
 import { useStores } from '@src/stores';
 import GridTable from '@src/common/styles/GridTable';
 import Card from '@src/common/styles/Card';
+import MobileCardsWrap from '@src/common/styles/MobileCardsWrap';
 import { Row, Column } from '@src/common/styles/Flex';
 import { IToken, TTokenStatistics } from '@src/common/constants';
 import { ReactComponent as SortDownIcon } from '@src/common/assets/icons/sortDown.svg';
 import DesktopTokenTableRow from '@src/components/Dashboard/tables/DesktopTokenTableRow';
+import MobileTokenTableRow from '@src/components/Dashboard/tables/MobileTokenTableRow';
+import useWindowSize from '@src/hooks/useWindowSize';
 import BN from '@src/common/utils/BN';
 
 interface IProps {
@@ -39,6 +42,7 @@ const TableTitle: React.FC<{
 );
 
 const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClick, isUserStats }) => {
+  const { windowWidth } = useWindowSize();
   const [sort, setSort] = useState<'selfBorrow' | 'setupBorrowAPR' | 'selfDailyBorrowInterest'>('selfBorrow');
   const [sortMode, setSortMode] = useState<'descending' | 'ascending'>('descending');
   const { tokenStore } = useStores();
@@ -82,50 +86,79 @@ const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
   }, [filteredTokens, sort, sortMode, tokenStore.poolDataTokensWithStats]);
 
   return (
-    <Card style={{ padding: 0, overflow: 'auto' }} justifyContent="center">
-      <GridTable
-        style={{ width: 'fit-content', minWidth: '100%' }}
-        desktopTemplate={isUserStats ? '5fr 2fr 2fr 2.5fr' : '5fr 2fr 2fr 2.5fr 4fr'}
-        mobileTemplate="2fr 1fr">
-        <div className="gridTitle">
-          <div>Asset</div>
-          <TableTitle onClick={() => selectSort('selfBorrow')} mode={sortMode} sort={sort === 'selfBorrow'}>
-            To be repaid
-          </TableTitle>
-          <TableTitle onClick={() => selectSort('setupBorrowAPR')} mode={sortMode} sort={sort === 'setupBorrowAPR'}>
-            Borrow APY
-          </TableTitle>
-          <TableTitle
-            onClick={() => selectSort('selfDailyBorrowInterest')}
-            mode={sortMode}
-            sort={sort === 'selfDailyBorrowInterest'}>
-            Daily interest
-          </TableTitle>
-        </div>
-        {sortedTokens &&
-          sortedTokens.length &&
-          sortedTokens.map((t) => {
-            const stats = tokenStore.poolDataTokensWithStats[t.assetId];
+    <>
+      {windowWidth! > 880 ? (
+        <Card style={{ padding: 0, overflow: 'auto' }} justifyContent="center">
+          <GridTable
+            style={{ width: 'fit-content', minWidth: '100%' }}
+            desktopTemplate={isUserStats ? '5fr 2fr 2fr 2.5fr' : '5fr 2fr 2fr 2.5fr 4fr'}
+            mobileTemplate="2fr 1fr">
+            <div className="gridTitle">
+              <div>Asset</div>
+              <TableTitle onClick={() => selectSort('selfBorrow')} mode={sortMode} sort={sort === 'selfBorrow'}>
+                To be repaid
+              </TableTitle>
+              <TableTitle onClick={() => selectSort('setupBorrowAPR')} mode={sortMode} sort={sort === 'setupBorrowAPR'}>
+                Borrow APY
+              </TableTitle>
+              <TableTitle
+                onClick={() => selectSort('selfDailyBorrowInterest')}
+                mode={sortMode}
+                sort={sort === 'selfDailyBorrowInterest'}>
+                Daily loan interest
+              </TableTitle>
+            </div>
+            {sortedTokens &&
+              sortedTokens.length &&
+              sortedTokens.map((t) => {
+                const stats = tokenStore.poolDataTokensWithStats[t.assetId];
 
-            if (stats && Number(stats.selfBorrow) > 0) {
-              return (
-                <DesktopTokenTableRow
-                  isUserStats={isUserStats}
-                  token={t}
-                  key={t.assetId}
-                  rate={stats.currentPrice}
-                  selfBorrow={stats.selfBorrow}
-                  setupBorrowAPR={stats.setupBorrowAPR}
-                  selfDailyBorrowInterest={stats.selfDailyBorrowInterest}
-                  handleSupplyAssetClick={handleSupplyAssetClick}
-                />
-              );
-            }
+                if (stats && Number(stats.selfBorrow) > 0) {
+                  return (
+                    <DesktopTokenTableRow
+                      isUserStats={isUserStats}
+                      token={t}
+                      key={t.assetId}
+                      rate={stats.currentPrice}
+                      selfBorrow={stats.selfBorrow}
+                      setupBorrowAPR={stats.setupBorrowAPR}
+                      selfDailyBorrowInterest={stats.selfDailyBorrowInterest}
+                      handleSupplyAssetClick={handleSupplyAssetClick}
+                    />
+                  );
+                }
 
-            return null;
-          })}
-      </GridTable>
-    </Card>
+                return null;
+              })}
+          </GridTable>
+        </Card>
+      ) : (
+        <MobileCardsWrap isColumn>
+          {sortedTokens &&
+            sortedTokens.length &&
+            sortedTokens.map((t) => {
+              const stats = tokenStore.poolDataTokensWithStats[t.assetId];
+
+              if (stats && Number(stats.selfBorrow) > 0) {
+                return (
+                  <MobileTokenTableRow
+                    isUserStats={isUserStats}
+                    token={t}
+                    key={t.assetId}
+                    rate={stats.currentPrice}
+                    selfBorrow={stats.selfBorrow}
+                    setupBorrowAPR={stats.setupBorrowAPR}
+                    selfDailyBorrowInterest={stats.selfDailyBorrowInterest}
+                    handleSupplyAssetClick={handleSupplyAssetClick}
+                  />
+                );
+              }
+
+              return null;
+            })}
+        </MobileCardsWrap>
+      )}
+    </>
   );
 };
 

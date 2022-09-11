@@ -183,6 +183,32 @@ export default class TokenStore {
     return activePoolTokensWithStats!;
   }
 
+  // todo: can cause problems, in case if there some same tokens in different pools
+  // for that case, specify pool id also in url
+  // get POOL TOKENS with STATS, searching in all pools
+  // get poolDataTokensWithStats(): Record<string, TTokenStatistics> {
+  //   let activePoolTokensWithStats: Record<string, TTokenStatistics>;
+
+  //   Object.entries(LENDS_CONTRACTS).forEach(([key, item]) => {
+  //     TOKENS_LIST(key).forEach(() => {
+  //       console.log(this.poolStatsByContractId, key, item, 'this.poolStatsByContractId');
+  //       const poolData = this.poolStatsByContractId[item];
+
+  //       if (poolData && poolData.tokens) {
+  //         const data = poolData.tokens.reduce(
+  //           (acc, stats) => ({ ...acc, [stats.assetId]: stats }),
+  //           {} as Record<string, TTokenStatistics>
+  //         );
+
+  //         // same problem us upward
+  //         activePoolTokensWithStats = data;
+  //       }
+  //     });
+  //   });
+
+  //   return activePoolTokensWithStats!;
+  // }
+
   // get ACTIVE POOL TOKENS with STATS
   get poolDataTokensWithStats(): Record<string, TTokenStatistics> {
     let activePoolTokensWithStats: Record<string, TTokenStatistics>;

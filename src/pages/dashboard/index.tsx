@@ -5,6 +5,7 @@ import { IToken } from '@src/common/constants';
 import styled from '@emotion/styled';
 import { Row, Column } from '@src/common/styles/Flex';
 import { DashboardVMProvider } from '@src/pages/dashboard/DashboardVm';
+import useWindowSize from '@src/hooks/useWindowSize';
 import DashboardTable from '@src/pages/dashboard/DashboardTable';
 import Container from '@src/common/styles/Container';
 import { Text } from '@src/UIKit/Text';
@@ -31,8 +32,10 @@ const TitleH = styled.h1`
   color: #363870;
   font-weight: 500;
   margin: 0;
+  flex-direction: column;
+  word-break: break-word;
 
-  b {
+  span {
     color: #7075e9;
   }
 
@@ -42,6 +45,19 @@ const TitleH = styled.h1`
 
   &:last-of-type {
     margin-bottom: 20px;
+  }
+
+  @media (min-width: 560px) {
+    flex-direction: row;
+  }
+`;
+
+const DashHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: 880px) {
+    flex-direction: row;
   }
 `;
 
@@ -87,9 +103,20 @@ const CardImg = styled.img`
 const SideViewWrap = styled.div`
   display: flex;
   flex-direction: column;
-  position: sticky;
-  top: 117px;
   align-self: flex-start;
+  width: 100%;
+
+  @media (min-width: 880px) {
+    width: 50%;
+    margin: 0 auto 20px auto;
+  }
+
+  @media (min-width: 1270px) {
+    position: sticky;
+    top: 117px;
+    max-width: 315px;
+    width: 30%;
+  }
 `;
 
 const FAQ = styled.div`
@@ -99,6 +126,7 @@ const FAQ = styled.div`
 
 const Dashboard: React.FC = () => {
   const { accountStore, tokenStore, lendStore } = useStores();
+  const { windowWidth } = useWindowSize();
   const { address } = accountStore;
   const isKeeperDisabled = !accountStore.isWavesKeeperInstalled;
 
@@ -108,8 +136,6 @@ const Dashboard: React.FC = () => {
 
   useMemo(() => {
     const poolsData = tokenStore.poolDataTokens;
-    console.log(poolsData, 'poolsData');
-    console.log(tokenStore.poolDataTokensWithStats, 'tokenStore.poolDataTokensWithStats');
 
     if (poolsData.every((item) => +tokenStore.poolDataTokensWithStats[item.assetId].selfBorrow === 0))
       showBorrowTable(false);
@@ -130,7 +156,6 @@ const Dashboard: React.FC = () => {
         showSupplyTable(true);
       }
     });
-    console.log(poolsData, '---FILTERED');
 
     setFilteredTokens(poolsData);
   }, [showBorrow, tokenStore.poolDataTokensWithStats, tokenStore.poolDataTokens]);
@@ -140,15 +165,18 @@ const Dashboard: React.FC = () => {
   };
 
   const currentPoolData = tokenStore.poolStatsByContractId[lendStore.activePoolContract];
-  console.log(currentPoolData, 'currentPoolData');
 
   return (
     <DashboardVMProvider>
       <Container>
-        <TitleH>
-          {lendStore && lendStore.activePoolTitle ? lendStore.activePoolTitle : ''} Total liquidity:{' '}
-          <b>&nbsp;$ {currentPoolData?.poolTotal.toFixed(2)}</b>
-        </TitleH>
+        <DashHeader>
+          <TitleH>{lendStore && lendStore.activePoolTitle ? lendStore.activePoolTitle : ''}</TitleH>
+          <TitleH>
+            Total liquidity:
+            <>&nbsp;</>
+            <span>${currentPoolData?.poolTotal.toFixed(2)}</span>
+          </TitleH>
+        </DashHeader>
 
         <SubTitleWrap>
           <Text size="medium">
@@ -157,8 +185,8 @@ const Dashboard: React.FC = () => {
           </Text>
         </SubTitleWrap>
 
-        <Row justifyContent="space-between">
-          <Column crossAxisSize="max">
+        <Row justifyContent="space-between" style={windowWidth! < 1270 ? { flexWrap: 'wrap' } : { flexWrap: 'unset' }}>
+          <Column crossAxisSize="max" style={windowWidth! < 1270 ? { order: 2 } : { order: 0 }}>
             <DashboardTable
               filteredTokens={filteredTokens}
               showSupply={showSupply}

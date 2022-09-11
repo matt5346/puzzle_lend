@@ -7,6 +7,7 @@ const Button = styled.button<{
   kind?: TButtonType;
   size?: TButtonSize;
   minWidth?: string;
+  maxWidth?: string;
   fixed?: boolean;
 }>`
   white-space: nowrap;
@@ -24,6 +25,7 @@ const Button = styled.button<{
   color: ${({ kind }) => (kind === 'secondary' ? '#7075E9' : '#ffffff')};
   width: ${({ fixed }) => (fixed ? '100%' : 'fit-content')};
   min-width: ${({ minWidth }) => minWidth || 'unset'};
+  max-width: ${({ maxWidth }) => maxWidth || 'unset'};
   transition: 0.4s;
   ${({ size }) =>
     (() => {

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useMemo, useState, useEffect } from 'react';
+import styled from '@emotion/styled';
 import { useParams, Link } from 'react-router-dom';
 import { useStores } from '@src/stores';
 import { observer } from 'mobx-react-lite';
@@ -11,11 +12,11 @@ import {
   LENDS_CONTRACTS,
   IToken,
   createIToken,
+  TOKENS_LIST_FULL,
 } from '@src/common/constants';
 import { Text } from '@src/UIKit/Text';
 import { Row, Column } from '@src/common/styles/Flex';
 import { SizedBox } from '@src/UIKit/SizedBox';
-import styled from '@emotion/styled';
 import TokenData from '@src/pages/dashboardToken/TokenData';
 import { Button } from '@src/UIKit/Button';
 import { Anchor } from '@src/UIKit/Anchor';
@@ -109,14 +110,13 @@ const DashboardToken: React.FC = () => {
       }
       console.log(totalBorrowUsers, totalSupplyUsers, '---currentToken2');
 
-      const iData: IToken =
-        TOKENS_LIST(lendStore.activePoolName).find((item) => item.assetId === assetId) || createIToken();
+      const iData: IToken = TOKENS_LIST_FULL.find((item) => item.assetId === assetId) || createIToken();
+      console.log(iData, 'DATA----');
       let data: TTokenStatistics = createITokenStat();
 
       if (assetId) {
         data = tokenStore.poolDataTokensWithStats[assetId];
-        const token = TOKENS_LIST(lendStore.activePoolName).find((item) => item.assetId === assetId)!;
-        console.log(token, 'iData-----');
+        console.log(data, 'DATA----2');
       }
 
       console.log(data, iData, TOKENS_LIST(lendStore.activePoolName), 'data-----');

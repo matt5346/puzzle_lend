@@ -43,31 +43,31 @@ const DesktopTokenTableRow: React.FC<IProps> = ({ owner, totalSupply, totalBorro
         return navigate(`/user/${owner}`);
       }}>
       {owner != null ? (
-        <Column crossAxisSize="max">
+        <Column style={{ minWidth: '350px' }} crossAxisSize="max" mainAxisSize="stretch">
           <Text textAlign="left">{owner}</Text>
         </Column>
       ) : (
-        <Column crossAxisSize="max">
+        <Column crossAxisSize="max" mainAxisSize="stretch">
           <Text textAlign="right" />
         </Column>
       )}
 
       {totalBorrow != null ? (
-        <Column crossAxisSize="max">
+        <Column crossAxisSize="max" mainAxisSize="stretch">
           <Text textAlign="right">$ {totalBorrow.toFixed(2)}</Text>
         </Column>
       ) : (
-        <Column crossAxisSize="max">
+        <Column crossAxisSize="max" mainAxisSize="stretch">
           <Text textAlign="right" />
         </Column>
       )}
 
       {totalSupply != null ? (
-        <Column crossAxisSize="max">
+        <Column crossAxisSize="max" mainAxisSize="stretch">
           <Text textAlign="right">$ {totalSupply.toFixed(2)}</Text>
         </Column>
       ) : (
-        <Column crossAxisSize="max">
+        <Column crossAxisSize="max" mainAxisSize="stretch">
           <Text textAlign="right" />
         </Column>
       )}
@@ -86,7 +86,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({ owner, totalSupply, totalBorro
           </Button>
         </Row>
       ) : (
-        <Column crossAxisSize="max">
+        <Column crossAxisSize="max" mainAxisSize="stretch">
           <Text textAlign="right" />
         </Column>
       )}

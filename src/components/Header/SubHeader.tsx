@@ -102,24 +102,22 @@ const Header: React.FC<IProps> = () => {
     <Root>
       <TopMenu>
         <Row alignItems="center" crossAxisSize="max">
-          <Desktop>
-            {menuItems.map(({ name, link, poolContract }) => (
-              <MenuItem key={name} selected={isRoutesEquals(link, location.pathname)}>
-                <Text
-                  weight={500}
-                  style={{
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => {
-                    lendStore.setActivePool(poolContract);
-                    tokenStore.syncTokenStatistics(lendStore.activePoolName);
-                    navigate(link, { replace: true });
-                  }}>
-                  {name}
-                </Text>
-              </MenuItem>
-            ))}
-          </Desktop>
+          {menuItems.map(({ name, link, poolContract }) => (
+            <MenuItem key={name} selected={isRoutesEquals(link, location.pathname)}>
+              <Text
+                weight={500}
+                style={{
+                  cursor: 'pointer',
+                }}
+                onClick={() => {
+                  lendStore.setActivePool(poolContract);
+                  tokenStore.syncTokenStatistics(lendStore.activePoolName);
+                  navigate(link, { replace: true });
+                }}>
+                {name}
+              </Text>
+            </MenuItem>
+          ))}
         </Row>
       </TopMenu>
     </Root>

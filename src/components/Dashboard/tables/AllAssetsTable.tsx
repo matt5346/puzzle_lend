@@ -3,14 +3,17 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import styled from '@emotion/styled';
+import useWindowSize from '@src/hooks/useWindowSize';
 import { useStores } from '@src/stores';
 import GridTable from '@src/common/styles/GridTable';
 import Card from '@src/common/styles/Card';
+import MobileCardsWrap from '@src/common/styles/MobileCardsWrap';
 import { Row, Column } from '@src/common/styles/Flex';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import { Text } from '@src/UIKit/Text';
 import { IToken, TTokenStatistics } from '@src/common/constants';
 import DesktopTokenTableRow from '@src/components/Dashboard/tables/DesktopTokenTableRow';
+import MobileTokenTableRow from '@src/components/Dashboard/tables/MobileTokenTableRow';
 import BN from '@src/common/utils/BN';
 
 import { ReactComponent as SortDownIcon } from '@src/common/assets/icons/sortDown.svg';
@@ -41,12 +44,8 @@ const TableTitle: React.FC<{
   </Row>
 );
 
-const Root = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
 const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClick }) => {
+  const { windowWidth } = useWindowSize();
   const [sort, setActiveSort] = useState<'totalAssetSupply' | 'setupSupplyAPY' | 'totalAssetBorrow' | 'setupBorrowAPR'>(
     'totalAssetSupply'
   );
@@ -93,59 +92,90 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
   }, [filteredTokens, sort, sortMode, tokenStore.poolDataTokensWithStats]);
 
   return (
-    <Card style={{ padding: 0, overflow: 'auto' }} justifyContent="center">
-      <GridTable
-        style={{ width: 'fit-content', minWidth: '100%' }}
-        desktopTemplate="2fr 1fr 1fr 1fr 1fr 2fr"
-        mobileTemplate="2fr 1fr">
-        <div className="gridTitle">
-          <div>Asset</div>
-          <TableTitle onClick={() => selectSort('totalAssetSupply')} mode={sortMode} sort={sort === 'totalAssetSupply'}>
-            Total supply
-          </TableTitle>
-          <TableTitle onClick={() => selectSort('setupSupplyAPY')} mode={sortMode} sort={sort === 'setupSupplyAPY'}>
-            Supply APY
-          </TableTitle>
-          <TableTitle onClick={() => selectSort('totalAssetBorrow')} mode={sortMode} sort={sort === 'totalAssetBorrow'}>
-            Total borrow
-          </TableTitle>
-          <TableTitle onClick={() => selectSort('setupBorrowAPR')} mode={sortMode} sort={sort === 'setupBorrowAPR'}>
-            Borrow APY
-          </TableTitle>
-        </div>
-        {sortedTokens.length === 0 && (
-          <Column justifyContent="center" alignItems="center" crossAxisSize="max">
-            <SizedBox height={24} />
-            <NotFoundIcon style={{ marginBottom: 24 }} />
-            <Text className="text" textAlign="center">
-              Unfortunately, there are no tokens that fit your filters.
-            </Text>
-            <SizedBox height={24} />
-          </Column>
-        )}
-        {sortedTokens.map((t) => {
-          const stats = tokenStore.poolDataTokensWithStats[t.assetId];
+    <>
+      {windowWidth! > 880 ? (
+        <Card style={{ padding: 0, overflow: 'auto' }} justifyContent="center">
+          <GridTable style={{ width: '100%', minWidth: '100%' }} desktopTemplate="2fr 1fr 1fr 1fr 1fr 2fr">
+            <div className="gridTitle">
+              <div>Asset</div>
+              <TableTitle
+                onClick={() => selectSort('totalAssetSupply')}
+                mode={sortMode}
+                sort={sort === 'totalAssetSupply'}>
+                Total supply
+              </TableTitle>
+              <TableTitle onClick={() => selectSort('setupSupplyAPY')} mode={sortMode} sort={sort === 'setupSupplyAPY'}>
+                Supply APY
+              </TableTitle>
+              <TableTitle
+                onClick={() => selectSort('totalAssetBorrow')}
+                mode={sortMode}
+                sort={sort === 'totalAssetBorrow'}>
+                Total borrow
+              </TableTitle>
+              <TableTitle onClick={() => selectSort('setupBorrowAPR')} mode={sortMode} sort={sort === 'setupBorrowAPR'}>
+                Borrow APY
+              </TableTitle>
+            </div>
+            {sortedTokens.length === 0 && (
+              <Column justifyContent="center" alignItems="center" crossAxisSize="max">
+                <SizedBox height={24} />
+                <NotFoundIcon style={{ marginBottom: 24 }} />
+                <Text className="text" textAlign="center">
+                  Unfortunately, there are no tokens that fit your filters.
+                </Text>
+                <SizedBox height={24} />
+              </Column>
+            )}
+            {sortedTokens.map((t) => {
+              const stats = tokenStore.poolDataTokensWithStats[t.assetId];
 
-          if (stats) {
-            return (
-              <DesktopTokenTableRow
-                isUserStats={false}
-                token={t}
-                key={t.assetId}
-                rate={stats.currentPrice}
-                setupBorrowAPR={stats.setupBorrowAPR}
-                setupSupplyAPY={stats.setupSupplyAPY}
-                totalSupply={stats.totalAssetSupply}
-                totalBorrow={stats.totalAssetBorrow}
-                handleSupplyAssetClick={handleSupplyAssetClick}
-              />
-            );
-          }
+              if (stats) {
+                return (
+                  <DesktopTokenTableRow
+                    isUserStats={false}
+                    token={t}
+                    key={t.assetId}
+                    rate={stats.currentPrice}
+                    setupBorrowAPR={stats.setupBorrowAPR}
+                    setupSupplyAPY={stats.setupSupplyAPY}
+                    totalSupply={stats.totalAssetSupply}
+                    totalBorrow={stats.totalAssetBorrow}
+                    handleSupplyAssetClick={handleSupplyAssetClick}
+                  />
+                );
+              }
 
-          return null;
-        })}
-      </GridTable>
-    </Card>
+              return null;
+            })}
+          </GridTable>
+        </Card>
+      ) : (
+        <MobileCardsWrap>
+          {sortedTokens.map((t) => {
+            const stats = tokenStore.poolDataTokensWithStats[t.assetId];
+
+            if (stats) {
+              return (
+                <MobileTokenTableRow
+                  isUserStats={false}
+                  token={t}
+                  key={t.assetId}
+                  rate={stats.currentPrice}
+                  setupBorrowAPR={stats.setupBorrowAPR}
+                  setupSupplyAPY={stats.setupSupplyAPY}
+                  totalSupply={stats.totalAssetSupply}
+                  totalBorrow={stats.totalAssetBorrow}
+                  handleSupplyAssetClick={handleSupplyAssetClick}
+                />
+              );
+            }
+
+            return null;
+          })}
+        </MobileCardsWrap>
+      )}
+    </>
   );
 };
 

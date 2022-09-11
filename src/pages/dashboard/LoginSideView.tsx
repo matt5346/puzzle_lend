@@ -37,7 +37,6 @@ const UserInfo: React.FC<IProps> = ({ handleLogin, isKeeperDisabled }) => {
       style={{
         padding: '24px 24px 0 24px',
         overflow: 'visible',
-        maxWidth: '315px',
         position: 'relative',
       }}
       minWidth={310}

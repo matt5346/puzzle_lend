@@ -41,12 +41,12 @@ const TableTitle: React.FC<{
 );
 
 const AssetsTable: React.FC<IProps> = ({ filteredTokens }) => {
-  const [sort, setActiveSort] = useState<'borrowed' | 'supplied' | 'totalAssetBorrow' | 'setupBorrowAPR'>('borrowed');
+  const [sort, setActiveSort] = useState<'borrowed' | 'supplied'>('borrowed');
   const [sortMode, setActiveSortMode] = useState<'descending' | 'ascending'>('descending');
   const { tokenStore } = useStores();
   const [sortedTokens, setSortedTokens] = useState<IToken[]>([]);
 
-  const selectSort = (v: 'borrowed' | 'supplied' | 'totalAssetBorrow' | 'setupBorrowAPR') => {
+  const selectSort = (v: 'borrowed' | 'supplied') => {
     if (sort === v) {
       setActiveSortMode(sortMode === 'ascending' ? 'descending' : 'ascending');
     } else {
@@ -56,7 +56,30 @@ const AssetsTable: React.FC<IProps> = ({ filteredTokens }) => {
   };
 
   useEffect(() => {
-    const data = filteredTokens;
+    const data = filteredTokens.sort((a: any, b: any) => {
+      const stats1: any | undefined = a;
+      const stats2: any | undefined = b;
+      let key: keyof any | undefined;
+      if (sort === 'borrowed') key = 'borrowed';
+      if (sort === 'supplied') key = 'supplied';
+      if (key == null) return 0;
+
+      if (stats1 == null && stats2 == null) return 0;
+      if (stats1[key] == null && stats2[key] != null) {
+        return sortMode === 'descending' ? 1 : -1;
+      }
+      if (stats1[key] == null && stats2[key] == null) {
+        return sortMode === 'descending' ? -1 : 1;
+      }
+      return sortMode === 'descending'
+        ? BN.formatUnits(stats1[key], 0).lt(stats2[key])
+          ? 1
+          : -1
+        : BN.formatUnits(stats1[key], 0).lt(stats2[key])
+        ? -1
+        : 1;
+    });
+    console.log(data, 'filt data--===1');
     setSortedTokens(data);
   }, [filteredTokens, sort, sortMode, tokenStore.poolDataTokensWithStats]);
 
@@ -64,10 +87,10 @@ const AssetsTable: React.FC<IProps> = ({ filteredTokens }) => {
     <Card style={{ padding: 0, overflow: 'auto', width: '100%' }} justifyContent="center">
       <GridTable
         style={{ width: '100%', minWidth: '100%' }}
-        desktopTemplate="4fr 2fr 2fr 3fr"
+        desktopTemplate="4fr 3fr 2fr 3fr"
         mobileTemplate="2fr 1fr 2fr 2fr">
         <div className="gridTitle">
-          <div>User</div>
+          <div style={{ minWidth: '350px' }}>User</div>
           <TableTitle onClick={() => selectSort('borrowed')} mode={sortMode} sort={sort === 'borrowed'}>
             Borrowed
           </TableTitle>
@@ -75,22 +98,20 @@ const AssetsTable: React.FC<IProps> = ({ filteredTokens }) => {
             Supplied
           </TableTitle>
         </div>
-        {sortedTokens.map((t: any) => {
-          if (t) {
+        {sortedTokens &&
+          sortedTokens.length &&
+          sortedTokens.map((t: any) => {
             return (
               <Column crossAxisSize="max">
                 <DesktopTokenTableRow
-                  key={t.assetId}
+                  key={t.owner + t.supplied}
                   owner={t.owner}
                   totalBorrow={t.borrowed}
                   totalSupply={t.supplied}
                 />
               </Column>
             );
-          }
-
-          return null;
-        })}
+          })}
       </GridTable>
     </Card>
   );

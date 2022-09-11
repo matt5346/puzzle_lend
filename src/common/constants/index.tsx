@@ -159,6 +159,8 @@ export const LENDS_CONTRACTS = {
 export const ROUTES = {
   HOME: '/',
   DASHBOARD: '/dashboard',
+  // supply/borrow/all separating on mobile
+  DASHBOARD_MOBILE: '/dashboard/:assetType',
   USER_STATS: '/user/:userId',
   BORROW_SUPPLY_USERS: '/users/list',
   DASHBOARD_POOl: '/dashboard/pool/:poolId',

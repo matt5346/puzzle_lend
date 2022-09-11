@@ -43,7 +43,7 @@ const UserStats: React.FC = () => {
         <SizedBox height={54} />
         {isReady &&
           Object.values(LENDS_CONTRACTS).map((pool: any) => {
-            return <UsersTable poolId={pool} showAll={false} isUserStats />;
+            return <UsersTable key={pool} poolId={pool} />;
           })}
       </Column>
     </Root>

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useMemo, useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { useStores } from '@src/stores';
 import { observer } from 'mobx-react-lite';
@@ -8,16 +9,61 @@ import { Text } from '@src/UIKit/Text';
 import { Row, Column } from '@src/common/styles/Flex';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import { Select } from '@src/UIKit/Select';
-import { LENDS_CONTRACTS, TOKENS_LIST_FULL } from '@src/common/constants';
+import { LENDS_CONTRACTS, TOKENS_LIST_FULL, ROUTES } from '@src/common/constants';
 import DashboardTable from '@src/pages/usersList/DashboardTable';
 import SquareTokenIcon from '@src/common/styles/SquareTokenIcon';
 import tokenLogos from '@src/common/constants/tokenLogos';
 import BN from '@src/common/utils/BN';
 import { ReactComponent as LineDivider } from '@src/common/assets/icons/line_divider.svg';
+import { ReactComponent as ChevronDown } from '@src/common/assets/icons/chevron_down.svg';
 
 const Root = styled.div`
   display: flex;
   max-width: 1360px;
+  padding: 0 15px;
+
+  .details-link {
+    display: flex;
+    justify-content: flex-start;
+    color: #7075e9;
+    text-decoration: unset;
+
+    svg {
+      width: 20px;
+      margin-right: 10px;
+      transform: translateX(0) rotate(90deg);
+      transition: transform 0.15s ease;
+    }
+
+    &:hover {
+      text-decoration: underline;
+
+      svg {
+        transform: translateX(5px) rotate(90deg);
+      }
+    }
+  }
+`;
+
+const AssetWrap = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #f1f2fe;
+  cursor: pointer;
+  padding: 0 16px 10px 16px;
+  box-sizing: border-box;
+
+  &:last-child {
+    padding-bottom: 16px;
+    margin-bottom: 0;
+    border-bottom: unset;
+  }
+
+  &:hover {
+    background: #f8f8ff;
+  }
 `;
 
 const SideViewWrap = styled.div`
@@ -26,6 +72,7 @@ const SideViewWrap = styled.div`
   position: sticky;
   top: 117px;
   align-self: flex-start;
+  width: 30%;
 `;
 
 const categoriesOptions = [
@@ -38,6 +85,7 @@ const moneyOptions = [{ title: 'USDN', key: 'usdn' }];
 
 const UsersList: React.FC = () => {
   const { usersStore, tokenStore } = useStores();
+  const navigate = useNavigate();
   const [usersData, setUsersData] = useState<any>([]);
   const [getTokensData, setTokensFullData] = useState<any>([]);
   const [getPoolType, setPoolType] = useState<number>(0);
@@ -48,17 +96,19 @@ const UsersList: React.FC = () => {
     console.log(Object.values(LENDS_CONTRACTS), 'Object.values(LENDS_CONTRACTS)---1');
     Object.values(LENDS_CONTRACTS).forEach((item) => {
       console.log(tokenStore.filterPoolDataTokensStats(item), '...tokenStore.filterPoolDataTokens(item)');
-      // poolsData.push(...tokenStore.filterPoolDataTokens(item));
       const tokens = tokenStore.filterPoolDataTokensStats(item);
 
+      // counting values of TOKENS SUPPLY, depending of select value
       Object.entries(tokens).forEach(([key, tokenItem]) => {
         const tokenIndex = poolsData.map((poolItem: any) => poolItem.assetId).indexOf(key);
 
-        console.log(tokenIndex, 'index -1');
         if (tokenIndex === -1) {
           poolsData.push(tokenItem);
         } else {
-          const poolItem = poolsData[tokenIndex];
+          poolsData[tokenIndex].totalAssetSupply = BN.formatUnits(
+            +poolsData[tokenIndex].totalAssetSupply + +tokenItem.totalAssetSupply,
+            0
+          );
         }
       });
     });
@@ -81,6 +131,13 @@ const UsersList: React.FC = () => {
     <Root>
       <Column crossAxisSize="max">
         <SizedBox height={54} />
+        <Link className="details-link" to={ROUTES.HOME}>
+          <ChevronDown />
+          <Text weight={500} type="blue500" fitContent>
+            Back to Main page
+          </Text>
+        </Link>
+        <SizedBox height={24} />
         <Text size="large" weight={500}>
           Users stats
         </Text>
@@ -112,7 +169,11 @@ const UsersList: React.FC = () => {
         </Row>
         <SizedBox height={12} />
         <Row justifyContent="space-between">
-          <Column crossAxisSize="max">
+          <Column
+            crossAxisSize="max"
+            style={{
+              width: '70%',
+            }}>
             {usersData && usersData.length && (
               <Column crossAxisSize="max">
                 <DashboardTable filteredTokens={usersData} />
@@ -124,13 +185,12 @@ const UsersList: React.FC = () => {
           <SideViewWrap>
             <Card
               style={{
-                padding: '16px',
+                padding: '16px 0 0 0',
                 overflow: 'visible',
-                minWidth: '400px',
                 position: 'relative',
               }}
               justifyContent="center">
-              <Text margin="0 0 16px 0" size="big" weight={500}>
+              <Text margin="0 0 16px 0" size="big" weight={500} style={{ padding: '0 16px' }}>
                 Total value
               </Text>
               <LineDivider style={{ width: '100%' }} />
@@ -143,11 +203,13 @@ const UsersList: React.FC = () => {
                     console.log(iData, 'IDATA');
 
                     return (
-                      <Row
-                        mainAxisSize="stretch"
-                        justifyContent="space-between"
-                        style={{ paddingBottom: '10px', marginBottom: '10px', borderBottom: '1px solid #f1f2fe' }}>
-                        <Row alignItems="center" style={{ cursor: 'pointer' }}>
+                      <AssetWrap key={item.assetId}>
+                        <Row
+                          alignItems="center"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            return navigate(`/dashboard/token/${item.assetId}`);
+                          }}>
                           {iData && iData.symbol && <SquareTokenIcon size="small" src={tokenLogos[iData.symbol]} />}
                           <SizedBox width={18} />
                           <Text nowrap weight={500} fitContent>
@@ -168,7 +230,7 @@ const UsersList: React.FC = () => {
                             $ {(+formatVal(item.totalAssetSupply, item.decimals) * +item.currentPrice).toFixed(2)}
                           </Text>
                         </Column>
-                      </Row>
+                      </AssetWrap>
                     );
                   })}
               </Column>

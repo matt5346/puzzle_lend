@@ -20,8 +20,6 @@ export enum TokenCategoriesEnum {
 // isUserStats -- case for all users except user whos logged with wallet
 interface IProps {
   poolId: string;
-  showAll: boolean;
-  isUserStats: boolean;
 }
 
 const Root = styled.div`
@@ -35,15 +33,14 @@ const Wrap = styled.div`
   flex-direction: column;
 `;
 
-const UserTable: React.FC<IProps> = ({ poolId, showAll, isUserStats }) => {
-  const { lendStore, accountStore, usersStore } = useStores();
+const UserTable: React.FC<IProps> = ({ poolId }) => {
+  const { lendStore, usersStore } = useStores();
 
   const [filteredTokens, setFilteredTokens] = useState<IToken[]>([]);
   const [showBorrow, showBorrowTable] = useState<boolean>(false);
   const [showSupply, showSupplyTable] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log(lendStore.activePoolContract, 'lendStore.activePoolContract');
     const poolsData = usersStore.filterPoolDataTokens(poolId);
 
     if (poolsData.every((item) => +usersStore.poolDataTokensWithStats[item.assetId].selfBorrow === 0))
@@ -56,7 +53,6 @@ const UserTable: React.FC<IProps> = ({ poolId, showAll, isUserStats }) => {
     // for showing or hiding supply/borrow TABLES
     poolsData.forEach((t) => {
       const stats = usersStore.poolDataTokensWithStats[t.assetId];
-      console.log(stats, 'poolsData.stats');
 
       if (showBorrow === false && Number(stats.selfBorrow) > 0) {
         showBorrowTable(true);
@@ -66,7 +62,6 @@ const UserTable: React.FC<IProps> = ({ poolId, showAll, isUserStats }) => {
         showSupplyTable(true);
       }
     });
-    console.log(poolsData, '---FILTERED');
     setFilteredTokens(poolsData);
   }, [lendStore.activePoolContract, showBorrow, poolId, usersStore]);
 
@@ -78,15 +73,9 @@ const UserTable: React.FC<IProps> = ({ poolId, showAll, isUserStats }) => {
         </Text>
         <SizedBox height={12} />
         {filteredTokens && filteredTokens.length ? (
-          <DashboardTable
-            filteredTokens={filteredTokens}
-            showBorrow={showSupply}
-            showSupply={showSupply}
-            showAll={false}
-            isUserStats
-          />
+          <DashboardTable filteredTokens={filteredTokens} showBorrow={showBorrow} showSupply={showSupply} isUserStats />
         ) : (
-          <Text>No assets</Text>
+          <Text>No Tokens in pool</Text>
         )}
       </Wrap>
     </Root>

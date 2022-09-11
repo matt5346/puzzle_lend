@@ -5,11 +5,6 @@ import { observer } from 'mobx-react-lite';
 import styled from '@emotion/styled';
 import { useStores } from '@src/stores';
 import { Text } from '@src/UIKit/Text';
-import { TOKENS_BY_ASSET_ID } from '@src/common/constants';
-import { SizedBox } from '@src/UIKit/SizedBox';
-import { Row, Column } from '@src/common/styles/Flex';
-import tokenLogos from '@src/common/constants/tokenLogos';
-import SquareTokenIcon from '@src/common/styles/SquareTokenIcon';
 import AssetsTable from '@src/pages/usersList/AssetsTable';
 
 // for some time

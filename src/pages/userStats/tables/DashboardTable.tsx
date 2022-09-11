@@ -24,7 +24,6 @@ interface IProps {
   filteredTokens: IToken[];
   showSupply: boolean;
   showBorrow: boolean;
-  showAll: boolean;
   isUserStats: boolean;
 }
 
@@ -39,9 +38,8 @@ const Wrap = styled.div`
   flex-direction: column;
 `;
 
-const DashboardTable: React.FC<IProps> = ({ filteredTokens, showSupply, showBorrow, showAll, isUserStats }) => {
-  const { lendStore, accountStore } = useStores();
-  const { address } = accountStore;
+const DashboardTable: React.FC<IProps> = ({ filteredTokens, showSupply, showBorrow, isUserStats }) => {
+  const { lendStore } = useStores();
 
   const handleSupplyAssetClick = (assetId: string, step: number) => {
     lendStore.setDashboardModalOpened(true, assetId, step);
@@ -49,7 +47,7 @@ const DashboardTable: React.FC<IProps> = ({ filteredTokens, showSupply, showBorr
 
   return (
     <Root>
-      {showSupply && (address || isUserStats) ? (
+      {showSupply ? (
         <Wrap>
           <Text weight={500} type="secondary" margin="0 0 10px 0">
             My supply
@@ -63,7 +61,7 @@ const DashboardTable: React.FC<IProps> = ({ filteredTokens, showSupply, showBorr
         </Wrap>
       ) : null}
 
-      {showBorrow && (address || isUserStats) ? (
+      {showBorrow ? (
         <Wrap>
           <Text weight={500} type="secondary" margin="0 0 10px 0">
             My borrow
@@ -76,6 +74,7 @@ const DashboardTable: React.FC<IProps> = ({ filteredTokens, showSupply, showBorr
           <SizedBox height={40} />
         </Wrap>
       ) : null}
+      {!showBorrow && !showSupply && <Text>No borrowed/supplied assets</Text>}
     </Root>
   );
 };

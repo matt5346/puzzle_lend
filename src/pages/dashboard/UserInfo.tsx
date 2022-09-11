@@ -40,7 +40,6 @@ const UserInfo: React.FC<IProps> = () => {
       style={{
         padding: '16px',
         overflow: 'visible',
-        maxWidth: '315px',
         position: 'relative',
       }}
       justifyContent="center">

@@ -18,6 +18,8 @@ import BN from '@src/common/utils/BN';
 export default class UsersStore {
   public rootStore: RootStore;
 
+  initialized = false;
+
   statistics: Array<TTokenStatistics> = [];
 
   poolStatsArr: Array<PoolDataType> = [];
@@ -35,6 +37,8 @@ export default class UsersStore {
   userCollateral = 0;
 
   usersStatsByPool: any = [];
+
+  private setInitialized = (v: boolean) => (this.initialized = v);
 
   private setUsersPoolData = (poolStats: PoolDataType) => {
     console.log(poolStats, 'poolStats 1');
@@ -113,14 +117,16 @@ export default class UsersStore {
     });
   }
 
-  // get ACTIVE POOL TOKENS with STATS
-  get poolDataTokensWithStats(): Record<string, TTokenStatistics> {
+  // get POOL TOKENS STATS, with contractId
+  filterPoolDataTokensStats(contractId: string): Record<string, TTokenStatistics> {
     let activePoolTokensWithStats: Record<string, TTokenStatistics>;
     const { lendStore } = this.rootStore;
+    const poolName = lendStore.poolNameById(contractId);
+    console.log(contractId, poolName, 'filterPoolDataTokensStats');
 
-    TOKENS_LIST(lendStore.activePoolName).forEach(() => {
-      const poolData = this.poolStatsByContractId[lendStore.activePoolContract];
-      console.log(poolData, 'poolData111');
+    TOKENS_LIST(poolName).forEach(() => {
+      const poolData = this.poolStatsByContractId[contractId];
+      console.log(poolData, this.poolStatsByContractId, 'poolData111');
 
       if (poolData && poolData.tokens) {
         const data = poolData.tokens.reduce(
@@ -128,6 +134,26 @@ export default class UsersStore {
           {} as Record<string, TTokenStatistics>
         );
         console.log(data, 'data111');
+        activePoolTokensWithStats = data;
+      }
+    });
+
+    return activePoolTokensWithStats!;
+  }
+
+  // get ACTIVE POOL TOKENS with STATS
+  get poolDataTokensWithStats(): Record<string, TTokenStatistics> {
+    let activePoolTokensWithStats: Record<string, TTokenStatistics>;
+    const { lendStore } = this.rootStore;
+
+    TOKENS_LIST(lendStore.activePoolName).forEach(() => {
+      const poolData = this.poolStatsByContractId[lendStore.activePoolContract];
+
+      if (poolData && poolData.tokens) {
+        const data = poolData.tokens.reduce(
+          (acc, stats) => ({ ...acc, [stats.assetId]: stats }),
+          {} as Record<string, TTokenStatistics>
+        );
         activePoolTokensWithStats = data;
       }
     });
@@ -297,6 +323,8 @@ export default class UsersStore {
 
   constructor(rootStore: RootStore, initState?: ISerializedTokenStore) {
     this.rootStore = rootStore;
-    Object.values(LENDS_CONTRACTS).map((item) => this.loadBorrowSupplyUsers(item));
+    Promise.all(Object.values(LENDS_CONTRACTS).map((item) => this.loadBorrowSupplyUsers(item))).then(() =>
+      this.setInitialized(true)
+    );
   }
 }
