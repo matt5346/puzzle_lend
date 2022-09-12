@@ -133,7 +133,7 @@ const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
           </GridTable>
         </Card>
       ) : (
-        <MobileCardsWrap isColumn>
+        <MobileCardsWrap>
           {sortedTokens &&
             sortedTokens.length &&
             sortedTokens.map((t) => {

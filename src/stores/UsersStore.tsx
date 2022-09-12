@@ -240,7 +240,7 @@ export default class UsersStore {
       const asset = TOKENS_BY_ASSET_ID[details.id] ?? details.precision;
       const { decimals } = asset;
       const firstPrice = new BN(details.data?.['firstPrice_usd-n'] ?? 0);
-      const currentPrice = new BN(details.data?.['lastPrice_usd-n'] ?? 0);
+      const currentPrice = new BN(details.min_price ?? 0);
 
       const totalSupply = BN.formatUnits(details.totalSupply, decimals);
       const circulatingSupply = BN.formatUnits(details.circulating, decimals);
@@ -295,6 +295,7 @@ export default class UsersStore {
         change24H,
         change24HUsd,
         currentPrice,
+        maxPrice: BN.formatUnits(details.map_price, 0),
         changeStr,
         fullyDilutedMC: totalSupply.times(currentPrice),
         marketCap: circulatingSupply.times(currentPrice),

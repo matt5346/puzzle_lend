@@ -139,8 +139,14 @@ const SideViewWrap = styled.div`
 `;
 
 const FAQ = styled.div`
-  width: 20%;
+  width: 100%;
   margin-right: 100px;
+  margin-bottom: 24px;
+
+  @media (min-width: 880px) {
+    margin-bottom: 0;
+    width: 20%;
+  }
 `;
 
 const Dashboard: React.FC = () => {
@@ -291,7 +297,7 @@ const Dashboard: React.FC = () => {
 
         <SizedBox height={106} />
 
-        <Row>
+        <Row style={windowWidth! < 880 ? { flexDirection: 'column' } : { flexDirection: 'row' }}>
           <FAQ>
             <TitleH>FAQ</TitleH>
             <Text size="medium" type="secondary">

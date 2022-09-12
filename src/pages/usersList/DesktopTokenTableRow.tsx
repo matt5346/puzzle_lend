@@ -23,14 +23,23 @@ const Root = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
+
+  .owner {
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+    max-width: 100px;
+    min-width: unset !important;
+  }
+
+  @media (min-width: 880px) {
+    .owner {
+      max-width: 250px;
+    }
+  }
 `;
 
 const DesktopTokenTableRow: React.FC<IProps> = ({ owner, totalSupply, totalBorrow }) => {
   const navigate = useNavigate();
-
-  // const formatVal = (val: number, decimal: number) => {
-  //   return (val / 10 ** decimal).toFixed(2);
-  // };
 
   return (
     <Root
@@ -43,7 +52,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({ owner, totalSupply, totalBorro
         return navigate(`/user/${owner}`);
       }}>
       {owner != null ? (
-        <Column style={{ minWidth: '350px' }} crossAxisSize="max" mainAxisSize="stretch">
+        <Column className="owner" style={{ minWidth: '350px' }} crossAxisSize="max" mainAxisSize="stretch">
           <Text textAlign="left">{owner}</Text>
         </Column>
       ) : (

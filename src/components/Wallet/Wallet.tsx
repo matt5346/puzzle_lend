@@ -27,7 +27,12 @@ const Wallet: React.FC<IProps> = () => {
   return (
     <Root>
       {address == null ? (
-        <Button size="medium" onClick={() => accountStore.setLoginModalOpened(true)} fixed>
+        <Button
+          style={{ marginLeft: 'auto' }}
+          size="medium"
+          maxWidth="156px"
+          onClick={() => accountStore.setLoginModalOpened(true)}
+          fixed>
           Connect wallet
         </Button>
       ) : (

@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable prefer-destructuring */
 import axios from 'axios';
 import BN from '@src/common/utils/BN';
@@ -201,10 +202,12 @@ const wavesCapService = {
 
     let tokensRates: any = {};
     let setupRate: any = {};
+    let tokensPricesRates: any = {};
 
     try {
       const tokensRatesUrl = `http://nodes.wavesnodes.com/utils/script/evaluate/${contractAddress}`;
 
+      // for counting supply/borrow interest on each token
       tokensRates = await axios(tokensRatesUrl, {
         method: 'POST',
         headers: {
@@ -220,6 +223,8 @@ const wavesCapService = {
 
     try {
       const tokensInterestUrl = `http://nodes.wavesnodes.com/utils/script/evaluate/${contractAddress}`;
+
+      // getting setup interest on each token
       setupRate = await axios(tokensInterestUrl, {
         method: 'POST',
         headers: {
@@ -233,13 +238,28 @@ const wavesCapService = {
       console.log(err, 'ERR');
     }
 
+    try {
+      const tokensRatesUrl = `http://nodes.wavesnodes.com/utils/script/evaluate/${contractAddress}`;
+      tokensPricesRates = await axios(tokensRatesUrl, {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        data: {
+          expr: `getPrices(false)`,
+        },
+      });
+      console.log(tokensPricesRates, 'tokensPricesRates 2');
+    } catch (err) {
+      console.log(err, 'ERR');
+    }
     console.log(tokensRates, 'tokensRates 2');
-    // eslint-disable-next-line no-underscore-dangle
     const tokensRatesArr: string[] = tokensRates?.data?.result?.value?._2?.value.split(',');
-    // eslint-disable-next-line no-underscore-dangle
     const tokensinterestArr: string[] = setupRate?.data?.result?.value?._2?.value.split(',');
+    const tokensPricesArr: string[] = tokensPricesRates?.data?.result?.value?._2?.value.split('|');
     console.log(tokensRatesArr, 'tokensRatesArr 2');
     console.log(tokensinterestArr, 'tokensinterestArr 2');
+    console.log(tokensPricesArr, 'tokensPricesArr 2');
 
     const assetsData = await Promise.all(
       assetsId.map(async (itemId) => {
@@ -286,6 +306,10 @@ const wavesCapService = {
         supply_rate: 0,
         // bRate, need for counting BORROW compound on front
         borrow_rate: 0,
+        // min price for all counting except ->
+        // max price only for counting borrow and withdraw
+        min_price: 0,
+        max_price: 0,
       };
 
       const assetExtraData = Object.values(assetsData).find((assetItem) => assetItem[item.id]);
@@ -296,6 +320,8 @@ const wavesCapService = {
         const poolValue = assetExtraData[item.id].find((pool: any) => `total_supplied_${item.id}` === pool.key);
         const poolBorrowed = assetExtraData[item.id].find((pool: any) => `total_borrowed_${item.id}` === pool.key);
         const ltv = assetExtraData[item.id].find((pool: any) => pool.key === 'setup_ltvs')?.value?.split(',');
+        // setupToken is order for Tokens in current pool > [Waves, pluto...]
+        // all other rates comparing to it
         const setupTokens = assetExtraData[item.id].find((pool: any) => pool.key === 'setup_tokens')?.value?.split(',');
         const selfSupply = assetExtraData[item.id].find((pool: any) => pool.key === `${address}_supplied_${item.id}`);
         const selfBorrowed = assetExtraData[item.id].find((pool: any) => pool.key === `${address}_borrowed_${item.id}`);
@@ -321,6 +347,14 @@ const wavesCapService = {
             // firstly its %, all percents in 6 decimals
             if (tokensinterestArr && +tokensinterestArr[key])
               itemData.setup_interest = +tokensinterestArr[key] / 10 ** 6 / 100;
+
+            // adding ORACLE prices of tokens, price in $ (6 decimals)
+            // 0 - min price, 1 - max price
+            if (tokensPricesArr && tokensPricesArr[key]) {
+              const prices = tokensPricesArr[key].split(',');
+              itemData.min_price = +prices[0] / 10 ** 6;
+              itemData.max_price = +prices[1] / 10 ** 6;
+            }
           }
         });
 
@@ -328,22 +362,21 @@ const wavesCapService = {
           // setup_roi === borrow interest
           if (pool.key === 'setup_interest') {
             itemData.setup_borrow_apr = ((1 + itemData.setup_interest) ** 365 - 1) * 100;
-            // itemData.setup_interest = pool.value / 10 ** 8;
           }
         });
 
-        console.log(poolValue, poolBorrowed, itemData.supply_rate, '--poolValue, poolBorrowed---spply');
-        console.log(selfSupply, selfBorrowed, itemData.borrow_rate, '--selfSupply, selfBorrowe---spply');
-        console.log(
-          itemData.name,
-          itemData.supply_rate,
-          itemData.borrow_rate,
-          '--titemData.supply_rate, itemData.borrow_rate----'
-        );
+        // debug, remove later
+        // console.log(poolValue, poolBorrowed, itemData.supply_rate, '--poolValue, poolBorrowed---spply');
+        // console.log(selfSupply, selfBorrowed, itemData.borrow_rate, '--selfSupply, selfBorrowe---spply');
+        // console.log(
+        //   itemData.name,
+        //   itemData.supply_rate,
+        //   itemData.borrow_rate,
+        //   '--titemData.supply_rate, itemData.borrow_rate----'
+        // );
 
         // for simplicity
         // all values gonna be convert to real numbers with decimals only in TEMPLATE
-        console.log(poolValue, 'poolValue.setup_interest');
         const currentPrice = new BN(itemData.data?.['lastPrice_usd-n'] ?? 0);
         if (poolValue) itemData.total_supply = poolValue.value * itemData.supply_rate;
         if (poolBorrowed) itemData.total_borrow = poolBorrowed.value * itemData.borrow_rate;
@@ -359,15 +392,6 @@ const wavesCapService = {
         const dailyIncome = supplyInterest * ((itemData.self_supply / 10 ** itemData.precision) * +currentPrice);
         const dailyBorrowInterest =
           +itemData.setup_interest * ((itemData.self_borrowed / 10 ** itemData.precision) * +currentPrice);
-
-        console.log(itemData.setup_interest, +currentPrice, 'itemData.setup_interest');
-        console.log(supplyInterest, UR, '----supplyInterest, UR');
-        console.log(
-          dailyIncome,
-          itemData.self_supply,
-          itemData.precision,
-          '----dailyIncome itemData.self_supply, itemData.precision'
-        );
 
         itemData.self_daily_borrow_interest = dailyBorrowInterest || null;
         itemData.self_daily_income = dailyIncome || null;

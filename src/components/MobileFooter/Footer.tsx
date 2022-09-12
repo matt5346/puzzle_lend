@@ -80,7 +80,7 @@ const Header: React.FC<IProps> = () => {
 
   const menuItems = [
     { name: 'My supply', link: ROUTES.DASHBOARD, params: 'supply', icon: ActionIcon },
-    { name: 'Home', link: ROUTES.HOME, icon: Home, params: null },
+    { name: 'Home', link: ROUTES.DASHBOARD, icon: Home, params: null },
     { name: 'My borrow', link: ROUTES.DASHBOARD, params: 'borrow', icon: ActionIcon },
   ];
   return (

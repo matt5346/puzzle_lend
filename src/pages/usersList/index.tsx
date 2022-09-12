@@ -1,26 +1,28 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useMemo, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
+import useWindowSize from '@src/hooks/useWindowSize';
 import styled from '@emotion/styled';
 import { useStores } from '@src/stores';
-import { observer } from 'mobx-react-lite';
 import Card from '@src/common/styles/Card';
 import { Text } from '@src/UIKit/Text';
 import { Row, Column } from '@src/common/styles/Flex';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import { Select } from '@src/UIKit/Select';
-import { LENDS_CONTRACTS, TOKENS_LIST_FULL, ROUTES } from '@src/common/constants';
 import DashboardTable from '@src/pages/usersList/DashboardTable';
 import SquareTokenIcon from '@src/common/styles/SquareTokenIcon';
 import tokenLogos from '@src/common/constants/tokenLogos';
+import Container from '@src/common/styles/Container';
+import { LENDS_CONTRACTS, TOKENS_LIST_FULL, ROUTES } from '@src/common/constants';
 import BN from '@src/common/utils/BN';
 import { ReactComponent as LineDivider } from '@src/common/assets/icons/line_divider.svg';
 import { ReactComponent as ChevronDown } from '@src/common/assets/icons/chevron_down.svg';
 
 const Root = styled.div`
   display: flex;
-  max-width: 1360px;
-  padding: 0 15px;
+  justify-content: center;
+  width: 100%;
 
   .details-link {
     display: flex;
@@ -69,10 +71,21 @@ const AssetWrap = styled.div`
 const SideViewWrap = styled.div`
   display: flex;
   flex-direction: column;
-  position: sticky;
-  top: 117px;
   align-self: flex-start;
-  width: 30%;
+  margin: 0 0 20px 0;
+  width: 100%;
+
+  @media (min-width: 880px) {
+    width: 50%;
+    margin: 0 0 20px 0;
+  }
+
+  @media (min-width: 1270px) {
+    position: sticky;
+    top: 117px;
+    width: 30%;
+    margin: 0 0 0 24px;
+  }
 `;
 
 const categoriesOptions = [
@@ -85,43 +98,47 @@ const moneyOptions = [{ title: 'USDN', key: 'usdn' }];
 
 const UsersList: React.FC = () => {
   const { usersStore, tokenStore } = useStores();
-  const navigate = useNavigate();
   const [usersData, setUsersData] = useState<any>([]);
+  const { windowWidth } = useWindowSize();
   const [getTokensData, setTokensFullData] = useState<any>([]);
   const [getPoolType, setPoolType] = useState<number>(0);
   const [getMoneyType, setMoneyType] = useState<number>(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const poolsData: any = [];
-    console.log(Object.values(LENDS_CONTRACTS), 'Object.values(LENDS_CONTRACTS)---1');
-    Object.values(LENDS_CONTRACTS).forEach((item) => {
-      console.log(tokenStore.filterPoolDataTokensStats(item), '...tokenStore.filterPoolDataTokens(item)');
-      const tokens = tokenStore.filterPoolDataTokensStats(item);
-
-      // counting values of TOKENS SUPPLY, depending of select value
-      Object.entries(tokens).forEach(([key, tokenItem]) => {
-        const tokenIndex = poolsData.map((poolItem: any) => poolItem.assetId).indexOf(key);
-
-        if (tokenIndex === -1) {
-          poolsData.push(tokenItem);
-        } else {
-          poolsData[tokenIndex].totalAssetSupply = BN.formatUnits(
-            +poolsData[tokenIndex].totalAssetSupply + +tokenItem.totalAssetSupply,
-            0
-          );
-        }
-      });
-    });
-    console.log(poolsData, 'poolsData1');
-
     let arr: any = [];
 
-    usersStore.usersStatsByPool.forEach((item: any) => arr.push(...item.tokens));
-    arr = arr.filter((item: any) => (item.owner !== 'total' ? item : false));
+    if (usersStore.initialized && tokenStore.initialized) {
+      console.log(Object.values(LENDS_CONTRACTS), 'Object.values(LENDS_CONTRACTS)---1');
+      Object.values(LENDS_CONTRACTS).forEach((item) => {
+        console.log(tokenStore.filterPoolDataTokensStats(item), '...tokenStore.filterPoolDataTokens(item)');
+        const tokens = tokenStore.filterPoolDataTokensStats(item);
+
+        // counting values of TOKENS SUPPLY, depending of select value
+        Object.entries(tokens).forEach(([key, tokenItem]) => {
+          const tokenIndex = poolsData.map((poolItem: any) => poolItem.assetId).indexOf(key);
+
+          if (tokenIndex === -1) {
+            poolsData.push(tokenItem);
+          } else {
+            poolsData[tokenIndex].totalAssetSupply = BN.formatUnits(
+              +poolsData[tokenIndex].totalAssetSupply + +tokenItem.totalAssetSupply,
+              0
+            );
+          }
+        });
+      });
+      console.log(poolsData, 'poolsData1');
+
+      usersStore.usersStatsByPool.forEach((item: any) => arr.push(...item.tokens));
+      arr = arr.filter((item: any) => (item.owner !== 'total' ? item : false));
+    }
+
     console.log(arr, 'usersStatsByPool---3');
     setUsersData(arr);
     setTokensFullData(poolsData);
-  }, [usersStore, tokenStore]);
+  }, [usersStore, tokenStore, usersStore.initialized, tokenStore.initialized]);
 
   const formatVal = (val: BN, decimal: number) => {
     return BN.formatUnits(val, decimal).toSignificant(6).toFormat(5);
@@ -129,8 +146,7 @@ const UsersList: React.FC = () => {
 
   return (
     <Root>
-      <Column crossAxisSize="max">
-        <SizedBox height={54} />
+      <Container>
         <Link className="details-link" to={ROUTES.HOME}>
           <ChevronDown />
           <Text weight={500} type="blue500" fitContent>
@@ -168,20 +184,21 @@ const UsersList: React.FC = () => {
           />
         </Row>
         <SizedBox height={12} />
-        <Row justifyContent="space-between">
+        <Row
+          justifyContent="space-between"
+          style={windowWidth! < 1270 ? { flexWrap: 'wrap', justifyContent: 'flex-start' } : { flexWrap: 'unset' }}>
           <Column
             crossAxisSize="max"
-            style={{
-              width: '70%',
-            }}>
-            {usersData && usersData.length && (
+            style={windowWidth! < 1270 ? { order: 2, width: '100%' } : { order: 0, width: '70%' }}>
+            {usersData && usersData.length ? (
               <Column crossAxisSize="max">
                 <DashboardTable filteredTokens={usersData} />
                 <SizedBox height={40} />
               </Column>
+            ) : (
+              <Text size="big">Assets loading...</Text>
             )}
           </Column>
-          <SizedBox width={24} />
           <SideViewWrap>
             <Card
               style={{
@@ -191,13 +208,12 @@ const UsersList: React.FC = () => {
               }}
               justifyContent="center">
               <Text margin="0 0 16px 0" size="big" weight={500} style={{ padding: '0 16px' }}>
-                Total value
+                Total supply/borrow
               </Text>
               <LineDivider style={{ width: '100%' }} />
               <SizedBox height={18} />
               <Column crossAxisSize="max">
-                {getTokensData &&
-                  getTokensData.length &&
+                {getTokensData && getTokensData.length ? (
                   getTokensData.map((item: any) => {
                     const iData = TOKENS_LIST_FULL.find((listItem: any) => listItem.assetId === item.assetId);
                     console.log(iData, 'IDATA');
@@ -232,12 +248,17 @@ const UsersList: React.FC = () => {
                         </Column>
                       </AssetWrap>
                     );
-                  })}
+                  })
+                ) : (
+                  <Text size="big" textAlign="center" style={{ margin: '10px' }}>
+                    Assets loading...
+                  </Text>
+                )}
               </Column>
             </Card>
           </SideViewWrap>
         </Row>
-      </Column>
+      </Container>
     </Root>
   );
 };

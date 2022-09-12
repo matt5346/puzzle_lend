@@ -53,6 +53,7 @@ export type TTokenStatistics = {
   totalBurned: BN;
   fullyDilutedMC: BN;
   marketCap: BN;
+  maxPrice: BN;
   currentPrice: BN;
   change24H: BN;
   change24HUsd: BN;
@@ -84,6 +85,7 @@ export function createITokenStat(): TTokenStatistics {
     fullyDilutedMC: BN.ZERO,
     marketCap: BN.ZERO,
     currentPrice: BN.ZERO,
+    maxPrice: BN.ZERO,
     change24H: BN.ZERO,
     change24HUsd: BN.ZERO,
     volume24: BN.ZERO,
@@ -162,7 +164,7 @@ export const ROUTES = {
   // supply/borrow/all separating on mobile
   DASHBOARD_MOBILE: '/dashboard/:assetType',
   USER_STATS: '/user/:userId',
-  BORROW_SUPPLY_USERS: '/users/list',
+  USERS_LIST: '/users/list',
   DASHBOARD_POOl: '/dashboard/pool/:poolId',
   DASHBOARD_TOKEN: '/dashboard/token/:assetId',
   NOT_FOUND: '/404',

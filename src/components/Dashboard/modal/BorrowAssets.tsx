@@ -31,6 +31,7 @@ interface IProps {
   isAgree: boolean;
   assetName?: string;
   assetSymbol?: string;
+  userHealth: number;
   totalSupply: BN;
   totalBorrow: BN;
   userBalance: BN;
@@ -115,7 +116,9 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     return +formatVal(props.totalSupply, props.decimals) - +formatVal(props.totalBorrow, props.decimals);
   };
 
+  // counting maximum amount for MAX btn
   const userMaximumToBorrowBN = (userColatteral: number, rate: BN) => {
+    // current recommended maximum borrow, no more than 80% of
     const maximum = userColatteral / 10 ** 6 / +rate.toFormat(4);
     const totalReserves = +formatVal(props.totalSupply, props.decimals) - +formatVal(props.totalBorrow, props.decimals);
 
@@ -124,7 +127,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
       return BN.formatUnits(totalReserves * 10 ** props.decimals, 0);
     }
 
-    return BN.formatUnits(maximum * 10 ** props.decimals, 0);
+    return BN.formatUnits(maximum * 10 ** props.decimals * 0.8, 0);
   };
 
   const userMaximumToBorrow = (userColatteral: number, rate: BN) => {
@@ -268,14 +271,10 @@ const BorrowAssets: React.FC<IProps> = (props) => {
       <SizedBox height={14} />
       <Row justifyContent="space-between">
         <Text size="medium" type="secondary" fitContent>
-          Wallet Balance
+          Account Health
         </Text>
         <Text size="medium" fitContent>
-          {props.userBalance && amount
-            ? (+formatVal(amount, props.decimals) + +formatVal(props.userBalance, props.decimals)).toFixed(4)
-            : 0}
-          <>&nbsp;</>
-          {props.assetName}
+          {props.userHealth && amount ? props.userHealth.toFixed(2) : 0}%
         </Text>
       </Row>
       <SizedBox height={14} />
@@ -298,19 +297,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
       <SizedBox height={24} />
       {/* if NO liquidity show ERROR, else borrow or login */}
       <Footer>
-        {props.totalSupply && props.totalBorrow && getReserves() === 0 ? (
-          <Button fixed disabled size="large">
-            Not Enough liquidity to Borrow
-          </Button>
-        ) : accountStore && accountStore.address ? (
-          <Button
-            disabled={!props.isAgree || +amount === 0}
-            fixed
-            onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId, lendStore.activePoolContract)}
-            size="large">
-            Borrow
-          </Button>
-        ) : (
+        {accountStore && !accountStore.address ? (
           <Button
             fixed
             onClick={() => {
@@ -320,6 +307,21 @@ const BorrowAssets: React.FC<IProps> = (props) => {
             size="large">
             Login
           </Button>
+        ) : props.totalSupply && props.totalBorrow && getReserves() === 0 ? (
+          <Button fixed disabled size="large">
+            Not Enough liquidity to Borrow
+          </Button>
+        ) : (
+          accountStore &&
+          accountStore.address && (
+            <Button
+              disabled={!props.isAgree || +amount === 0}
+              fixed
+              onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId, lendStore.activePoolContract)}
+              size="large">
+              Borrow
+            </Button>
+          )
         )}
       </Footer>
     </Root>

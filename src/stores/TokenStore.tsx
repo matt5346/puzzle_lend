@@ -336,7 +336,7 @@ export default class TokenStore {
       const { decimals } = asset;
       console.log(decimals, 'decimal');
       const firstPrice = new BN(details.data?.['firstPrice_usd-n'] ?? 0);
-      const currentPrice = new BN(details.data?.['lastPrice_usd-n'] ?? 0);
+      const currentPrice = new BN(details.min_price ?? 0);
 
       const totalSupply = BN.formatUnits(details.totalSupply, decimals);
       const circulatingSupply = BN.formatUnits(details.circulating, decimals);
@@ -357,48 +357,31 @@ export default class TokenStore {
       borrowedAmountApr += (details.self_borrowed / 10 ** details.precision) * +currentPrice * details.setup_borrow_apr;
       baseAmount += (details.self_supply / 10 ** details.precision) * +currentPrice;
 
+      // console.log(
+      //   details.name,
+      //   details.self_supply / 10 ** details.precision,
+      //   details.supply_rate,
+      //   'supplyAmountCurrent'
+      // );
+      // console.log(
+      //   details.name,
+      //   details.self_borrowed / 10 ** details.precision,
+      //   details.borrow_rate,
+      //   +currentPrice,
+      //   'borrowedAmountCurrent'
+      // );
       // count balance supply/borrow
-      console.log(
-        details.name,
-        details.self_supply / 10 ** details.precision,
-        details.supply_rate,
-        'supplyAmountCurrent'
-      );
-      console.log(
-        details.name,
-        details.self_borrowed / 10 ** details.precision,
-        details.borrow_rate,
-        +currentPrice,
-        'borrowedAmountCurrent'
-      );
       supplyAmountCurrent += (details.self_supply / 10 ** details.precision) * +currentPrice;
       borrowedAmountCurrent += (details.self_borrowed / 10 ** details.precision) * +currentPrice;
 
       // console.log(
-      //   details.self_borrowed,
+      //   details.self_supply,
       //   details.setup_ltv,
-      //   supplyAmountApy,
-      //   'details.self_borrowed, details.setup_ltv, suppliedAmount'
+      //   details.self_borrowed,
+      //   +currentPrice,
+      //   details.name,
+      //   '(details.self_supply * details.setup_ltv) / details.self_borrowed'
       // );
-
-      // count USER HEALTH
-      // NEXT COMMENTED case for DIFFERENT assets pairs as usdc/waves pool
-      // currently invalid, cause all pools in same pairs
-
-      // if (details.self_borrowed > 0) {
-      //   borrowCapacity += (details.setup_ltv / 100) * 1 * supplyAmountApy * Number(details.data?.['firstPrice_usd-n']);
-      //   borrowCapacityUsed +=
-      //     (borrowedAmountApr * Number(details.data?.['firstPrice_usd-n'])) / (details.setup_ltv / 100);
-      // }
-
-      console.log(
-        details.self_supply,
-        details.setup_ltv,
-        details.self_borrowed,
-        +currentPrice,
-        details.name,
-        '(details.self_supply * details.setup_ltv) / details.self_borrowed'
-      );
 
       // count USER HEALTH for SAME ASSETS
       if (details.self_supply > 0) {
@@ -430,6 +413,7 @@ export default class TokenStore {
         change24H,
         change24HUsd,
         currentPrice,
+        maxPrice: BN.formatUnits(details.map_price, 0),
         changeStr,
         fullyDilutedMC: totalSupply.times(currentPrice),
         marketCap: circulatingSupply.times(currentPrice),

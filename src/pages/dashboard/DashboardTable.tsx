@@ -42,14 +42,6 @@ const Wrap = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-
-  @media (min-width: 560px) {
-    width: 49%;
-  }
-
-  @media (min-width: 880px) {
-    width: 100%;
-  }
 `;
 
 const SupplyBorrowWrap = styled.div`
@@ -58,12 +50,7 @@ const SupplyBorrowWrap = styled.div`
   flex-direction: column;
   margin-top: 40px;
 
-  @media (min-width: 560px) {
-    flex-direction: row;
-  }
-
   @media (min-width: 880px) {
-    flex-direction: column;
     margin-top: 0;
   }
 `;
@@ -135,11 +122,17 @@ const DashboardTable: React.FC<IProps> = ({ filteredTokens, showSupply, showBorr
               </Text>
               <AllAssetsTable filteredTokens={filteredTokens} handleSupplyAssetClick={handleSupplyAssetClick} />
 
-              <DashboardModal
-                filteredTokens={filteredTokens}
-                onClose={() => lendStore.setDashboardModalOpened(false, '', lendStore.dashboardModalStep)}
-                visible={lendStore.dashboardModalOpened}
-              />
+              {filteredTokens && filteredTokens.length ? (
+                <DashboardModal
+                  filteredTokens={filteredTokens}
+                  onClose={() => lendStore.setDashboardModalOpened(false, '', lendStore.dashboardModalStep)}
+                  visible={lendStore.dashboardModalOpened}
+                />
+              ) : (
+                <Text weight={500} size="big" margin="10px auto">
+                  Assets Loading...
+                </Text>
+              )}
             </Column>
           ) : null}
         </>

@@ -41,6 +41,7 @@ const WalletModalBody: React.FC<IProps> = ({ filteredTokens }) => {
   const [isBorrowAgree, setBorrowAgree] = useState<boolean>(true);
   const vm = DashboardWalletUseVM();
   const { lendStore, tokenStore } = vm.rootStore;
+  const currentPoolData = tokenStore.poolStatsByContractId[lendStore.activePoolContract];
 
   const getTokenBalance: any = () => {
     const getAssetData = vm.balances.find((tokenData) => tokenData.assetId === lendStore.choosenToken?.assetId);
@@ -134,12 +135,12 @@ const WalletModalBody: React.FC<IProps> = ({ filteredTokens }) => {
             assetName={tokenFilteredData?.name}
             assetSymbol={tokenFilteredData?.symbol}
             rate={lendStore.choosenToken?.currentPrice}
+            userHealth={currentPoolData?.userHealth}
             userColatteral={tokenStore?.userCollateral}
             selfBorrow={lendStore.choosenToken?.selfBorrow}
             totalBorrow={lendStore.choosenToken?.totalAssetBorrow}
             totalSupply={lendStore.choosenToken?.totalAssetSupply}
             setupLtv={lendStore.choosenToken?.setupLtv}
-            userBalance={getTokenBalance()}
             decimals={lendStore.choosenToken?.decimals}
             amount={vm.borrowAmount}
             setAmount={vm.setBorrowAmount}
@@ -149,6 +150,7 @@ const WalletModalBody: React.FC<IProps> = ({ filteredTokens }) => {
             onClose={vm.onCloseModal}
             isAgree={isBorrowAgree}
             onChange={setBorrowAgree}
+            userBalance={getTokenBalance()}
           />
         )}
         {lendStore.dashboardModalStep === 3 && (
