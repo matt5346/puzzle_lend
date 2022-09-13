@@ -6,6 +6,8 @@ import BN from '@src/common/utils/BN';
 export interface IBigNumberInputProps {
   className?: string;
   decimals: number;
+  isNative: boolean;
+  rate: BN;
   value: BN | void;
   onChange: (value: BN) => void;
   renderInput?: (
@@ -31,18 +33,22 @@ const BigNumberInput: React.FC<IBigNumberInputProps> = ({
   min,
   disabled,
   readOnly,
+  isNative,
+  rate,
   ...rest
 }) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const [inputValue, _setInputValue] = React.useState<string>('');
+  const [isInputConverted, inputValueConverted] = React.useState<boolean>(false);
 
   // eslint-disable-next-line @typescript-eslint/no-shadow
   const setInputValue = (value: string): void => {
     if (!inputRef.current) {
       return;
     }
+    console.log(+value, 'VALUE!');
 
     // const caret = inputRef.current.selectionStart;
     _setInputValue(value);
@@ -71,6 +77,26 @@ const BigNumberInput: React.FC<IBigNumberInputProps> = ({
     }
     // eslint-disable-next-line
   }, [autofocus, inputRef.current]);
+
+  // for changing input dollar/crypto value
+  React.useEffect(() => {
+    // if showing price in crypto (Waves, pluto...)
+    if (isNative) {
+      const nativeValue = (+value / +rate! / 10 ** decimals).toFixed(6);
+      const valueEffect = BN.parseUnits(nativeValue || '0', decimals);
+      setInputValue(nativeValue);
+      onChange(valueEffect);
+      return;
+    }
+
+    if (!isNative) {
+      const dollarValue = ((+value / 10 ** decimals) * +rate!).toFixed(6);
+      const valueEffect = BN.parseUnits(dollarValue || '0', decimals);
+      setInputValue(dollarValue.toString());
+      onChange(valueEffect);
+    }
+    // eslint-disable-next-line
+  }, [isNative]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     console.log('onChange');
@@ -103,8 +129,18 @@ const BigNumberInput: React.FC<IBigNumberInputProps> = ({
       return;
     }
 
-    setInputValue(value);
-    onChange(newValue);
+    // if showing price in crypto (Waves, pluto...)
+    if (isNative) {
+      setInputValue(value);
+      onChange(newValue);
+      return;
+    }
+
+    if (!isNative) {
+      const dollarValue = +value * +rate!;
+      setInputValue(dollarValue.toString());
+      onChange(newValue);
+    }
   };
 
   const inputProps = {

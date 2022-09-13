@@ -17,6 +17,7 @@ interface IProps {
   assetId: string;
   decimals: number;
   amount: BN;
+  rate: BN;
   setAmount?: (amount: BN) => void;
   onMaxClick?: () => void;
   usdnEquivalent?: string;
@@ -91,6 +92,8 @@ const LightTokenInput: React.FC<IProps> = (props) => {
               ref={ref}
             />
           )}
+          isNative
+          rate={props.rate}
           autofocus={focused}
           decimals={props.decimals}
           value={props.amount}

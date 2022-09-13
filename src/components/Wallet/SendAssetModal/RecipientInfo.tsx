@@ -33,6 +33,7 @@ const RecipientInfo: React.FC<IProps> = () => {
         />
         <SizedBox height={16} />
         <LightTokenInput
+          rate={assetToSend!.usdnEquivalent!}
           assetId={assetToSend!.assetId}
           decimals={assetToSend!.decimals}
           amount={vm.amount}

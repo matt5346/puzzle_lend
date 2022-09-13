@@ -20,6 +20,7 @@ import _ from 'lodash';
 import tokenLogos from '@src/common/constants/tokenLogos';
 import SquareTokenIcon from '@src/common/styles/SquareTokenIcon';
 import { ReactComponent as Back } from '@src/common/assets/icons/arrowBackWithTail.svg';
+import { ReactComponent as Swap } from '@src/common/assets/icons/swap.svg';
 
 interface IProps {
   assetId: string;
@@ -88,9 +89,33 @@ const InputContainer = styled.div<{
 `;
 
 const TokenToDollar = styled.div`
+  display: flex;
+  align-items: center;
   position: absolute;
   right: 10px;
   top: 50%;
+  transform: translateY(-50%);
+  padding: 5px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+
+  svg {
+    margin-left: 5px;
+  }
+
+  &:hover {
+    background-color: #fff;
+  }
+`;
+
+const DollarSymbol = styled.div`
+  display: flex;
+  align-items: center;
+  position: absolute;
+  font-size: 18px;
+  left: 67px;
+  top: 50%;
+  color: #363870;
   transform: translateY(-50%);
 `;
 
@@ -98,7 +123,13 @@ const BorrowAssets: React.FC<IProps> = (props) => {
   const navigate = useNavigate();
   const [focused, setFocused] = useState(false);
   const [amount, setAmount] = useState<BN>(props.amount);
+  const [isNative, setConvertToNative] = useState<boolean>(true);
   const { lendStore, accountStore } = useStores();
+
+  const setInputAmountMeasure = (isNativeToken: boolean) => {
+    console.log(isNativeToken, 'setInputAmountMeasure');
+    setConvertToNative(isNativeToken);
+  };
 
   useEffect(() => {
     props.amount && setAmount(props.amount);
@@ -125,8 +156,8 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     return BN.formatUnits(Math.ceil(+v + 1), 0);
   };
 
-  const formatVal = (val: BN, decimal: number) => {
-    return BN.formatUnits(val, decimal).toSignificant(6).toString();
+  const formatVal = (valArg: BN, decimal: number) => {
+    return (+valArg / 10 ** decimal).toFixed(2);
   };
 
   return (
@@ -159,7 +190,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
                 ? (+formatVal(props.selfBorrow, props.decimals) - +formatVal(amount, props.decimals)).toFixed(3)
                 : 0}
               <>&nbsp;</>
-              {props.assetSymbol}
+              {isNative ? props.assetSymbol : '$'}
             </Text>
           </Row>
           <Text textAlign="right" nowrap size="medium" type="secondary">
@@ -169,6 +200,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
       </Row>
       <SizedBox height={16} />
       <InputContainer focused={focused} readOnly={!props.setAmount} error={props.error}>
+        {!isNative && <DollarSymbol>$</DollarSymbol>}
         {props.onMaxClick && (
           <MaxButton
             onClick={() => {
@@ -192,6 +224,8 @@ const BorrowAssets: React.FC<IProps> = (props) => {
               ref={ref}
             />
           )}
+          isNative={isNative}
+          rate={props.rate}
           autofocus={focused}
           decimals={props.decimals}
           value={amount}
@@ -199,11 +233,22 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           placeholder="0.00"
           readOnly={!props.setAmount}
         />
-        <TokenToDollar>
-          <Text size="small" type="secondary">
-            ~${props.rate && amount ? (+formatVal(amount, props.decimals) * +props.rate.toFormat(4)).toFixed(3) : 0}
-          </Text>
-        </TokenToDollar>
+        {isNative ? (
+          <TokenToDollar onClick={() => setInputAmountMeasure(false)}>
+            <Text size="small" type="secondary">
+              ~${props.rate && amount ? (+formatVal(amount, props.decimals) * +props.rate?.toFormat(4)).toFixed(3) : 0}
+            </Text>
+            <Swap />
+          </TokenToDollar>
+        ) : (
+          <TokenToDollar onClick={() => setInputAmountMeasure(true)}>
+            <Text size="small" type="secondary">
+              ~{props.assetSymbol}{' '}
+              {props.rate && amount && +formatVal(BN.parseUnits(+amount / +props.rate?.toFormat(4), 0), props.decimals)}
+            </Text>
+            <Swap />
+          </TokenToDollar>
+        )}
       </InputContainer>
       <SizedBox height={24} />
       <Row justifyContent="space-between">

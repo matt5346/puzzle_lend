@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 
-type TButtonType = 'primary' | 'secondary';
+type TButtonType = 'primary' | 'secondary' | 'error';
 type TButtonSize = 'medium' | 'large';
 
 const Button = styled.button<{
@@ -15,7 +15,19 @@ const Button = styled.button<{
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
-  background: ${({ kind }) => (kind === 'secondary' ? '#fff' : '#7075e9')};
+  ${({ kind }) =>
+    (() => {
+      switch (kind) {
+        case 'primary':
+          return 'background: #7075e9;';
+        case 'secondary':
+          return 'background: #fff;';
+        case 'error':
+          return 'background: #fca1a1!important;';
+        default:
+          return 'background: #7075e9;';
+      }
+    })()}
   border: 1px solid ${({ kind }) => (kind === 'secondary' ? '#F1F2FE' : '#7075e9')};
   border-radius: 12px;
   box-shadow: none;

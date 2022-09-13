@@ -22,6 +22,7 @@ interface IProps {
   setAssetId?: (assetId: string) => void;
 
   decimals: number;
+  rate: BN;
 
   amount: BN;
   setAmount?: (amount: BN) => void;
@@ -132,6 +133,8 @@ const TokenInput: React.FC<IProps> = (props) => {
               ref={ref}
             />
           )}
+          isNative
+          rate={props.rate}
           autofocus={focused}
           decimals={props.decimals}
           value={amount}
