@@ -101,6 +101,7 @@ const WalletModalBody: React.FC<IProps> = ({ filteredTokens }) => {
             userBalance={getTokenBalance()}
             decimals={lendStore.choosenToken?.decimals}
             amount={vm.supplyAmount}
+            selfSupply={lendStore.choosenToken?.selfSupply}
             setAmount={vm.setSupplyAmount}
             assetId={lendStore.choosenToken?.assetId}
             onMaxClick={supplyMaxClickFunc}

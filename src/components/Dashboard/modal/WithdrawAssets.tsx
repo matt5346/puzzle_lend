@@ -125,6 +125,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
   const [focused, setFocused] = useState(false);
   const [amount, setAmount] = useState<BN>(props.amount);
   const [isNative, setConvertToNative] = useState<boolean>(true);
+  const [error, setError] = useState<string>('');
   const { lendStore, accountStore } = useStores();
 
   const setInputAmountMeasure = (isNativeToken: boolean) => {
@@ -134,6 +135,25 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
 
   const formatVal = (valArg: BN, decimal: number) => {
     return (+valArg / 10 ** decimal).toFixed(2);
+  };
+
+  const getUserBalance = () => {
+    console.log(+amount, 'amount1');
+    if (!isNative)
+      return (
+        +formatVal(props.userBalance, props.decimals) * +props.rate.toFormat(4) +
+        +formatVal(amount, props.decimals)
+      ).toFixed(4);
+
+    return props.userBalance
+      ? (+formatVal(props.userBalance, props.decimals) + +formatVal(amount, props.decimals)).toFixed(2)
+      : 0;
+  };
+
+  const maxWithdraw = (val: BN) => {
+    if (!isNative) return BN.formatUnits(+val * +props.rate.toFormat(4), 0);
+
+    return val;
   };
 
   useEffect(() => {
@@ -155,11 +175,27 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
   const handleChangeAmount = (v: BN) => {
     console.log('handleChangeAmount');
     const formattedVal = formatVal(v, props.decimals);
-    const selfSupply = formatVal(props.selfSupply, props.decimals);
+    let selfSupply = formatVal(props.selfSupply, props.decimals);
+    let isError = false;
 
-    if (+formattedVal > +selfSupply) return;
+    if (!isNative) selfSupply = (+selfSupply * +props.rate.toFormat(4)).toString();
+
+    if (+formattedVal > +selfSupply) {
+      setError(`Amount of withdraw bigger than you'r supply`);
+      isError = true;
+    }
+
+    if (!isError) setError('');
     setAmount(v);
     debounce(v);
+  };
+
+  const submitForm = () => {
+    let amountVal = props.amount;
+
+    if (!isNative) amountVal = BN.parseUnits(Math.ceil(+amountVal / +props.rate.toFormat(4)), 0);
+
+    props.onSubmit!(amountVal, props.assetId, lendStore.activePoolContract);
   };
 
   return (
@@ -177,9 +213,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
         </Row>
         <Column alignItems="flex-end">
           <Text size="medium" textAlign="right">
-            {props.userBalance
-              ? (+formatVal(props.userBalance, props.decimals) + +formatVal(amount, props.decimals)).toFixed(2)
-              : 0}
+            {getUserBalance()}
             <>&nbsp;</>
             {isNative ? props.assetSymbol : '$'}
           </Text>
@@ -195,7 +229,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
           <MaxButton
             onClick={() => {
               setFocused(true);
-              props.onMaxClick && props.onMaxClick(props.selfSupply);
+              props.onMaxClick && props.onMaxClick(maxWithdraw(props.selfSupply));
             }}
           />
         )}
@@ -285,11 +319,12 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
           </Button>
         ) : accountStore && accountStore.address ? (
           <Button
-            disabled={+amount === 0}
+            disabled={+amount === 0 || error !== ''}
             fixed
-            onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId, lendStore.activePoolContract)}
+            kind={error !== '' ? 'error' : 'primary'}
+            onClick={() => submitForm()}
             size="large">
-            Withdraw
+            {error !== '' ? error : 'Withdraw'}
           </Button>
         ) : (
           <Button

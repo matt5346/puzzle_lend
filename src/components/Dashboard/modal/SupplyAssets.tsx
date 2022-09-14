@@ -35,9 +35,10 @@ interface IProps {
   setupSupplyAPY?: string;
   rate: BN;
   selfBorrow: BN;
+  selfSupply: BN;
   onChange: (agreement: boolean) => void;
   setAmount?: (amount: BN) => void;
-  onMaxClick?: () => void;
+  onMaxClick?: (amount?: BN) => void;
   onClose?: () => void;
   onSubmit?: (amount: BN, assetId: string, contractAddress: string) => void;
   usdnEquivalent?: string;
@@ -158,8 +159,10 @@ const SupplyAssets: React.FC<IProps> = (props) => {
   const handleChangeAmount = (v: BN) => {
     console.log(+v, 'handleChangeAmount');
     const formattedVal = formatVal(v, props.decimals);
-    const walletBal = formatVal(props.userBalance, props.decimals);
+    let walletBal = formatVal(props.userBalance, props.decimals);
     let isError = false;
+
+    if (!isNative) walletBal = (+walletBal * +props.rate.toFormat(4)).toString();
 
     if (+formattedVal > +walletBal) {
       setError('Wallet Balance too low');
@@ -169,6 +172,33 @@ const SupplyAssets: React.FC<IProps> = (props) => {
     if (!isError) setError('');
     setAmount(v);
     debounce(v);
+  };
+
+  const getUserBalance = () => {
+    console.log(+amount, 'amount1');
+    if (!isNative)
+      return (
+        +formatVal(props.userBalance, props.decimals) * +props.rate.toFormat(4) -
+        +formatVal(amount, props.decimals)
+      ).toFixed(4);
+
+    return props.userBalance
+      ? (+formatVal(props.userBalance, props.decimals) - +formatVal(amount, props.decimals)).toFixed(2)
+      : 0;
+  };
+
+  const getMaxSupply = (val: BN) => {
+    if (!isNative) return BN.formatUnits(+val * +props.rate.toFormat(4), 0);
+
+    return val;
+  };
+
+  const submitForm = () => {
+    let amountVal = props.amount;
+
+    if (!isNative) amountVal = BN.parseUnits(Math.ceil(+amountVal / +props.rate.toFormat(4)), 0);
+
+    props.onSubmit!(amountVal, props.assetId, lendStore.activePoolContract);
   };
 
   return (
@@ -197,9 +227,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
               }}
             />
             <Text size="medium" fitContent>
-              {props.userBalance
-                ? (+formatVal(props.userBalance, props.decimals) - +formatVal(amount, props.decimals)).toFixed(2)
-                : 0}
+              {getUserBalance()}
               <>&nbsp;</>
               {isNative ? props.assetSymbol : '$'}
             </Text>
@@ -216,7 +244,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
           <MaxButton
             onClick={() => {
               setFocused(true);
-              props.onMaxClick && props.onMaxClick();
+              props.onMaxClick && props.onMaxClick(getMaxSupply(props.userBalance));
             }}
           />
         )}
@@ -313,7 +341,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
             disabled={!props.isAgree || +amount === 0 || error !== ''}
             fixed
             kind={error !== '' ? 'error' : 'primary'}
-            onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId, lendStore.activePoolContract)}
+            onClick={() => submitForm()}
             size="large">
             {error !== '' ? error : 'Supply'}
           </Button>
