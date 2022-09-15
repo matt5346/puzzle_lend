@@ -29,7 +29,7 @@ interface IProps {
   assetSymbol?: string;
   assetName?: string;
   totalSupply: BN;
-  userBalance?: BN;
+  userBalance: BN;
   setupBorrowAPR?: string;
   selfBorrow: BN;
   rate: BN;
@@ -125,10 +125,14 @@ const BorrowAssets: React.FC<IProps> = (props) => {
   const [amount, setAmount] = useState<BN>(props.amount);
   const [isNative, setConvertToNative] = useState<boolean>(true);
   const { lendStore, accountStore } = useStores();
+  const [error, setError] = useState<string>('');
 
   const setInputAmountMeasure = (isNativeToken: boolean) => {
-    console.log(isNativeToken, 'setInputAmountMeasure');
     setConvertToNative(isNativeToken);
+  };
+
+  const formatVal = (valArg: BN, decimal: number) => {
+    return (+valArg / 10 ** decimal).toFixed(4);
   };
 
   useEffect(() => {
@@ -143,21 +147,55 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     []
   );
 
+  const getUserRepay = () => {
+    console.log(+amount, 'amount1');
+    if (!isNative && props.selfBorrow)
+      return (
+        +formatVal(props.selfBorrow, props.decimals) * +props.rate?.toFormat(4) -
+        +formatVal(amount, props.decimals)
+      ).toFixed(2);
+
+    return (+formatVal(props.selfBorrow, props.decimals) - +formatVal(amount, props.decimals)).toFixed(2);
+  };
+
   const handleChangeAmount = (v: BN) => {
-    console.log('handleChangeAmount');
+    let isError = false;
+    let walletBalance = props.userBalance;
+    let forRepay = props.selfBorrow;
+    if (!isNative) {
+      walletBalance = BN.parseUnits(+walletBalance * +props.rate?.toFormat(4), 0);
+      forRepay = BN.parseUnits(+forRepay * +props.rate?.toFormat(4), 0);
+    }
+    console.log(+forRepay, +v, 'VALs');
 
-    if (+props.selfBorrow < +v) return;
+    if (+forRepay * 1.05 < +v) {
+      setError(`Too big value for repaying`);
+      isError = true;
+    }
 
+    if (+walletBalance < +v) {
+      setError(`Amount of repay bigger than wallet balance`);
+      isError = true;
+    }
+
+    if (!isError) setError('');
     setAmount(v);
     debounce(v);
   };
 
-  const getMax = (v: BN) => {
-    return BN.formatUnits(Math.ceil(+v + 1), 0);
+  const submitForm = () => {
+    let amountVal = props.amount;
+
+    if (!isNative) amountVal = BN.parseUnits(Math.ceil(+amountVal / +props.rate?.toFormat(4)), 0);
+
+    props.onSubmit!(amountVal, props.assetId, lendStore.activePoolContract);
   };
 
-  const formatVal = (valArg: BN, decimal: number) => {
-    return (+valArg / 10 ** decimal).toFixed(2);
+  const getMax = (val: BN) => {
+    if (!isNative) return BN.formatUnits(Math.ceil(+val * +props.rate?.toFormat(4)), 0);
+
+    // fixing problem of lower repaying number
+    return BN.formatUnits(Math.ceil(+val + 1), 0);
   };
 
   return (
@@ -186,9 +224,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
               }}
             />
             <Text size="medium" fitContent>
-              {props.selfBorrow
-                ? (+formatVal(props.selfBorrow, props.decimals) - +formatVal(amount, props.decimals)).toFixed(3)
-                : 0}
+              {getUserRepay()}
               <>&nbsp;</>
               {isNative ? props.assetSymbol : '$'}
             </Text>
@@ -294,11 +330,12 @@ const BorrowAssets: React.FC<IProps> = (props) => {
       <Footer>
         {accountStore && accountStore.address ? (
           <Button
-            disabled={+amount === 0}
+            disabled={+amount === 0 || error !== ''}
             fixed
-            onClick={() => props.onSubmit && props.onSubmit(amount, props.assetId, lendStore.activePoolContract)}
+            kind={error !== '' ? 'error' : 'primary'}
+            onClick={() => submitForm()}
             size="large">
-            Repay
+            {error !== '' ? error : 'Repay'}
           </Button>
         ) : (
           <Button

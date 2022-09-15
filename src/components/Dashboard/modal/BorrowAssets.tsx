@@ -195,7 +195,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
   const submitForm = () => {
     let amountVal = props.amount;
 
-    if (!isNative) amountVal = BN.parseUnits(Math.ceil(+amountVal / +props.rate.toFormat(4)), 0);
+    if (!isNative) amountVal = BN.parseUnits(Math.ceil(+amountVal / +props.rate?.toFormat(4)), 0);
 
     props.onSubmit!(amountVal, props.assetId, lendStore.activePoolContract);
   };
@@ -206,7 +206,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     let borrowCapacity = 0;
     let borrowCapacityUsed = 0;
 
-    if (!isNative) currentBorrowAmount /= +props.rate.toFormat(4);
+    if (!isNative) currentBorrowAmount /= +props.rate?.toFormat(4);
 
     console.log(+currentBorrow, 'currentBorrow');
 
@@ -255,8 +255,8 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     let isError = false;
 
     // if isNative, show maximum in crypto AMOUNT
-    if (isNative) maxCollateral = props.userColatteral / 10 ** 6 / +props.rate.toFormat(4);
-    if (!isNative) totalReserves *= +props.rate.toFormat(4);
+    if (isNative) maxCollateral = props.userColatteral / 10 ** 6 / +props.rate?.toFormat(4);
+    if (!isNative) totalReserves *= +props.rate?.toFormat(4);
 
     if (+formattedVal > +maxCollateral) {
       setError('Supply amount too low, please provide more');

@@ -33,7 +33,8 @@ const Root = styled.div`
 
   @media (min-width: 880px) {
     .owner {
-      max-width: 250px;
+      max-width: 320px;
+      overflow-x: unset;
     }
   }
 `;

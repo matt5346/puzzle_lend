@@ -141,7 +141,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
     console.log(+amount, 'amount1');
     if (!isNative)
       return (
-        +formatVal(props.userBalance, props.decimals) * +props.rate.toFormat(4) +
+        +formatVal(props.userBalance, props.decimals) * +props.rate?.toFormat(4) +
         +formatVal(amount, props.decimals)
       ).toFixed(4);
 
@@ -151,7 +151,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
   };
 
   const maxWithdraw = (val: BN) => {
-    if (!isNative) return BN.formatUnits(+val * +props.rate.toFormat(4), 0);
+    if (!isNative) return BN.formatUnits(+val * +props.rate?.toFormat(4), 0);
 
     return val;
   };
@@ -178,7 +178,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
     let selfSupply = formatVal(props.selfSupply, props.decimals);
     let isError = false;
 
-    if (!isNative) selfSupply = (+selfSupply * +props.rate.toFormat(4)).toString();
+    if (!isNative) selfSupply = (+selfSupply * +props.rate?.toFormat(4)).toString();
 
     if (+formattedVal > +selfSupply) {
       setError(`Amount of withdraw bigger than you'r supply`);
@@ -193,7 +193,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
   const submitForm = () => {
     let amountVal = props.amount;
 
-    if (!isNative) amountVal = BN.parseUnits(Math.ceil(+amountVal / +props.rate.toFormat(4)), 0);
+    if (!isNative) amountVal = BN.parseUnits(Math.ceil(+amountVal / +props.rate?.toFormat(4)), 0);
 
     props.onSubmit!(amountVal, props.assetId, lendStore.activePoolContract);
   };
@@ -260,7 +260,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
         {isNative ? (
           <TokenToDollar onClick={() => setInputAmountMeasure(false)}>
             <Text size="small" type="secondary">
-              ~${props.rate && amount ? (+formatVal(amount, props.decimals) * +props.rate.toFormat(4)).toFixed(3) : 0}
+              ~${props.rate && amount ? (+formatVal(amount, props.decimals) * +props.rate?.toFormat(4)).toFixed(3) : 0}
             </Text>
             <Swap />
           </TokenToDollar>

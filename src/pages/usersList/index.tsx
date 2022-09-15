@@ -108,10 +108,18 @@ const UsersList: React.FC = () => {
   useEffect(() => {
     const poolsData: any = [];
     let arr: any = [];
+    const poolsContracts: any = [];
+
+    if (getPoolType === 0) {
+      poolsContracts.push(categoriesOptions[1].key, categoriesOptions[2].key);
+    } else {
+      poolsContracts.push(categoriesOptions[getPoolType].key);
+    }
+    console.log(getPoolType, poolsContracts, 'getPoolType poolsContracts');
 
     if (usersStore.initialized && tokenStore.initialized) {
       console.log(Object.values(LENDS_CONTRACTS), 'Object.values(LENDS_CONTRACTS)---1');
-      Object.values(LENDS_CONTRACTS).forEach((item) => {
+      poolsContracts.forEach((item: any) => {
         console.log(tokenStore.filterPoolDataTokensStats(item), '...tokenStore.filterPoolDataTokens(item)');
         const tokens = tokenStore.filterPoolDataTokensStats(item);
 
@@ -119,6 +127,8 @@ const UsersList: React.FC = () => {
         Object.entries(tokens).forEach(([key, tokenItem]) => {
           const tokenIndex = poolsData.map((poolItem: any) => poolItem.assetId).indexOf(key);
 
+          // todo:
+          // probleem with countring same assets for different pools
           if (tokenIndex === -1) {
             poolsData.push(tokenItem);
           } else {
@@ -129,16 +139,22 @@ const UsersList: React.FC = () => {
           }
         });
       });
-      console.log(poolsData, 'poolsData1');
+      console.log(usersStore, 'usersStore1');
 
-      usersStore.usersStatsByPool.forEach((item: any) => arr.push(...item.tokens));
+      // verifying with active select contract pool
+      poolsContracts.forEach((contractId: string) => {
+        usersStore.usersStatsByPool.forEach((item: any) => {
+          if (item.contractId === contractId) arr.push(...item.tokens);
+        });
+      });
+
       arr = arr.filter((item: any) => (item.owner !== 'total' ? item : false));
     }
 
     console.log(arr, 'usersStatsByPool---3');
     setUsersData(arr);
     setTokensFullData(poolsData);
-  }, [usersStore, tokenStore, usersStore.initialized, tokenStore.initialized]);
+  }, [usersStore, tokenStore, usersStore.initialized, tokenStore.initialized, getPoolType]);
 
   const formatVal = (val: BN, decimal: number) => {
     return BN.formatUnits(val, decimal).toSignificant(6).toFormat(5);
@@ -240,10 +256,12 @@ const UsersList: React.FC = () => {
                         </Row>
                         <Column>
                           <Text weight={500} textAlign="right" size="medium" nowrap>
-                            {formatVal(item.totalAssetSupply, item.decimals)} {item.symbol}
+                            {(+formatVal(item.totalAssetSupply, item.decimals)).toFixed(2)} {'/ '}
+                            {(+formatVal(item.totalAssetBorrow, item.decimals)).toFixed(2)} {item.symbol}
                           </Text>
                           <Text textAlign="right" size="small" type="secondary">
-                            $ {(+formatVal(item.totalAssetSupply, item.decimals) * +item.currentPrice).toFixed(2)}
+                            $ {(+formatVal(item.totalAssetSupply, item.decimals) * +item.currentPrice).toFixed(2)}{' '}
+                            {'/ '}$ {(+formatVal(item.totalAssetBorrow, item.decimals) * +item.currentPrice).toFixed(2)}
                           </Text>
                         </Column>
                       </AssetWrap>
