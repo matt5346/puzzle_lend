@@ -200,8 +200,11 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
 
   return (
     <Root>
-      <Row onClick={() => navigate(`/dashboard/token/${props.assetId}`)} style={{ cursor: 'pointer' }}>
-        <Row alignItems="center">
+      <Row>
+        <Row
+          alignItems="center"
+          onClick={() => navigate(`/dashboard/token/${props.assetId}`)}
+          style={{ cursor: 'pointer' }}>
           {props.assetSymbol && <SquareTokenIcon size="small" src={tokenLogos[props.assetSymbol]} />}
           <SizedBox width={8} />
           <Column>
@@ -297,7 +300,14 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
         <Text size="medium" type="secondary" fitContent>
           Supplied
         </Text>
-        <Text size="medium" fitContent>
+        <Text
+          size="medium"
+          fitContent
+          onClick={() => {
+            setFocused(true);
+            props.onMaxClick && props.onMaxClick(maxWithdraw(props.selfSupply));
+          }}
+          style={{ cursor: 'pointer' }}>
           {formatVal(props.selfSupply, props.decimals)}
         </Text>
       </Row>

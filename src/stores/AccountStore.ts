@@ -9,7 +9,7 @@ import { Signer } from '@waves/signer';
 import { ProviderWeb } from '@waves.exchange/provider-web';
 import { ProviderCloud } from '@waves.exchange/provider-cloud';
 import { ProviderKeeper } from '@waves/provider-keeper';
-import { NODE_URL, TOKENS_LIST_FULL } from '@src/common/constants';
+import { NODE_URL, TOKENS_LIST_FULL, LENDS_CONTRACTS } from '@src/common/constants';
 import { action, autorun, makeAutoObservable, reaction } from 'mobx';
 import Balance from '@src/common/entities/Balance';
 import { getCurrentBrowser } from '@src/common/utils/getCurrentBrowser';
@@ -160,6 +160,7 @@ class AccountStore {
 
   login = async (loginType: LOGIN_TYPE) => {
     this.setLoginType(loginType);
+    const { tokenStore } = this.rootStore;
     switch (loginType) {
       case LOGIN_TYPE.KEEPER:
         this.setSigner(new Signer());
@@ -182,6 +183,9 @@ class AccountStore {
     }
     const loginData = await this.signer?.login();
     this.setAddress(loginData?.address ?? null);
+    Object.values(LENDS_CONTRACTS).map((item) =>
+      tokenStore.syncTokenStatistics(item, this.rootStore.accountStore.address!)
+    );
   };
 
   logout() {

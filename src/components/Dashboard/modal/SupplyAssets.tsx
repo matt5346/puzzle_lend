@@ -203,8 +203,11 @@ const SupplyAssets: React.FC<IProps> = (props) => {
 
   return (
     <Root>
-      <Row onClick={() => navigate(`/dashboard/token/${props.assetId}`)} style={{ cursor: 'pointer' }}>
-        <Row alignItems="center">
+      <Row>
+        <Row
+          alignItems="center"
+          onClick={() => navigate(`/dashboard/token/${props.assetId}`)}
+          style={{ cursor: 'pointer' }}>
           {props.assetSymbol && <SquareTokenIcon size="small" src={tokenLogos[props.assetSymbol]} />}
           <SizedBox width={8} />
           <Column>
@@ -226,7 +229,14 @@ const SupplyAssets: React.FC<IProps> = (props) => {
                 transform: 'rotate(180deg)',
               }}
             />
-            <Text size="medium" fitContent>
+            <Text
+              size="medium"
+              fitContent
+              onClick={() => {
+                setFocused(true);
+                props.onMaxClick && props.onMaxClick(getMaxSupply(props.userBalance));
+              }}
+              style={{ cursor: 'pointer' }}>
               {getUserBalance()}
               <>&nbsp;</>
               {isNative ? props.assetSymbol : '$'}

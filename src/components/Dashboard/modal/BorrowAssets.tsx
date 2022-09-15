@@ -137,6 +137,10 @@ const BorrowAssets: React.FC<IProps> = (props) => {
   const [error, setError] = useState<string>('');
   const { lendStore, accountStore, tokenStore } = useStores();
 
+  useEffect(() => {
+    props.amount && setAmount(props.amount);
+  }, [props.amount]);
+
   const formatVal = (valArg: BN, decimal: number) => {
     return (+valArg / 10 ** decimal).toFixed(2);
   };
@@ -147,6 +151,43 @@ const BorrowAssets: React.FC<IProps> = (props) => {
 
   const getReserves = () => {
     return (+formatVal(props.totalSupply, props.decimals) - +formatVal(props.totalBorrow, props.decimals)).toFixed(2);
+  };
+
+  const countAccountHealth = (currentBorrow: any) => {
+    let currentBorrowAmount = currentBorrow;
+    const tokens = tokenStore.poolDataTokens;
+    let borrowCapacity = 0;
+    let borrowCapacityUsed = 0;
+
+    if (!isNative) currentBorrowAmount /= +props.rate?.toFormat(4);
+
+    console.log(+currentBorrowAmount, 'currentBorrow2');
+
+    tokens.forEach((item: IToken) => {
+      const tokenData: TTokenStatistics = tokenStore.poolDataTokensWithStats[item.assetId];
+      if (+tokenData.selfSupply > 0) {
+        borrowCapacity +=
+          (+tokenData.selfSupply / 10 ** tokenData.decimals) * +tokenData.currentPrice * (+tokenData.setupLtv / 100);
+      }
+
+      if (+tokenData.selfBorrow > 0) {
+        let localCapacityused = (+tokenData.selfBorrow / 10 ** tokenData.decimals) * +tokenData.currentPrice;
+
+        if (tokenData.assetId === props.assetId)
+          localCapacityused =
+            ((+currentBorrowAmount + +tokenData.selfBorrow) / 10 ** tokenData.decimals) * +tokenData.currentPrice;
+
+        console.log(+tokenData.selfBorrow, '+tokenData.selfBorrow');
+        borrowCapacityUsed += localCapacityused;
+      }
+    });
+
+    // case when user did'nt borrow anything
+    if (borrowCapacityUsed === 0) borrowCapacityUsed = (+currentBorrowAmount / 10 ** props.decimals) * +props.rate;
+
+    const accountHealth: number = (1 - borrowCapacityUsed / borrowCapacity) * 100;
+    console.log(borrowCapacity, borrowCapacityUsed, accountHealth, 'borrowCapacity borrowCapacityUsed accountHealth');
+    setAccountHealth(accountHealth);
   };
 
   // counting maximum amount for MAX btn
@@ -170,8 +211,10 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     }
 
     if (!isError) setError('');
+    const val = BN.formatUnits(Math.ceil(maximum * 10 ** props.decimals * 0.8), 0);
+    countAccountHealth(val);
     // current recommended maximum borrow, no more than 80% of
-    return BN.formatUnits(Math.ceil(maximum * 10 ** props.decimals * 0.8), 0);
+    return val;
   };
 
   // counting maximum after USER INPUT
@@ -199,43 +242,6 @@ const BorrowAssets: React.FC<IProps> = (props) => {
 
     props.onSubmit!(amountVal, props.assetId, lendStore.activePoolContract);
   };
-
-  const countAccountHealth = (currentBorrow: any) => {
-    let currentBorrowAmount = currentBorrow;
-    const tokens = tokenStore.poolDataTokens;
-    let borrowCapacity = 0;
-    let borrowCapacityUsed = 0;
-
-    if (!isNative) currentBorrowAmount /= +props.rate?.toFormat(4);
-
-    console.log(+currentBorrow, 'currentBorrow');
-
-    tokens.forEach((item: IToken) => {
-      const tokenData: TTokenStatistics = tokenStore.poolDataTokensWithStats[item.assetId];
-      if (+tokenData.selfSupply > 0) {
-        borrowCapacity +=
-          (+tokenData.selfSupply / 10 ** tokenData.decimals) * +tokenData.currentPrice * (+tokenData.setupLtv / 100);
-      }
-
-      if (+tokenData.selfBorrow > 0) {
-        let localCapacityused = (+tokenData.selfBorrow / 10 ** tokenData.decimals) * +tokenData.currentPrice;
-
-        if (tokenData.assetId === props.assetId)
-          localCapacityused =
-            ((+currentBorrowAmount + +tokenData.selfBorrow) / 10 ** tokenData.decimals) * +tokenData.currentPrice;
-
-        console.log(+tokenData.selfBorrow, '+tokenData.selfBorrow');
-        borrowCapacityUsed += localCapacityused;
-      }
-    });
-    const accountHealth: number = (1 - borrowCapacityUsed / borrowCapacity) * 100;
-    console.log(borrowCapacity, borrowCapacityUsed, accountHealth, 'borrowCapacity borrowCapacityUsed accountHealth');
-    setAccountHealth(accountHealth);
-  };
-
-  useEffect(() => {
-    props.amount && setAmount(props.amount);
-  }, [props.amount]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debounce = useCallback(
@@ -275,8 +281,11 @@ const BorrowAssets: React.FC<IProps> = (props) => {
 
   return (
     <Root>
-      <Row onClick={() => navigate(`/dashboard/token/${props.assetId}`)} style={{ cursor: 'pointer' }}>
-        <Row alignItems="center">
+      <Row>
+        <Row
+          alignItems="center"
+          onClick={() => navigate(`/dashboard/token/${props.assetId}`)}
+          style={{ cursor: 'pointer' }}>
           {props.assetSymbol && <SquareTokenIcon size="small" src={tokenLogos[props.assetSymbol]} />}
           <SizedBox width={8} />
           <Column>
@@ -298,7 +307,14 @@ const BorrowAssets: React.FC<IProps> = (props) => {
                 transform: 'rotate(180deg)',
               }}
             />
-            <Text size="medium" fitContent>
+            <Text
+              size="medium"
+              fitContent
+              onClick={() => {
+                setFocused(true);
+                props.onMaxClick && props.onMaxClick(userMaximumToBorrowBN(props.userColatteral, props.rate));
+              }}
+              style={{ cursor: 'pointer' }}>
               {props.userColatteral && props.rate ? userMaximumToBorrow(props.userColatteral, props.rate) : 0}
               <>&nbsp;</>
               {isNative ? props.assetSymbol : '$'}

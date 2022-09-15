@@ -137,7 +137,9 @@ const BorrowAssets: React.FC<IProps> = (props) => {
 
   useEffect(() => {
     props.amount && setAmount(props.amount);
-  }, [props.amount]);
+
+    if (+props.selfBorrow === 0) setError('You did not borrow anything');
+  }, [props.amount, props.selfBorrow]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debounce = useCallback(
@@ -200,8 +202,11 @@ const BorrowAssets: React.FC<IProps> = (props) => {
 
   return (
     <Root>
-      <Row onClick={() => navigate(`/dashboard/token/${props.assetId}`)} style={{ cursor: 'pointer' }}>
-        <Row alignItems="center">
+      <Row>
+        <Row
+          alignItems="center"
+          onClick={() => navigate(`/dashboard/token/${props.assetId}`)}
+          style={{ cursor: 'pointer' }}>
           {props.assetSymbol && <SquareTokenIcon size="small" src={tokenLogos[props.assetSymbol]} />}
           <SizedBox width={8} />
           <Column>
@@ -223,7 +228,14 @@ const BorrowAssets: React.FC<IProps> = (props) => {
                 transform: 'rotate(180deg)',
               }}
             />
-            <Text size="medium" fitContent>
+            <Text
+              size="medium"
+              fitContent
+              onClick={() => {
+                setFocused(true);
+                props.onMaxClick && props.onMaxClick(getMax(props.selfBorrow));
+              }}
+              style={{ cursor: 'pointer' }}>
               {getUserRepay()}
               <>&nbsp;</>
               {isNative ? props.assetSymbol : '$'}
@@ -330,7 +342,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
       <Footer>
         {accountStore && accountStore.address ? (
           <Button
-            disabled={+amount === 0 || error !== ''}
+            disabled={+amount === 0 || error !== '' || +props.selfBorrow === 0}
             fixed
             kind={error !== '' ? 'error' : 'primary'}
             onClick={() => submitForm()}

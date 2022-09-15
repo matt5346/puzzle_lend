@@ -51,7 +51,9 @@ const TokenData: React.FC<IProps> = ({
           General info
         </Text>
         <SizedBox height={16} />
-        <Row justifyContent="space-between">
+        <Row
+          justifyContent="space-between"
+          style={{ borderBottom: '1px solid #F1F2FE', paddingBottom: '8px', marginBottom: '8px' }}>
           <Text size="medium" type="secondary" fitContent>
             Price
           </Text>
@@ -59,8 +61,9 @@ const TokenData: React.FC<IProps> = ({
             {rate?.gte(0.0001) ? rate?.toFormat(4) : rate?.toFormat(8)} $
           </Text>
         </Row>
-        <SizedBox height={16} />
-        <Row justifyContent="space-between">
+        <Row
+          justifyContent="space-between"
+          style={{ borderBottom: '1px solid #F1F2FE', paddingBottom: '8px', marginBottom: '8px' }}>
           <Text size="medium" type="secondary" fitContent>
             Number of suppliers
           </Text>
@@ -68,8 +71,9 @@ const TokenData: React.FC<IProps> = ({
             {totalSupply || 0}
           </Text>
         </Row>
-        <SizedBox height={16} />
-        <Row justifyContent="space-between">
+        <Row
+          justifyContent="space-between"
+          style={{ borderBottom: '1px solid #F1F2FE', paddingBottom: '8px', marginBottom: '8px' }}>
           <Text size="medium" type="secondary" fitContent>
             Number of borrowers
           </Text>
@@ -77,8 +81,9 @@ const TokenData: React.FC<IProps> = ({
             {totalBorrow || 0}
           </Text>
         </Row>
-        <SizedBox height={16} />
-        <Row justifyContent="space-between">
+        <Row
+          justifyContent="space-between"
+          style={{ borderBottom: '1px solid #F1F2FE', paddingBottom: '8px', marginBottom: '8px' }}>
           <Text size="medium" type="secondary" fitContent>
             LTV
           </Text>
@@ -86,8 +91,9 @@ const TokenData: React.FC<IProps> = ({
             {setupLtv || 0}%
           </Text>
         </Row>
-        <SizedBox height={16} />
-        <Row justifyContent="space-between">
+        <Row
+          justifyContent="space-between"
+          style={{ borderBottom: '1px solid #F1F2FE', paddingBottom: '8px', marginBottom: '8px' }}>
           <Text size="medium" type="secondary" fitContent>
             Liquidation threshold
           </Text>
@@ -95,7 +101,6 @@ const TokenData: React.FC<IProps> = ({
             ???
           </Text>
         </Row>
-        <SizedBox height={16} />
         <Row justifyContent="space-between">
           <Text size="medium" type="secondary" fitContent>
             Liquidation penalty

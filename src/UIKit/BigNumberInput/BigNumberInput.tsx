@@ -83,15 +83,15 @@ const BigNumberInput: React.FC<IBigNumberInputProps> = ({
     // if showing price in crypto (Waves, pluto...)
     if (isNative) {
       const nativeValue = (+value / +rate! / 10 ** decimals).toFixed(6);
-      const valueEffect = BN.parseUnits(nativeValue || '0', decimals);
-      setInputValue(nativeValue);
-      onChange(valueEffect);
+      const valueEffect = BN.parseUnits(nativeValue || '', decimals);
+      setInputValue(+nativeValue === 0 ? '' : nativeValue);
+      onChange(+valueEffect === 0 ? BN.ZERO : valueEffect);
       return;
     }
 
     if (!isNative) {
       const dollarValue = ((+value / 10 ** decimals) * +rate!).toFixed(6);
-      const valueEffect = BN.parseUnits(dollarValue || '0', decimals);
+      const valueEffect = BN.parseUnits(dollarValue || '', decimals);
       setInputValue(dollarValue.toString());
       onChange(valueEffect);
     }
