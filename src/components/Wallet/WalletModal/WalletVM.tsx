@@ -46,7 +46,6 @@ class WalletVM {
   }
 
   handleCopyAddress = () => {
-    console.log('copy');
     const { accountStore } = this.rootStore;
     if (accountStore.address) {
       copy(accountStore.address ?? '');

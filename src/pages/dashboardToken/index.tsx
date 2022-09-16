@@ -99,26 +99,22 @@ const DashboardToken: React.FC = () => {
   };
 
   const getUtilizationRatio = (borrow: BN, supply: BN) => {
-    console.log(+borrow, +supply, '---br--');
     if (+borrow === 0 || +supply === 0) return 0;
 
     return ((+borrow / +supply) * 100).toFixed(2);
   };
 
   useEffect(() => {
-    console.log(poolDataTokensWithStats, assetId, usersStore, 'data----111-');
     async function fetchMyAPI() {
       const response = await Promise.all(
         Object.values(LENDS_CONTRACTS).map(async (item) => {
           return { [item]: await tokenStore.loadTokenUsers(item) };
         })
       );
-      console.log(usersStore, response, '---usersStore');
       const poolTokens = response.filter((item) => (item[lendStore.activePoolContract] ? item : false))[0];
       const currentToken = poolTokens[lendStore.activePoolContract].filter((item: any) =>
         item[assetId!] ? item : false
       )[0];
-      console.log(currentToken, 'currentToken');
 
       let totalBorrowUsers = 0;
       let totalSupplyUsers = 0;
@@ -138,18 +134,13 @@ const DashboardToken: React.FC = () => {
           }
         });
       }
-      console.log(totalBorrowUsers, totalSupplyUsers, '---currentToken2');
 
       const iData: IToken = TOKENS_LIST_FULL.find((item) => item.assetId === assetId) || createIToken();
-      console.log(iData, 'DATA----');
       let data: TTokenStatistics = createITokenStat();
 
       if (assetId) {
         data = tokenStore.poolDataTokensWithStats[assetId];
-        console.log(data, 'DATA----2');
       }
-
-      console.log(data, iData, TOKENS_LIST(lendStore.activePoolName), 'data-----');
 
       setTotalSupplyUsers(totalSupplyUsers);
       setTotalBorrowUsers(totalBorrowUsers);

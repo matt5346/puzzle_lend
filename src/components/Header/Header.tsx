@@ -101,7 +101,6 @@ const isRoutesEquals = (a: string, b: string) => {
 
   if (splittedUrl.includes(a.replaceAll('/', ''))) result = true;
 
-  console.log(splittedUrl, b, 'ab11');
   return result;
 };
 

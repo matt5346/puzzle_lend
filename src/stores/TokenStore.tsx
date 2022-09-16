@@ -44,7 +44,6 @@ export default class TokenStore {
   @action.bound setPools = (pools: Pool[]) => (this.pools = pools);
 
   private setPoolData = (poolStats: PoolDataType) => {
-    console.log(poolStats, 'poolStats 1');
     const getPool = this.poolStatsArr.find((item) => item.contractId === poolStats.contractId);
 
     if (getPool) {
@@ -56,13 +55,11 @@ export default class TokenStore {
     if (!getPool) {
       this.poolStatsArr.push(poolStats);
     }
-    console.log(this.poolStatsArr, 'this.poolStatsArr2');
   };
 
   private setInitialized = (v: boolean) => (this.initialized = v);
 
   private setUserHealth = (v: number) => {
-    console.log('accountHealth', v);
     if (v > 100) {
       return 100;
     }
@@ -164,24 +161,36 @@ export default class TokenStore {
     let activePoolTokensWithStats: Record<string, TTokenStatistics>;
     const { lendStore } = this.rootStore;
     const poolName = lendStore.poolNameById(contractId);
-    console.log(contractId, poolName, 'filterPoolDataTokensStats');
 
     TOKENS_LIST(poolName).forEach(() => {
       const poolData = this.poolStatsByContractId[contractId];
-      console.log(poolData, this.poolStatsByContractId, 'poolData111');
 
       if (poolData && poolData.tokens) {
         const data = poolData.tokens.reduce(
           (acc, stats) => ({ ...acc, [stats.assetId]: stats }),
           {} as Record<string, TTokenStatistics>
         );
-        console.log(data, 'data111');
         activePoolTokensWithStats = data;
       }
     });
 
     return activePoolTokensWithStats!;
   }
+
+  // Calculating UR on contract
+  public calculateUR = (contractId: string): any => {
+    const { lendStore } = this.rootStore;
+    const contractPoolName = lendStore.poolNameById(contractId);
+    const assets = TOKENS_LIST(contractPoolName).map(({ assetId }) => assetId);
+
+    wavesCapService.updateUR(contractId, assets).catch((e: any) => {
+      // notifi\cationStore.notify(e.message ?? e.toString(), {
+      //   type: 'error',
+      // });
+      console.log(e, 'getAssetsStats');
+      return [];
+    });
+  };
 
   // get ACTIVE POOL TOKENS with STATS
   get poolDataTokensWithStats(): Record<string, TTokenStatistics> {
@@ -190,14 +199,12 @@ export default class TokenStore {
 
     TOKENS_LIST(lendStore.activePoolName).forEach(() => {
       const poolData = this.poolStatsByContractId[lendStore.activePoolContract];
-      console.log(poolData, 'poolData111');
 
       if (poolData && poolData.tokens) {
         const data = poolData.tokens.reduce(
           (acc, stats) => ({ ...acc, [stats.assetId]: stats }),
           {} as Record<string, TTokenStatistics>
         );
-        console.log(data, 'data111');
         activePoolTokensWithStats = data;
       }
     });
@@ -265,20 +272,16 @@ export default class TokenStore {
 
   // loading all data about tokens, their apy/apr, supply/borrow and evth
   public syncTokenStatistics = async (contractId?: string, userId?: string) => {
-    console.log(this.poolStatsArr, 'syncTokenStatistics 1!');
     const { accountStore, lendStore } = this.rootStore;
     const contractPoolId = contractId || lendStore.activePoolContract;
     const contractPoolName = lendStore.poolNameById(contractPoolId);
     const assets = TOKENS_LIST(contractPoolName).map(({ assetId }) => assetId);
-    console.log(contractPoolId, lendStore.activePoolContract, '------lendStore.activePoolContract');
     const userContract = userId || accountStore.address;
 
     console.log(
       lendStore.poolNameById(contractId || lendStore.activePoolContract),
       'endStore.poolNameById(contractId)'
     );
-    console.log(assets, 'ASSETS');
-    console.log(contractPoolId, 'lendStore.activePoolContract 2');
     const stats = await wavesCapService.getPoolsStats(assets, userContract!, contractPoolId).catch((e) => {
       // notifi\cationStore.notify(e.message ?? e.toString(), {
       //   type: 'error',
@@ -286,7 +289,6 @@ export default class TokenStore {
       console.log(e, 'getAssetsStats');
       return [];
     });
-    console.log(stats, 'stats ');
 
     // count pool Total
     let poolTotal = 0;
@@ -308,7 +310,6 @@ export default class TokenStore {
     const statistics = stats.map((details: any) => {
       const asset = TOKENS_BY_ASSET_ID[details.id] ?? details.precision;
       const { decimals } = asset;
-      console.log(decimals, 'decimal');
       const firstPrice = new BN(details.data?.['firstPrice_usd-n'] ?? 0);
       const currentPrice = new BN(details.min_price ?? 0);
 
@@ -395,12 +396,9 @@ export default class TokenStore {
         volume24: new BN(details['24h_vol_usd-n']),
       };
     });
-    console.log(borrowCapacityUsed / borrowCapacity, 'borrowCapacity borrowCapacityUsed');
 
     const netAPY: number = (supplyAmountApy - borrowedAmountApr) / baseAmount;
     const accountHealth: number = (1 - borrowCapacityUsed / borrowCapacity) * 100;
-
-    console.log(netAPY, accountHealth, 'netapy accountHealth');
 
     const poolData = {
       netAPY,
@@ -415,8 +413,6 @@ export default class TokenStore {
 
     this.setPoolData(poolData);
 
-    console.log(statistics, 'syncTokenStatistics 2!');
-
     Object.values(LENDS_CONTRACTS).map((item) => this.loadUserDetails(item));
   };
 
@@ -428,6 +424,7 @@ export default class TokenStore {
       Object.values(LENDS_CONTRACTS).map((item) => this.syncTokenStatistics(item, rootStore.accountStore.address!))
     ).then(() => this.setInitialized(true));
 
+    // Object.values(LENDS_CONTRACTS).map((item) => this.calculateUR(item));
     setInterval(() => {
       this.syncTokenStatistics(rootStore.lendStore.activePoolContract, rootStore.accountStore.address!);
     }, 60 * 2000);

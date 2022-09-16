@@ -129,7 +129,6 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
   const { lendStore, accountStore } = useStores();
 
   const setInputAmountMeasure = (isNativeToken: boolean) => {
-    console.log(isNativeToken, 'setInputAmountMeasure');
     setConvertToNative(isNativeToken);
   };
 
@@ -138,7 +137,6 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
   };
 
   const getUserBalance = () => {
-    console.log(+amount, 'amount1');
     if (!isNative)
       return (
         +formatVal(props.userBalance, props.decimals) * +props.rate?.toFormat(4) +
@@ -151,9 +149,9 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
   };
 
   const maxWithdraw = (val: BN) => {
-    if (!isNative) return BN.formatUnits(+val * +props.rate?.toFormat(4), 0);
+    if (!isNative) return BN.formatUnits(+val * +props.rate?.toFormat(4) + 1, 0);
 
-    return val;
+    return BN.formatUnits(+val + 1, 0);
   };
 
   useEffect(() => {
@@ -173,7 +171,6 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
   };
 
   const handleChangeAmount = (v: BN) => {
-    console.log('handleChangeAmount');
     const formattedVal = formatVal(v, props.decimals);
     let selfSupply = formatVal(props.selfSupply, props.decimals);
     let isError = false;

@@ -61,14 +61,12 @@ class DashboardWalletVM {
   }
 
   onCloseModal = () => {
-    console.log('CLOSE');
     const { lendStore } = this.rootStore;
     lendStore.setDashboardModalOpened(false, '', lendStore.dashboardModalStep);
   };
 
   submitBorrow = async (amount: any, assetId: any, contractAddress: string) => {
     const { accountStore, lendStore, tokenStore, notificationStore } = this.rootStore;
-    console.log(amount.toString(), assetId, 'token');
 
     await accountStore
       .invoke({
@@ -110,7 +108,6 @@ class DashboardWalletVM {
 
   submitSupply = async (amount: any, assetId: any, contractAddress: string) => {
     const { accountStore, lendStore, tokenStore, notificationStore } = this.rootStore;
-    console.log(amount.toString(), contractAddress, assetId, 'token');
 
     await accountStore
       .invoke({
@@ -154,7 +151,6 @@ class DashboardWalletVM {
 
   submitWithdraw = async (amount: any, assetId: any, contractAddress: string) => {
     const { accountStore, lendStore, tokenStore, notificationStore } = this.rootStore;
-    console.log(amount.toString(), assetId, 'token');
 
     await accountStore
       .invoke({
@@ -196,7 +192,6 @@ class DashboardWalletVM {
 
   submitRepay = async (amount: any, assetId: any, contractAddress: string) => {
     const { accountStore, lendStore, tokenStore, notificationStore } = this.rootStore;
-    console.log(amount.toString(), assetId, 'token');
 
     await accountStore
       .invoke({
@@ -239,7 +234,6 @@ class DashboardWalletVM {
   };
 
   handleCopyAddress = () => {
-    console.log('copy');
     const { accountStore } = this.rootStore;
     if (accountStore.address) {
       copy(accountStore.address ?? '');

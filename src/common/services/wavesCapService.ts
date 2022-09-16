@@ -34,11 +34,9 @@ const wavesCapService = {
 
           const urlSupply = `https://nodes.wavesnodes.com/addresses/data/${contractAddress}?${stringParams}`;
           const responseAssets = await axios.get(urlSupply);
-          console.log(responseAssets, '.responseAssets1');
           return { [itemId]: responseAssets.data };
         })
       );
-      console.log(usersDataResponse, '.userData1');
 
       usersData = usersDataResponse;
     } catch (er) {
@@ -46,6 +44,25 @@ const wavesCapService = {
     }
 
     return usersData;
+  },
+  updateUR: async (contractAddress: string, assetsId: string[]): Promise<any> => {
+    try {
+      assetsId.forEach(async (item) => {
+        const tokensRatesUrl = `http://nodes.wavesnodes.com/utils/script/evaluate/${contractAddress}`;
+        const response = await axios(tokensRatesUrl, {
+          method: 'POST',
+          headers: {
+            'Content-type': 'application/json',
+          },
+          data: {
+            expr: `calculateUtilizationRatio("${item}", false)`,
+          },
+        });
+        console.log(response, 'updateUR');
+      });
+    } catch (er) {
+      console.log(er, 'error');
+    }
   },
   getBorrowSupplyUsers: async (contractAddress: string, assetsId: string[]): Promise<any> => {
     let usersData: any = [];
@@ -91,7 +108,6 @@ const wavesCapService = {
 
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           objData!.forEach((userObj: any) => {
-            console.log(userObj, 'userObj assetData');
             const userDataObj = {
               owner: null,
               supplied: 0,
@@ -165,8 +181,6 @@ const wavesCapService = {
           expr: `getUserCollateral(false, "${userId}", true)`,
         },
       });
-      console.log(response, 'response');
-      console.log(contractAddress, 'getUserExtraStats');
 
       // eslint-disable-next-line no-underscore-dangle
       userCollateral = response?.data?.result?.value?._2?.value;
@@ -182,8 +196,15 @@ const wavesCapService = {
     for (let i = 0; i < assetsId.length - 1; i++) {
       params.append('assetIds[]=', assetsId[i]);
     }
-    const url = `https://wavescap.com/api/assets-info.php?${params.toString()}`;
-    const response = await axios.get(url);
+    let response: any = [];
+
+    try {
+      const url = `https://wavescap.com/api/assets-info.php?${params.toString()}`;
+      response = await axios.get(url);
+    } catch (err) {
+      console.log(err, 'ERR');
+    }
+
     return response.data.assets != null ? response.data.assets.filter((v: any) => v != null) : [];
   },
   // loading assets data for current pool
@@ -192,13 +213,19 @@ const wavesCapService = {
   // contractAddress: contract Address of POOL
   getPoolsStats: async (assetsId: string[], address?: string, contractAddress?: string): Promise<IAssetResponse[]> => {
     const params = new URLSearchParams();
-    console.log(contractAddress, 'contractAddress');
 
     for (let i = 0; i <= assetsId.length - 1; i++) {
       params.append('assetIds[]=', assetsId[i]);
     }
-    const url = `https://wavescap.com/api/assets-info.php?${params.toString()}`;
-    const response = await axios.get(url);
+
+    let response: any = [];
+
+    try {
+      const url = `https://wavescap.com/api/assets-info.php?${params.toString()}`;
+      response = await axios.get(url);
+    } catch (err) {
+      console.log(err, 'ERR');
+    }
 
     let tokensRates: any = {};
     let setupRate: any = {};
@@ -249,17 +276,12 @@ const wavesCapService = {
           expr: `getPrices(false)`,
         },
       });
-      console.log(tokensPricesRates, 'tokensPricesRates 2');
     } catch (err) {
       console.log(err, 'ERR');
     }
-    console.log(tokensRates, 'tokensRates 2');
     const tokensRatesArr: string[] = tokensRates?.data?.result?.value?._2?.value.split(',');
     const tokensinterestArr: string[] = setupRate?.data?.result?.value?._2?.value.split(',');
     const tokensPricesArr: string[] = tokensPricesRates?.data?.result?.value?._2?.value.split('|');
-    console.log(tokensRatesArr, 'tokensRatesArr 2');
-    console.log(tokensinterestArr, 'tokensinterestArr 2');
-    console.log(tokensPricesArr, 'tokensPricesArr 2');
 
     const assetsData = await Promise.all(
       assetsId.map(async (itemId) => {
@@ -276,11 +298,9 @@ const wavesCapService = {
 
         const urlSupply = `https://nodes.wavesnodes.com/addresses/data/${contractAddress}?${stringParams}`;
         const responseAssets = await axios.get(urlSupply);
-        console.log(responseAssets, 'SUUPLY');
         return { [itemId]: responseAssets.data };
       })
     );
-    console.log(response, '----response');
 
     const fullAssetsData = response.data.assets.map((item: any) => {
       const itemData = {
@@ -313,10 +333,8 @@ const wavesCapService = {
       };
 
       const assetExtraData = Object.values(assetsData).find((assetItem) => assetItem[item.id]);
-      console.log(assetExtraData, '----assetExtraData');
 
       if (assetExtraData && assetExtraData[item.id]) {
-        console.log(assetExtraData[item.id], '----assetExtraData[item.id]');
         const poolValue = assetExtraData[item.id].find((pool: any) => `total_supplied_${item.id}` === pool.key);
         const poolBorrowed = assetExtraData[item.id].find((pool: any) => `total_borrowed_${item.id}` === pool.key);
         const ltv = assetExtraData[item.id].find((pool: any) => pool.key === 'setup_ltvs')?.value?.split(',');
@@ -367,7 +385,7 @@ const wavesCapService = {
 
         // debug, remove later
         // console.log(poolValue, poolBorrowed, itemData.supply_rate, '--poolValue, poolBorrowed---spply');
-        // console.log(selfSupply, selfBorrowed, itemData.borrow_rate, '--selfSupply, selfBorrowe---spply');
+        console.log(selfSupply, selfBorrowed, itemData.borrow_rate, '--selfSupply, selfBorrowe---spply');
         // console.log(
         //   itemData.name,
         //   itemData.supply_rate,
@@ -377,42 +395,31 @@ const wavesCapService = {
 
         // for simplicity
         // all values gonna be convert to real numbers with decimals only in TEMPLATE
-        const currentPrice = new BN(itemData.data?.['lastPrice_usd-n'] ?? 0);
         if (poolValue) itemData.total_supply = poolValue.value * itemData.supply_rate;
         if (poolBorrowed) itemData.total_borrow = poolBorrowed.value * itemData.borrow_rate;
 
-        if (selfSupply) itemData.self_supply = selfSupply.value * itemData.supply_rate;
-        if (selfBorrowed) itemData.self_borrowed = selfBorrowed.value * itemData.borrow_rate;
+        if (selfSupply) itemData.self_supply = selfSupply.value * +itemData.supply_rate;
+        if (selfBorrowed) itemData.self_borrowed = selfBorrowed.value * +itemData.borrow_rate;
 
         const UR = itemData.total_borrow / itemData.total_supply;
         const supplyInterest = +itemData.setup_interest * UR;
         const supplyAPY = ((1 + supplyInterest) ** 365 - 1) * 100;
 
         // borrow daily interest && daily INCOME
-        const dailyIncome = supplyInterest * ((itemData.self_supply / 10 ** itemData.precision) * +currentPrice);
+        const dailyIncome = supplyInterest * ((itemData.self_supply / 10 ** itemData.precision) * +itemData.min_price);
         const dailyBorrowInterest =
-          +itemData.setup_interest * ((itemData.self_borrowed / 10 ** itemData.precision) * +currentPrice);
+          +itemData.setup_interest * ((itemData.self_borrowed / 10 ** itemData.precision) * +itemData.min_price);
 
         itemData.self_daily_borrow_interest = dailyBorrowInterest || null;
         itemData.self_daily_income = dailyIncome || null;
         itemData.setup_supply_apy = supplyAPY || null;
         itemData.supply_interest = supplyInterest;
       }
-      console.log(itemData, '----itemData');
 
       return itemData;
     });
     console.log(fullAssetsData, 'fullAsset');
     return fullAssetsData != null ? fullAssetsData.filter((v: any) => v != null) : [];
-  },
-  getAllAssetsStats: async (): Promise<IAssetResponse[]> => {
-    const response = await axios.get('https://wavescap.com/api/assets.json');
-    return response.data;
-  },
-  getAssetRate: async (assetsId: string): Promise<BN | null> => {
-    const url = `https://wavescap.com/api/asset/${assetsId}.json`;
-    const { data: res } = await axios.get<IAssetResponse>(url);
-    return res.data && res.data['lastPrice_usd-n'] ? new BN(res.data['lastPrice_usd-n']) : null;
   },
 };
 

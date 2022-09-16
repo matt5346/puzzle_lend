@@ -84,7 +84,6 @@ export const LoginTypesRender: React.FC<{
 
 const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
   const handleLogin = (loginType: LOGIN_TYPE) => {
-    console.log(loginType, 'loginType 1');
     rest.onClose();
     onLogin(loginType);
   };

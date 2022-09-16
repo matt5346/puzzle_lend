@@ -136,7 +136,6 @@ const SupplyAssets: React.FC<IProps> = (props) => {
   };
 
   const setInputAmountMeasure = (isNativeToken: boolean) => {
-    console.log(isNativeToken, 'setInputAmountMeasure');
     setConvertToNative(isNativeToken);
   };
 
@@ -157,7 +156,6 @@ const SupplyAssets: React.FC<IProps> = (props) => {
   );
 
   const handleChangeAmount = (v: BN) => {
-    console.log(+v, 'handleChangeAmount');
     const formattedVal = formatVal(v, props.decimals);
     let walletBal = formatVal(props.userBalance, props.decimals);
     let isError = false;
@@ -175,7 +173,6 @@ const SupplyAssets: React.FC<IProps> = (props) => {
   };
 
   const getUserBalance = () => {
-    console.log(+amount, 'amount1');
     if (!isNative)
       return (
         +formatVal(props.userBalance, props.decimals) * +props.rate?.toFormat(4) -

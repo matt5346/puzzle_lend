@@ -51,22 +51,17 @@ const WalletModalBody: React.FC<IProps> = ({ filteredTokens }) => {
 
   const supplyMaxClickFunc = (amount?: BN) => {
     const getAssetData = vm.balances.find((tokenData) => tokenData.assetId === lendStore.choosenToken?.assetId);
-    console.log(getAssetData?.balance?.toString(), 'getAssetData lendStore');
-    console.log(amount?.toString(), 'amount lendStore');
 
     if (getAssetData) vm.setSupplyAmount(amount || getAssetData.balance!);
   };
 
   const withdrawMaxClickFunc = (amount?: BN) => {
     const getAssetData = vm.balances.find((tokenData) => tokenData.assetId === lendStore.choosenToken?.assetId);
-    console.log(getAssetData?.balance?.toString(), 'getAssetData lendStore');
-    console.log(amount?.toString(), 'amount lendStore');
 
     if (getAssetData) vm.setWithdrawAmount(amount || getAssetData.balance!);
   };
 
   const borrowMaxClickFunc = (amount: BN) => {
-    console.log(amount.toString(), 'MAX');
     vm.setBorrowAmount(amount);
   };
 
@@ -84,8 +79,6 @@ const WalletModalBody: React.FC<IProps> = ({ filteredTokens }) => {
 
     setFilteredToken(token);
   }, [lendStore.choosenToken, filteredTokens]);
-
-  console.log(vm, 'ASSETS vm');
 
   return (
     <Root>

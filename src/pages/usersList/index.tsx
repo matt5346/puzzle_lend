@@ -106,54 +106,57 @@ const UsersList: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const poolsData: any = [];
-    let arr: any = [];
-    const poolsContracts: any = [];
+    async function fetchMyAPI() {
+      const poolsData: any = [];
+      let arr: any = [];
+      const poolsContracts: any = [];
 
-    if (getPoolType === 0) {
-      poolsContracts.push(categoriesOptions[1].key, categoriesOptions[2].key);
-    } else {
-      poolsContracts.push(categoriesOptions[getPoolType].key);
-    }
-    console.log(getPoolType, poolsContracts, 'getPoolType poolsContracts');
+      await Promise.all(Object.values(LENDS_CONTRACTS).map((item) => usersStore.loadBorrowSupplyUsers(item))).then(() =>
+        usersStore.setInitialized(true)
+      );
 
-    if (usersStore.initialized && tokenStore.initialized) {
-      console.log(Object.values(LENDS_CONTRACTS), 'Object.values(LENDS_CONTRACTS)---1');
-      poolsContracts.forEach((item: any) => {
-        console.log(tokenStore.filterPoolDataTokensStats(item), '...tokenStore.filterPoolDataTokens(item)');
-        const tokens = tokenStore.filterPoolDataTokensStats(item);
+      if (getPoolType === 0) {
+        poolsContracts.push(categoriesOptions[1].key, categoriesOptions[2].key);
+      } else {
+        poolsContracts.push(categoriesOptions[getPoolType].key);
+      }
 
-        // counting values of TOKENS SUPPLY, depending of select value
-        Object.entries(tokens).forEach(([key, tokenItem]) => {
-          const tokenIndex = poolsData.map((poolItem: any) => poolItem.assetId).indexOf(key);
+      if (usersStore.initialized && tokenStore.initialized) {
+        poolsContracts.forEach((item: any) => {
+          const tokens = tokenStore.filterPoolDataTokensStats(item);
 
-          // todo:
-          // probleem with countring same assets for different pools
-          if (tokenIndex === -1) {
-            poolsData.push(tokenItem);
-          } else {
-            poolsData[tokenIndex].totalAssetSupply = BN.formatUnits(
-              +poolsData[tokenIndex].totalAssetSupply + +tokenItem.totalAssetSupply,
-              0
-            );
-          }
+          // counting values of TOKENS SUPPLY, depending of select value
+          Object.entries(tokens).forEach(([key, tokenItem]) => {
+            const tokenIndex = poolsData.map((poolItem: any) => poolItem.assetId).indexOf(key);
+
+            // todo:
+            // probleem with countring same assets for different pools
+            if (tokenIndex === -1) {
+              poolsData.push(tokenItem);
+            } else {
+              poolsData[tokenIndex].totalAssetSupply = BN.formatUnits(
+                +poolsData[tokenIndex].totalAssetSupply + +tokenItem.totalAssetSupply,
+                0
+              );
+            }
+          });
         });
-      });
-      console.log(usersStore, 'usersStore1');
 
-      // verifying with active select contract pool
-      poolsContracts.forEach((contractId: string) => {
-        usersStore.usersStatsByPool.forEach((item: any) => {
-          if (item.contractId === contractId) arr.push(...item.tokens);
+        // verifying with active select contract pool
+        poolsContracts.forEach((contractId: string) => {
+          usersStore.usersStatsByPool.forEach((item: any) => {
+            if (item.contractId === contractId) arr.push(...item.tokens);
+          });
         });
-      });
 
-      arr = arr.filter((item: any) => (item.owner !== 'total' ? item : false));
+        arr = arr.filter((item: any) => (item.owner !== 'total' ? item : false));
+      }
+
+      setUsersData(arr);
+      setTokensFullData(poolsData);
     }
 
-    console.log(arr, 'usersStatsByPool---3');
-    setUsersData(arr);
-    setTokensFullData(poolsData);
+    fetchMyAPI();
   }, [usersStore, tokenStore, usersStore.initialized, tokenStore.initialized, getPoolType]);
 
   const formatVal = (val: BN, decimal: number) => {
@@ -184,7 +187,6 @@ const UsersList: React.FC = () => {
             selected={categoriesOptions[getPoolType]}
             onSelect={({ key }) => {
               const index = categoriesOptions.findIndex((o) => o.key === key);
-              console.log(key, getPoolType, 'KEY');
               setPoolType(index);
             }}
           />
@@ -194,7 +196,6 @@ const UsersList: React.FC = () => {
             selected={moneyOptions[getMoneyType]}
             onSelect={({ key }) => {
               const index = moneyOptions.findIndex((o) => o.key === key);
-              console.log(key, getMoneyType, 'KEY');
               setMoneyType(index);
             }}
           />
@@ -232,7 +233,6 @@ const UsersList: React.FC = () => {
                 {getTokensData && getTokensData.length ? (
                   getTokensData.map((item: any) => {
                     const iData = TOKENS_LIST_FULL.find((listItem: any) => listItem.assetId === item.assetId);
-                    console.log(iData, 'IDATA');
 
                     return (
                       <AssetWrap key={item.assetId}>
@@ -244,15 +244,17 @@ const UsersList: React.FC = () => {
                           }}>
                           {iData && iData.symbol && <SquareTokenIcon size="small" src={tokenLogos[iData.symbol]} />}
                           <SizedBox width={18} />
-                          <Text nowrap weight={500} fitContent>
-                            {item.name}
+                          <Column>
+                            <Text nowrap weight={500} fitContent>
+                              {item.name}
+                            </Text>
                             <Text>
                               ${' '}
                               {item?.currentPrice?.gte(0.0001)
                                 ? item.currentPrice?.toFormat(4)
                                 : item.currentPrice?.toFormat(8)}
                             </Text>
-                          </Text>
+                          </Column>
                         </Row>
                         <Column>
                           <Text weight={500} textAlign="right" size="medium" nowrap>

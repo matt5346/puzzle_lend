@@ -62,10 +62,14 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
       <Row alignItems="center" style={{ cursor: 'pointer' }}>
         <SquareTokenIcon size="small" src={tokenLogos[token.symbol]} />
         <SizedBox width={18} />
-        <Text nowrap weight={500} fitContent>
-          {token.name}
-          <Text>$ {rate?.gte(0.0001) ? rate?.toFormat(4) : rate?.toFormat(8)}</Text>
-        </Text>
+        <Column>
+          <Text nowrap weight={500} fitContent>
+            {token.name}
+          </Text>
+          <Text nowrap fitContent>
+            $ {rate?.gte(0.0001) ? rate?.toFormat(4) : rate?.toFormat(8)}
+          </Text>
+        </Column>
         <SizedBox width={18} />
       </Row>
 

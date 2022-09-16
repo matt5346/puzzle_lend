@@ -34,7 +34,6 @@ interface IPoolSettings {
   artefactOriginTransactionId?: string;
   owner: string;
 }
-console.log(process.env, '------EEEEMVVV');
 
 const poolService = {
   getPoolByDomain: async (domain: string): Promise<IPoolSettings> => {

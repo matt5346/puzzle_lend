@@ -33,7 +33,6 @@ const UserInfo: React.FC<IProps> = () => {
   const vm = useDashboardVM();
   const { tokenStore, lendStore } = vm.rootStore;
   const currentPoolData = tokenStore.poolStatsByContractId[lendStore.activePoolContract];
-  console.log(currentPoolData, 'currentPoolData');
 
   return (
     <Card

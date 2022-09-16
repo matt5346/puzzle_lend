@@ -79,7 +79,6 @@ const AssetsTable: React.FC<IProps> = ({ filteredTokens }) => {
         ? -1
         : 1;
     });
-    console.log(data, 'filt data--===1');
     setSortedTokens(data);
   }, [filteredTokens, sort, sortMode, tokenStore.poolDataTokensWithStats]);
 
@@ -102,14 +101,12 @@ const AssetsTable: React.FC<IProps> = ({ filteredTokens }) => {
           sortedTokens.length &&
           sortedTokens.map((t: any) => {
             return (
-              <Column crossAxisSize="max">
-                <DesktopTokenTableRow
-                  key={t.owner + t.supplied}
-                  owner={t.owner}
-                  totalBorrow={t.borrowed}
-                  totalSupply={t.supplied}
-                />
-              </Column>
+              <DesktopTokenTableRow
+                key={t.owner + t.supplied}
+                owner={t.owner}
+                totalBorrow={t.borrowed}
+                totalSupply={t.supplied}
+              />
             );
           })}
       </GridTable>

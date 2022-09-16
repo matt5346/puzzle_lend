@@ -38,10 +38,9 @@ export default class UsersStore {
 
   usersStatsByPool: any = [];
 
-  private setInitialized = (v: boolean) => (this.initialized = v);
+  public setInitialized = (v: boolean) => (this.initialized = v);
 
   private setUsersPoolData = (poolStats: PoolDataType) => {
-    console.log(poolStats, 'poolStats 1');
     const getPool = this.poolStatsArr.find((item) => item.contractId === poolStats.contractId);
 
     if (getPool) {
@@ -53,11 +52,9 @@ export default class UsersStore {
     if (!getPool) {
       this.poolStatsArr.push(poolStats);
     }
-    console.log(this.poolStatsArr, 'this.poolStatsArr2');
   };
 
   private setUserHealth = (v: number) => {
-    console.log('accountHealth', v);
     if (v > 100) {
       return 100;
     }
@@ -122,18 +119,15 @@ export default class UsersStore {
     let activePoolTokensWithStats: Record<string, TTokenStatistics>;
     const { lendStore } = this.rootStore;
     const poolName = lendStore.poolNameById(contractId);
-    console.log(contractId, poolName, 'filterPoolDataTokensStats');
 
     TOKENS_LIST(poolName).forEach(() => {
       const poolData = this.poolStatsByContractId[contractId];
-      console.log(poolData, this.poolStatsByContractId, 'poolData111');
 
       if (poolData && poolData.tokens) {
         const data = poolData.tokens.reduce(
           (acc, stats) => ({ ...acc, [stats.assetId]: stats }),
           {} as Record<string, TTokenStatistics>
         );
-        console.log(data, 'data111');
         activePoolTokensWithStats = data;
       }
     });
@@ -163,6 +157,7 @@ export default class UsersStore {
 
   // for Users LIST page
   public loadBorrowSupplyUsers = async (contractId: string) => {
+    console.log('loadBorrowSupplyUsers');
     const { accountStore, notificationStore, lendStore } = this.rootStore;
     const contractPoolId = contractId || lendStore.activePoolContract;
     const contractPoolName = lendStore.poolNameById(contractPoolId);
@@ -183,12 +178,10 @@ export default class UsersStore {
       tokens: stats,
     };
 
-    console.log(userData, '==stat==');
     this.setUsersStats(userData);
   };
 
   private setUsersStats = (userStats: any) => {
-    console.log(userStats, 'poolStats 1');
     const getPool = this.usersStatsByPool.find((item: any) => item.contractId === userStats.contractId);
 
     if (getPool) {
@@ -200,17 +193,14 @@ export default class UsersStore {
     if (!getPool) {
       this.usersStatsByPool.push(userStats);
     }
-    console.log(this.usersStatsByPool, 'this.usersStatsByPool');
   };
 
   // loading DATA for CUSTOM USER
   public syncTokenStatistics = async (contractId?: string, userId?: string): Promise<PoolDataType> => {
-    console.log(this.poolStatsArr, 'syncTokenStatistics 1!');
     const { accountStore, lendStore } = this.rootStore;
     const contractPoolId = contractId || lendStore.activePoolContract;
     const contractPoolName = lendStore.poolNameById(contractPoolId);
     const assets = TOKENS_LIST(contractPoolName).map(({ assetId }) => assetId);
-    console.log(contractPoolId, lendStore.activePoolContract, '------lendStore.activePoolContract');
     const userContract = userId || accountStore.address;
 
     const stats = await wavesCapService.getPoolsStats(assets, userContract!, contractPoolId).catch((e) => {
@@ -324,8 +314,8 @@ export default class UsersStore {
 
   constructor(rootStore: RootStore, initState?: ISerializedTokenStore) {
     this.rootStore = rootStore;
-    Promise.all(Object.values(LENDS_CONTRACTS).map((item) => this.loadBorrowSupplyUsers(item))).then(() =>
-      this.setInitialized(true)
-    );
+    // Promise.all(Object.values(LENDS_CONTRACTS).map((item) => this.loadBorrowSupplyUsers(item))).then(() =>
+    //   this.setInitialized(true)
+    // );
   }
 }

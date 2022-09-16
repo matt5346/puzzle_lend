@@ -51,7 +51,6 @@ const UserStats: React.FC = () => {
       const response = await Promise.all(
         Object.values(LENDS_CONTRACTS).map((item) => usersStore.syncTokenStatistics(item, userId!))
       );
-      console.log(usersStore, response, '---usersStore');
       setReady(true);
     }
 

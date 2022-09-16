@@ -161,8 +161,6 @@ const BorrowAssets: React.FC<IProps> = (props) => {
 
     if (!isNative) currentBorrowAmount /= +props.rate?.toFormat(4);
 
-    console.log(+currentBorrowAmount, 'currentBorrow2');
-
     tokens.forEach((item: IToken) => {
       const tokenData: TTokenStatistics = tokenStore.poolDataTokensWithStats[item.assetId];
       if (+tokenData.selfSupply > 0) {
@@ -177,7 +175,6 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           localCapacityused =
             ((+currentBorrowAmount + +tokenData.selfBorrow) / 10 ** tokenData.decimals) * +tokenData.currentPrice;
 
-        console.log(+tokenData.selfBorrow, '+tokenData.selfBorrow');
         borrowCapacityUsed += localCapacityused;
       }
     });
@@ -186,7 +183,6 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     if (borrowCapacityUsed === 0) borrowCapacityUsed = (+currentBorrowAmount / 10 ** props.decimals) * +props.rate;
 
     const accountHealth: number = (1 - borrowCapacityUsed / borrowCapacity) * 100;
-    console.log(borrowCapacity, borrowCapacityUsed, accountHealth, 'borrowCapacity borrowCapacityUsed accountHealth');
     setAccountHealth(accountHealth);
   };
 
@@ -252,7 +248,6 @@ const BorrowAssets: React.FC<IProps> = (props) => {
   );
 
   const handleChangeAmount = (v: BN) => {
-    console.log(+v, isNative, 'handleChangeAmount1');
     const formattedVal = formatVal(v, props.decimals);
     // if !isNative, show maximum in dollars, collateral in dollars by default
     let maxCollateral = props.userColatteral / 10 ** 6;

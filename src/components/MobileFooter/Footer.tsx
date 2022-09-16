@@ -70,7 +70,6 @@ const Icon = styled.img`
 const isRoutesEquals = (a: string, b: string) => {
   const result = a.replaceAll('/', '') === b.replaceAll('/', '');
 
-  console.log(a, 'a', b.replaceAll('/', ''), 'b', 'footer1');
   return result;
 };
 

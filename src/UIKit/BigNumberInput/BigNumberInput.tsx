@@ -48,7 +48,6 @@ const BigNumberInput: React.FC<IBigNumberInputProps> = ({
     if (!inputRef.current) {
       return;
     }
-    console.log(+value, 'VALUE!');
 
     // const caret = inputRef.current.selectionStart;
     _setInputValue(value);
@@ -99,7 +98,6 @@ const BigNumberInput: React.FC<IBigNumberInputProps> = ({
   }, [isNative]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('onChange');
     // eslint-disable-next-line @typescript-eslint/no-shadow
     let { value } = event.currentTarget;
 

@@ -66,7 +66,6 @@ const Dropdown: React.FC<IProps> = ({ title, children, isOpened = false }) => {
   const handleToggle = (e: any) => {
     e.preventDefault();
     setIsExpanded(!isExpanded);
-    console.log(ref, 'REF');
 
     if (ref.current && ref.current.clientHeight) {
       setHeight(ref.current.clientHeight);
