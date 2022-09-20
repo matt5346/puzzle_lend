@@ -79,19 +79,20 @@ const BigNumberInput: React.FC<IBigNumberInputProps> = ({
 
   // for changing input dollar/crypto value
   React.useEffect(() => {
+    // Replace comma to the dot
     // if showing price in crypto (Waves, pluto...)
     if (isNative) {
       const nativeValue = (+value / +rate! / 10 ** decimals).toFixed(6);
-      const valueEffect = BN.parseUnits(nativeValue || '', decimals);
-      setInputValue(+nativeValue === 0 ? '' : nativeValue);
+      const valueEffect = BN.parseUnits(nativeValue.replace(',', '.') || '', decimals);
+      setInputValue(+nativeValue === 0 ? '' : nativeValue.replace(',', '.'));
       onChange(+valueEffect === 0 ? BN.ZERO : valueEffect);
       return;
     }
 
     if (!isNative) {
       const dollarValue = ((+value / 10 ** decimals) * +rate!).toFixed(6);
-      const valueEffect = BN.parseUnits(dollarValue || '', decimals);
-      setInputValue(dollarValue.toString());
+      const valueEffect = BN.parseUnits(dollarValue.replace(',', '.') || '', decimals);
+      setInputValue(dollarValue.replace(',', '.').toString());
       onChange(valueEffect);
     }
     // eslint-disable-next-line

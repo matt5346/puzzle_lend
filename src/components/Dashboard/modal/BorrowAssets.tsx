@@ -41,6 +41,7 @@ interface IProps {
   setupBorrowAPR?: string;
   selfBorrow: BN;
   rate: BN;
+  maxPrice: BN;
   setAmount?: (amount: BN) => void;
   onMaxClick?: (amount?: BN) => void;
   onClose?: () => void;
@@ -215,6 +216,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
 
   // counting maximum after USER INPUT
   const userMaximumToBorrow = (userColatteral: number, rate: BN) => {
+    console.log(+rate, 'rate');
     let maximum = userColatteral / 10 ** 6;
 
     // if isNative, show maximum in crypto AMOUNT
@@ -260,7 +262,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     if (!isNative) totalReserves *= +props.rate?.toFormat(4);
 
     if (+formattedVal > +maxCollateral) {
-      setError('Supply amount too low, please provide more');
+      setError('Borrow amount too low, please provide more');
       isError = true;
     }
     if (+formattedVal > +totalReserves) {
@@ -307,10 +309,10 @@ const BorrowAssets: React.FC<IProps> = (props) => {
               fitContent
               onClick={() => {
                 setFocused(true);
-                props.onMaxClick && props.onMaxClick(userMaximumToBorrowBN(props.userColatteral, props.rate));
+                props.onMaxClick && props.onMaxClick(userMaximumToBorrowBN(props.userColatteral, props.maxPrice));
               }}
               style={{ cursor: 'pointer' }}>
-              {props.userColatteral && props.rate ? userMaximumToBorrow(props.userColatteral, props.rate) : 0}
+              {props.userColatteral && props.maxPrice ? userMaximumToBorrow(props.userColatteral, props.maxPrice) : 0}
               <>&nbsp;</>
               {isNative ? props.assetSymbol : '$'}
             </Text>
@@ -327,7 +329,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           <MaxButton
             onClick={() => {
               setFocused(true);
-              props.onMaxClick && props.onMaxClick(userMaximumToBorrowBN(props.userColatteral, props.rate));
+              props.onMaxClick && props.onMaxClick(userMaximumToBorrowBN(props.userColatteral, props.maxPrice));
             }}
           />
         )}

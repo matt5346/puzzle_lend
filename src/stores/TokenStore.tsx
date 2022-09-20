@@ -388,7 +388,7 @@ export default class TokenStore {
         change24H,
         change24HUsd,
         currentPrice,
-        maxPrice: BN.formatUnits(details.map_price, 0),
+        maxPrice: BN.formatUnits(details.max_price, 0),
         changeStr,
         fullyDilutedMC: totalSupply.times(currentPrice),
         marketCap: circulatingSupply.times(currentPrice),
@@ -397,8 +397,13 @@ export default class TokenStore {
       };
     });
 
-    const netAPY: number = (supplyAmountApy - borrowedAmountApr) / baseAmount;
-    const accountHealth: number = (1 - borrowCapacityUsed / borrowCapacity) * 100;
+    console.log(borrowCapacityUsed, borrowCapacity, baseAmount, 'borrowCapacityUsed, borrowCapacity baseAmount');
+
+    let netAPY = 0;
+    let accountHealth = 0;
+
+    if (baseAmount !== 0) netAPY = (supplyAmountApy - borrowedAmountApr) / baseAmount;
+    if (borrowCapacity !== 0) accountHealth = (1 - borrowCapacityUsed / borrowCapacity) * 100;
 
     const poolData = {
       netAPY,

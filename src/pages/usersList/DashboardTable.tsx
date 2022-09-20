@@ -1,21 +1,12 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable array-callback-return */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import styled from '@emotion/styled';
-import { useStores } from '@src/stores';
 import { Text } from '@src/UIKit/Text';
-import AssetsTable from '@src/pages/usersList/AssetsTable';
+import { Pagination } from '@src/UIKit/Pagination';
+import UsersTable from '@src/pages/usersList/UsersTable';
 
-// for some time
-export enum TokenCategoriesEnum {
-  all = 0,
-  global = 1,
-  stable = 2,
-  defi = 3,
-  ducks = 4,
-}
-// isUserStats -- case for all users except user whos logged with wallet
 interface IProps {
   filteredTokens: any;
 }
@@ -32,14 +23,43 @@ const Wrap = styled.div`
 `;
 
 const DashboardTable: React.FC<IProps> = ({ filteredTokens }) => {
+  const [perPageCounter, setPerPage] = useState<number>(10);
+  const [pageCounter, setPage] = useState<number>(1);
+  const [getFilteredUsers, setFilteredUsers] = useState<any>([]);
+
+  const onPerPageChange = (perPage: any) => {
+    console.log(perPage, 'CHANGE');
+    setPerPage(perPage);
+  };
+  const onPageChange = (page: any) => {
+    console.log(page, 'CHANGE2');
+    setPage(page);
+  };
+
+  useEffect(() => {
+    const to = pageCounter * perPageCounter;
+    const from = to - perPageCounter;
+    const users = filteredTokens.slice().splice(from, to);
+    setFilteredUsers(users);
+  }, [perPageCounter, pageCounter, filteredTokens]);
+
   return (
     <Root>
       <Wrap>
-        {filteredTokens && filteredTokens.length ? (
-          <AssetsTable filteredTokens={filteredTokens} />
+        {getFilteredUsers && getFilteredUsers.length ? (
+          <>
+            <UsersTable filteredTokens={getFilteredUsers} />
+            <Pagination
+              page={pageCounter}
+              perPage={perPageCounter}
+              total={filteredTokens.length}
+              changePage={onPageChange}
+              changePerPage={onPerPageChange}
+            />
+          </>
         ) : (
           <Text weight={500} type="secondary">
-            No borrowers
+            No Users
           </Text>
         )}
       </Wrap>

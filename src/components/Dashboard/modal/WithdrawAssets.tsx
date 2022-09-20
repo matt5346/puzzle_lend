@@ -14,13 +14,14 @@ import { MaxButton } from '@src/UIKit/MaxButton';
 import { BigNumberInput } from '@src/UIKit/BigNumberInput';
 import { AmountInput } from '@src/UIKit/AmountInput';
 import { Column, Row } from '@src/common/styles/Flex';
-import { Emoji } from '@src/UIKit/Emoji';
+import { TTokenStatistics, IToken } from '@src/common/constants';
 import BN from '@src/common/utils/BN';
 import _ from 'lodash';
 
 import tokenLogos from '@src/common/constants/tokenLogos';
 import SquareTokenIcon from '@src/common/styles/SquareTokenIcon';
 import { ReactComponent as Swap } from '@src/common/assets/icons/swap.svg';
+import { ReactComponent as Back } from '@src/common/assets/icons/arrowBackWithTail.svg';
 
 interface IProps {
   assetId: string;
@@ -34,6 +35,7 @@ interface IProps {
   setupSupplyAPY?: string;
   selfSupply: BN;
   rate: BN;
+  userHealth: number;
   setAmount?: (amount: BN) => void;
   onMaxClick?: (amount?: BN) => void;
   onClose?: () => void;
@@ -124,9 +126,10 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
   const navigate = useNavigate();
   const [focused, setFocused] = useState(false);
   const [amount, setAmount] = useState<BN>(props.amount);
+  const [getDynamicAccountHealth, setAccountHealth] = useState<number>(0);
   const [isNative, setConvertToNative] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
-  const { lendStore, accountStore } = useStores();
+  const { lendStore, accountStore, tokenStore } = useStores();
 
   const setInputAmountMeasure = (isNativeToken: boolean) => {
     setConvertToNative(isNativeToken);
@@ -148,8 +151,50 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
       : 0;
   };
 
+  const countAccountHealth = (currentBorrow: any) => {
+    let currentBorrowAmount = currentBorrow;
+    const tokens = tokenStore.poolDataTokens;
+    let borrowCapacity = 0;
+    let borrowCapacityUsed = 0;
+
+    if (!isNative) currentBorrowAmount /= +props.rate?.toFormat(4);
+
+    tokens.forEach((item: IToken) => {
+      const tokenData: TTokenStatistics = tokenStore.poolDataTokensWithStats[item.assetId];
+      if (+tokenData.selfSupply > 0) {
+        borrowCapacity +=
+          (+tokenData.selfSupply / 10 ** tokenData.decimals) * +tokenData.currentPrice * (+tokenData.setupLtv / 100);
+      }
+
+      if (+tokenData.selfBorrow > 0) {
+        let localCapacityused = (+tokenData.selfBorrow / 10 ** tokenData.decimals) * +tokenData.currentPrice;
+
+        if (tokenData.assetId === props.assetId)
+          localCapacityused =
+            ((+currentBorrowAmount + +tokenData.selfBorrow) / 10 ** tokenData.decimals) * +tokenData.currentPrice;
+
+        borrowCapacityUsed += localCapacityused;
+      }
+    });
+
+    // case when user did'nt borrow anything
+    if (borrowCapacityUsed === 0) borrowCapacityUsed = (+currentBorrowAmount / 10 ** props.decimals) * +props.rate;
+
+    const accountHealth: number = (1 - borrowCapacityUsed / borrowCapacity) * 100;
+    setAccountHealth(accountHealth);
+  };
+
   const maxWithdraw = (val: BN) => {
+    let isError = false;
     if (!isNative) return BN.formatUnits(+val * +props.rate?.toFormat(4) + 1, 0);
+    countAccountHealth(val);
+
+    if (props.userHealth - getDynamicAccountHealth < 1) {
+      setError(`Account health in risk of liquidation`);
+      isError = true;
+    }
+
+    if (!isError) setError('');
 
     return BN.formatUnits(+val + 1, 0);
   };
@@ -179,6 +224,12 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
 
     if (+formattedVal > +selfSupply) {
       setError(`Amount of withdraw bigger than you'r supply`);
+      isError = true;
+    }
+    countAccountHealth(v);
+
+    if (props.userHealth - getDynamicAccountHealth < 1) {
+      setError(`Account health in risk of liquidation`);
       isError = true;
     }
 
@@ -307,6 +358,31 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
           style={{ cursor: 'pointer' }}>
           {formatVal(props.selfSupply, props.decimals)}
         </Text>
+      </Row>
+      <SizedBox height={14} />
+      <Row alignItems="center" justifyContent="space-between">
+        <Text size="medium" type="secondary" nowrap>
+          Account Health
+        </Text>
+        <Row alignItems="center" justifyContent="flex-end">
+          <Text size="medium" type="success" fitContent>
+            {props.userHealth - getDynamicAccountHealth > 1 ? `${props.userHealth.toFixed(2)}%` : null}
+          </Text>
+          {props.userHealth - getDynamicAccountHealth > 1 ? (
+            <Back
+              style={{
+                minWidth: '16px',
+                maxWidth: '16px',
+                height: '18px',
+                transform: 'rotate(180deg)',
+              }}
+            />
+          ) : null}
+          <Text type={props.userHealth - getDynamicAccountHealth > 1 ? 'error' : 'success'} size="medium" fitContent>
+            <>&nbsp;</>
+            {getDynamicAccountHealth && amount ? getDynamicAccountHealth.toFixed(2) : 0}%
+          </Text>
+        </Row>
       </Row>
       <SizedBox height={14} />
       <Row justifyContent="space-between">

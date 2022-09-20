@@ -113,6 +113,7 @@ const WalletModalBody: React.FC<IProps> = ({ filteredTokens }) => {
             selfSupply={lendStore.choosenToken?.selfSupply}
             totalSupply={lendStore.choosenToken?.totalAssetSupply}
             totalBorrow={lendStore.choosenToken?.totalAssetBorrow}
+            userHealth={currentPoolData?.userHealth}
             userBalance={getTokenBalance()}
             decimals={lendStore.choosenToken?.decimals}
             amount={vm.withdrawAmount}
@@ -128,6 +129,7 @@ const WalletModalBody: React.FC<IProps> = ({ filteredTokens }) => {
             setupBorrowAPR={lendStore.choosenToken?.setupBorrowAPR}
             assetName={tokenFilteredData?.name}
             assetSymbol={tokenFilteredData?.symbol}
+            maxPrice={lendStore.choosenToken?.maxPrice}
             rate={lendStore.choosenToken?.currentPrice}
             userHealth={currentPoolData?.userHealth}
             userColatteral={tokenStore?.userCollateral}

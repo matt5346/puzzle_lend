@@ -385,7 +385,7 @@ const wavesCapService = {
 
         // debug, remove later
         // console.log(poolValue, poolBorrowed, itemData.supply_rate, '--poolValue, poolBorrowed---spply');
-        console.log(selfSupply, selfBorrowed, itemData.borrow_rate, '--selfSupply, selfBorrowe---spply');
+        // console.log(selfSupply, selfBorrowed, itemData.borrow_rate, '--selfSupply, selfBorrowe---spply');
         // console.log(
         //   itemData.name,
         //   itemData.supply_rate,

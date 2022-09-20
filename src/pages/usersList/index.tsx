@@ -16,6 +16,7 @@ import tokenLogos from '@src/common/constants/tokenLogos';
 import Container from '@src/common/styles/Container';
 import { LENDS_CONTRACTS, TOKENS_LIST_FULL, ROUTES } from '@src/common/constants';
 import BN from '@src/common/utils/BN';
+
 import { ReactComponent as LineDivider } from '@src/common/assets/icons/line_divider.svg';
 import { ReactComponent as ChevronDown } from '@src/common/assets/icons/chevron_down.svg';
 

@@ -8,7 +8,6 @@ import GridTable from '@src/common/styles/GridTable';
 import Card from '@src/common/styles/Card';
 import { Row, Column } from '@src/common/styles/Flex';
 import { SizedBox } from '@src/UIKit/SizedBox';
-import { Text } from '@src/UIKit/Text';
 import { IToken, TTokenStatistics } from '@src/common/constants';
 import DesktopTokenTableRow from '@src/pages/usersList/DesktopTokenTableRow';
 import BN from '@src/common/utils/BN';
@@ -83,34 +82,36 @@ const AssetsTable: React.FC<IProps> = ({ filteredTokens }) => {
   }, [filteredTokens, sort, sortMode, tokenStore.poolDataTokensWithStats]);
 
   return (
-    <Card style={{ padding: 0, overflow: 'auto', width: '100%' }} justifyContent="center">
-      <GridTable
-        style={{ width: '100%', minWidth: '100%' }}
-        desktopTemplate="4fr 3fr 2fr 3fr"
-        mobileTemplate="2fr 1fr 2fr 2fr">
-        <div className="gridTitle">
-          <div style={{ minWidth: '350px' }}>User</div>
-          <TableTitle onClick={() => selectSort('borrowed')} mode={sortMode} sort={sort === 'borrowed'}>
-            Borrowed
-          </TableTitle>
-          <TableTitle onClick={() => selectSort('supplied')} mode={sortMode} sort={sort === 'supplied'}>
-            Supplied
-          </TableTitle>
-        </div>
-        {sortedTokens &&
-          sortedTokens.length &&
-          sortedTokens.map((t: any) => {
-            return (
-              <DesktopTokenTableRow
-                key={t.owner + t.supplied}
-                owner={t.owner}
-                totalBorrow={t.borrowed}
-                totalSupply={t.supplied}
-              />
-            );
-          })}
-      </GridTable>
-    </Card>
+    <Column>
+      <Card style={{ padding: 0, overflow: 'auto', width: '100%' }} justifyContent="center">
+        <GridTable
+          style={{ width: '100%', minWidth: '100%' }}
+          desktopTemplate="4fr 3fr 2fr 3fr"
+          mobileTemplate="2fr 1fr 2fr 2fr">
+          <div className="gridTitle">
+            <div style={{ minWidth: '350px' }}>User</div>
+            <TableTitle onClick={() => selectSort('borrowed')} mode={sortMode} sort={sort === 'borrowed'}>
+              Borrowed
+            </TableTitle>
+            <TableTitle onClick={() => selectSort('supplied')} mode={sortMode} sort={sort === 'supplied'}>
+              Supplied
+            </TableTitle>
+          </div>
+          {sortedTokens &&
+            sortedTokens.length &&
+            sortedTokens.map((t: any) => {
+              return (
+                <DesktopTokenTableRow
+                  key={t.owner + t.supplied}
+                  owner={t.owner}
+                  totalBorrow={t.borrowed}
+                  totalSupply={t.supplied}
+                />
+              );
+            })}
+        </GridTable>
+      </Card>
+    </Column>
   );
 };
 
