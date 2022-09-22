@@ -43,7 +43,6 @@ const Supply: React.FC = () => {
           return (
             <SupplyTokensRow
               token={t}
-              vol24={stats?.volume24}
               key={t.assetId}
               rate={stats.currentPrice}
               setupSupplyAPY={stats.setupSupplyAPY}

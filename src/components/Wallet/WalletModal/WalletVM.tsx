@@ -8,7 +8,7 @@ import Balance from '@src/common/entities/Balance';
 import { LOGIN_TYPE } from '@src/stores/AccountStore';
 import centerEllipsis from '@src/common/utils/centerEllipsis';
 import BN from '@src/common/utils/BN';
-import wavesCapService from '@src/common/services/wavesCapService';
+import wavesNodesService from '@src/common/services/wavesNodesService';
 import { ROUTES, TOKENS_LIST, IToken } from '@src/common/constants';
 
 const ctx = React.createContext<WalletVM | null>(null);
@@ -101,7 +101,7 @@ class WalletVM {
   getBalanceAssetsStats = async () => {
     if (this.balances.length === 0) return;
     const topAssets = this.balances.slice(0, 10).reduce<string[]>((acc, v) => [...acc, v.assetId], []);
-    const responses = await wavesCapService.getAssetsStats(topAssets);
+    const responses = await wavesNodesService.getAssetsStats(topAssets);
     const assetInfo = responses.reduce<Record<string, BN>>((acc, value) => {
       if (value == null) return acc;
       const firstPrice = new BN(value.data?.['firstPrice_usd-n'] ?? 0);

@@ -1,10 +1,7 @@
 /* eslint-disable react/require-default-props */
 import React, { useMemo, useState } from 'react';
 import styled from '@emotion/styled';
-import { useParams, Link } from 'react-router-dom';
-import { useStores } from '@src/stores';
 import { observer } from 'mobx-react-lite';
-import { TTokenStatistics, createITokenStat, IToken } from '@src/common/constants';
 import { Text } from '@src/UIKit/Text';
 import Card from '@src/common/styles/Card';
 import BN from '@src/common/utils/BN';
@@ -12,14 +9,10 @@ import { Row, Column } from '@src/common/styles/Flex';
 import { SizedBox } from '@src/UIKit/SizedBox';
 
 interface IProps {
-  token: IToken;
   rate?: BN;
-  selfSupply?: BN;
-  selfBorrow?: BN;
-  dailyIncome?: string;
   setupLtv?: string;
-  setupBorrowAPR?: string;
-  setupSupplyAPY?: string;
+  setupLts?: string;
+  setupPenalty?: string;
   totalSupply: number;
   totalBorrow: number;
 }
@@ -28,18 +21,7 @@ const Root = styled.div`
   width: 100%;
 `;
 
-const TokenData: React.FC<IProps> = ({
-  rate,
-  token,
-  selfBorrow,
-  selfSupply,
-  dailyIncome,
-  totalSupply,
-  totalBorrow,
-  setupLtv,
-  setupBorrowAPR,
-  setupSupplyAPY,
-}) => {
+const TokenData: React.FC<IProps> = ({ rate, totalSupply, totalBorrow, setupLtv, setupLts, setupPenalty }) => {
   return (
     <Root>
       <Card>
@@ -98,7 +80,7 @@ const TokenData: React.FC<IProps> = ({
             Liquidation threshold
           </Text>
           <Text size="medium" type="secondary" fitContent>
-            ???
+            {setupLts || 0}%
           </Text>
         </Row>
         <Row justifyContent="space-between">
@@ -106,7 +88,7 @@ const TokenData: React.FC<IProps> = ({
             Liquidation penalty
           </Text>
           <Text size="medium" type="secondary" fitContent>
-            ???
+            {setupPenalty || 0}%
           </Text>
         </Row>
       </Card>

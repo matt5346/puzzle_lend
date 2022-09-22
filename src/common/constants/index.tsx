@@ -38,6 +38,8 @@ export type TTokenStatistics = {
   name: string;
   symbol: string;
   setupLtv: string;
+  setupLts: string;
+  setupPenalty: string;
   setupBorrowAPR: string;
   setupSupplyAPY: string;
   selfSupply: BN;
@@ -46,19 +48,10 @@ export type TTokenStatistics = {
   selfDailyIncome: string;
   selfDailyBorrowInterest: string;
   supplyInterest: string;
-  totalSupply: BN;
   totalAssetSupply: BN;
   totalAssetBorrow: BN;
-  circulatingSupply: BN;
-  totalBurned: BN;
-  fullyDilutedMC: BN;
-  marketCap: BN;
   maxPrice: BN;
   currentPrice: BN;
-  change24H: BN;
-  change24HUsd: BN;
-  volume24: BN;
-  changeStr: string;
 };
 
 export function createITokenStat(): TTokenStatistics {
@@ -68,27 +61,20 @@ export function createITokenStat(): TTokenStatistics {
     symbol: '',
     decimals: 0,
     setupLtv: '',
+    setupLts: '',
+    setupPenalty: '',
     setupBorrowAPR: '',
     setupSupplyAPY: '',
-    changeStr: '',
     selfSupplyRate: '',
     selfSupply: BN.ZERO,
     selfBorrow: BN.ZERO,
     selfDailyIncome: '',
     selfDailyBorrowInterest: '',
     supplyInterest: '',
-    totalSupply: BN.ZERO,
     totalAssetSupply: BN.ZERO,
     totalAssetBorrow: BN.ZERO,
-    circulatingSupply: BN.ZERO,
-    totalBurned: BN.ZERO,
-    fullyDilutedMC: BN.ZERO,
-    marketCap: BN.ZERO,
     currentPrice: BN.ZERO,
     maxPrice: BN.ZERO,
-    change24H: BN.ZERO,
-    change24HUsd: BN.ZERO,
-    volume24: BN.ZERO,
   };
 }
 

@@ -39,7 +39,6 @@ const Supply: React.FC = () => {
           return (
             <BorrowTokensRow
               token={t}
-              vol24={stats?.volume24}
               key={t.assetId}
               rate={stats.currentPrice}
               selfBorrow={stats.selfBorrow}

@@ -11,7 +11,6 @@ import RoundTokenIcon from '@src/common/styles/RoundTokenIcon';
 interface IProps extends HTMLAttributes<HTMLDivElement> {
   token: IToken;
   rate?: BN;
-  vol24?: BN;
   setupLtv?: string;
   setupSupplyAPY?: string;
   selfSupply: BN;
@@ -41,7 +40,7 @@ const Root = styled.div<{ withClickLogic?: boolean }>`
   }
 `;
 
-const SupplyTokensRow: React.FC<IProps> = ({ vol24, token, rate, setupSupplyAPY, selfSupply, ...rest }) => {
+const SupplyTokensRow: React.FC<IProps> = ({ token, rate, setupSupplyAPY, selfSupply, ...rest }) => {
   const formatVal = (val: BN, decimal: number) => {
     return BN.formatUnits(val, decimal).toSignificant(6).toString();
   };

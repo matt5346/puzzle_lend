@@ -8,6 +8,7 @@ import { PercentageCircleBar } from '@src/UIKit/PercentageCircleBar';
 import { ReactComponent as Divider } from '@src/common/assets/icons/divider.svg';
 import { ReactComponent as LineDivider } from '@src/common/assets/icons/line_divider.svg';
 import Card from '@src/common/styles/Card';
+import { Tooltip } from '@src/UIKit/Tooltip';
 import { useDashboardVM } from '@src/pages/dashboard/DashboardVm';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -46,12 +47,22 @@ const UserInfo: React.FC<IProps> = () => {
         Account
       </Text>
       <HealthWrap>
-        <PercentageCircleBar
-          size={100}
-          strokeWidth={3}
-          percentage={currentPoolData && currentPoolData.userHealth ? currentPoolData.userHealth : 100}
-          color="purple"
-        />
+        <Tooltip
+          width="100%"
+          containerStyles={{ display: 'flex', alignItems: 'center', width: '100%' }}
+          content={
+            <Text>
+              In essence, Account health is a proportion between your Borrow Limit (Borrow Capacity) and your Borrow
+              Capacity Used.
+            </Text>
+          }>
+          <PercentageCircleBar
+            size={100}
+            strokeWidth={3}
+            percentage={currentPoolData && currentPoolData.userHealth ? currentPoolData.userHealth : 100}
+            color="purple"
+          />
+        </Tooltip>
       </HealthWrap>
       <Divider />
       <Row justifyContent="space-between">

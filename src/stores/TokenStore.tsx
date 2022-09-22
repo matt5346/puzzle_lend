@@ -14,7 +14,7 @@ import {
   IToken,
   POOL_CONFIG,
 } from '@src/common/constants';
-import wavesCapService from '@src/common/services/wavesCapService';
+import wavesNodesService from '@src/common/services/wavesNodesService';
 import Pool, { IData, IShortPoolInfo } from '@src/common/entities/Pool';
 import BN from '@src/common/utils/BN';
 
@@ -183,7 +183,7 @@ export default class TokenStore {
     const contractPoolName = lendStore.poolNameById(contractId);
     const assets = TOKENS_LIST(contractPoolName).map(({ assetId }) => assetId);
 
-    wavesCapService.updateUR(contractId, assets).catch((e: any) => {
+    wavesNodesService.updateUR(contractId, assets).catch((e: any) => {
       // notifi\cationStore.notify(e.message ?? e.toString(), {
       //   type: 'error',
       // });
@@ -227,7 +227,7 @@ export default class TokenStore {
 
     let stats = null;
 
-    stats = await wavesCapService.getAssetUsers(contractId, assets).catch((e) => {
+    stats = await wavesNodesService.getAssetUsers(contractId, assets).catch((e) => {
       notificationStore.notify(e.message ?? e.toString(), {
         type: 'error',
       });
@@ -254,7 +254,7 @@ export default class TokenStore {
     const { accountStore, lendStore } = this.rootStore;
     let stats = null;
     if (accountStore.address) {
-      stats = await wavesCapService
+      stats = await wavesNodesService
         .getUserExtraStats(accountStore.address, contractId || lendStore.activePoolContract)
         .catch((e) => {
           // notificationStore.notify(e.message ?? e.toString(), {
@@ -282,7 +282,7 @@ export default class TokenStore {
       lendStore.poolNameById(contractId || lendStore.activePoolContract),
       'endStore.poolNameById(contractId)'
     );
-    const stats = await wavesCapService.getPoolsStats(assets, userContract!, contractPoolId).catch((e) => {
+    const stats = await wavesNodesService.getPoolsStats(assets, userContract!, contractPoolId).catch((e) => {
       // notifi\cationStore.notify(e.message ?? e.toString(), {
       //   type: 'error',
       // });
@@ -308,21 +308,9 @@ export default class TokenStore {
     // const net_apy =
 
     const statistics = stats.map((details: any) => {
-      const asset = TOKENS_BY_ASSET_ID[details.id] ?? details.precision;
+      const asset = TOKENS_BY_ASSET_ID[details.assetId] ?? details.precision;
       const { decimals } = asset;
-      const firstPrice = new BN(details.data?.['firstPrice_usd-n'] ?? 0);
       const currentPrice = new BN(details.min_price ?? 0);
-
-      const totalSupply = BN.formatUnits(details.totalSupply, decimals);
-      const circulatingSupply = BN.formatUnits(details.circulating, decimals);
-
-      const change24H = currentPrice.div(firstPrice).minus(1).times(100);
-      const change24HUsd = change24H.div(100).times(currentPrice);
-
-      const changePrefix = change24H?.gte(0) ? '+' : '-';
-      const formatChange24HUsd = change24HUsd?.times(change24H?.gte(0) ? 1 : -1).toFormat(2);
-      const formatChange24H = change24H?.times(change24H?.gte(0) ? 1 : -1).toFormat(2);
-      const changeStr = `${changePrefix} $${formatChange24HUsd} (${formatChange24H}%)`;
 
       // pool Total
       poolTotal += (details.total_supply / 10 ** details.precision) * +currentPrice;
@@ -368,12 +356,13 @@ export default class TokenStore {
       }
 
       return {
-        assetId: details.id,
+        assetId: details.assetId,
         decimals,
         name: details.name,
         symbol: details.shortcode,
-        totalSupply,
         setupLtv: details.setup_ltv,
+        setupLts: details.setup_lts,
+        setupPenalty: details.setup_penalties,
         setupBorrowAPR: details.setup_borrow_apr,
         setupSupplyAPY: details.setup_supply_apy,
         selfSupply: BN.formatUnits(details.self_supply, 0),
@@ -384,20 +373,10 @@ export default class TokenStore {
         selfSupplyRate: details.supply_rate,
         totalAssetBorrow: BN.formatUnits(details.total_borrow, 0),
         totalAssetSupply: BN.formatUnits(details.total_supply, 0),
-        circulatingSupply: BN.formatUnits(details.circulating, 0),
-        change24H,
-        change24HUsd,
         currentPrice,
         maxPrice: BN.formatUnits(details.max_price, 0),
-        changeStr,
-        fullyDilutedMC: totalSupply.times(currentPrice),
-        marketCap: circulatingSupply.times(currentPrice),
-        totalBurned: totalSupply.minus(circulatingSupply),
-        volume24: new BN(details['24h_vol_usd-n']),
       };
     });
-
-    console.log(borrowCapacityUsed, borrowCapacity, baseAmount, 'borrowCapacityUsed, borrowCapacity baseAmount');
 
     let netAPY = 0;
     let accountHealth = 0;

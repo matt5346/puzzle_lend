@@ -165,7 +165,7 @@ const DashboardToken: React.FC = () => {
         <Text className="details-link" onClick={() => navigate(-1)}>
           <ChevronDown />
           <Text weight={500} type="blue500" fitContent>
-            Back to Main Pool
+            Back to Pools
           </Text>
         </Text>
         <SizedBox height={24} />
@@ -242,12 +242,11 @@ const DashboardToken: React.FC = () => {
         )}
         {tokenFullData && tokenFullData.assetId && (
           <TokenData
-            token={tokenIData!}
             key={tokenFullData.assetId}
             rate={tokenFullData.currentPrice}
-            setupBorrowAPR={tokenFullData.setupBorrowAPR}
-            setupSupplyAPY={tokenFullData.setupSupplyAPY}
             setupLtv={tokenFullData.setupLtv}
+            setupLts={tokenFullData.setupLts}
+            setupPenalty={tokenFullData.setupPenalty}
             totalSupply={getSupplyUsers}
             totalBorrow={getBorrowUsers}
           />

@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable array-callback-return */
 import React, { useEffect, useState } from 'react';
@@ -10,6 +11,7 @@ import Card from '@src/common/styles/Card';
 import MobileCardsWrap from '@src/common/styles/MobileCardsWrap';
 import { Row, Column } from '@src/common/styles/Flex';
 import { SizedBox } from '@src/UIKit/SizedBox';
+import { Tooltip } from '@src/UIKit/Tooltip';
 import { Text } from '@src/UIKit/Text';
 import { IToken, TTokenStatistics } from '@src/common/constants';
 import DesktopTokenTableRow from '@src/components/Dashboard/tables/DesktopTokenTableRow';
@@ -26,9 +28,10 @@ interface IProps {
 
 const TableTitle: React.FC<{
   sort: boolean;
+  isTooltip?: boolean | false;
   mode: 'descending' | 'ascending';
   onClick: () => void;
-}> = ({ sort, mode, onClick, children }) => (
+}> = ({ sort, mode, onClick, children, isTooltip = false }) => (
   <Row
     alignItems="center"
     justifyContent="flex-end"
@@ -36,6 +39,7 @@ const TableTitle: React.FC<{
     style={{
       userSelect: 'none',
       cursor: 'pointer',
+      ...(isTooltip ? { textDecoration: 'underline dotted' } : {}),
       ...(sort ? { color: '#363870' } : {}),
     }}>
     <div>{children}</div>
@@ -104,9 +108,22 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
                 sort={sort === 'totalAssetSupply'}>
                 Total supply
               </TableTitle>
-              <TableTitle onClick={() => selectSort('setupSupplyAPY')} mode={sortMode} sort={sort === 'setupSupplyAPY'}>
-                Supply APY
-              </TableTitle>
+              <Tooltip
+                width="100%"
+                containerStyles={{ display: 'flex', alignItems: 'center', width: '100%' }}
+                content={
+                  <Text>
+                    Annual percentage rate (APY) earned for supplying assets. APYs are dynamic and fluctuate over time.
+                  </Text>
+                }>
+                <TableTitle
+                  isTooltip
+                  onClick={() => selectSort('setupSupplyAPY')}
+                  mode={sortMode}
+                  sort={sort === 'setupSupplyAPY'}>
+                  Supply APY
+                </TableTitle>
+              </Tooltip>
               <TableTitle
                 onClick={() => selectSort('totalAssetBorrow')}
                 mode={sortMode}
