@@ -67,6 +67,7 @@ class DashboardWalletVM {
 
   submitBorrow = async (amount: any, assetId: any, contractAddress: string) => {
     const { accountStore, lendStore, tokenStore, notificationStore } = this.rootStore;
+    lendStore.setPreloader(true);
 
     await accountStore
       .invoke({
@@ -95,19 +96,22 @@ class DashboardWalletVM {
       })
       .catch((e) => {
         console.log(e, '---e');
+        lendStore.setPreloader(false);
         notificationStore.notify(e.message ?? JSON.stringify(e), {
           type: 'error',
           title: 'Oops, transaction is not completed',
         });
       })
-      .then(() => {
-        accountStore.updateAccountAssets(true);
-        tokenStore.syncTokenStatistics(lendStore.activePoolContract);
+      .then(async () => {
+        await accountStore.updateAccountAssets(true);
+        await tokenStore.syncTokenStatistics(lendStore.activePoolContract);
+        lendStore.setPreloader(false);
       });
   };
 
   submitSupply = async (amount: any, assetId: any, contractAddress: string) => {
     const { accountStore, lendStore, tokenStore, notificationStore } = this.rootStore;
+    lendStore.setPreloader(true);
 
     await accountStore
       .invoke({
@@ -138,19 +142,22 @@ class DashboardWalletVM {
       })
       .catch((e) => {
         console.log(e, '---e');
+        lendStore.setPreloader(false);
         notificationStore.notify(e.message ?? JSON.stringify(e), {
           type: 'error',
           title: 'Oops, transaction is not completed',
         });
       })
-      .then(() => {
-        accountStore.updateAccountAssets(true);
-        tokenStore.syncTokenStatistics(lendStore.activePoolContract);
+      .then(async () => {
+        await accountStore.updateAccountAssets(true);
+        await tokenStore.syncTokenStatistics(lendStore.activePoolContract);
+        lendStore.setPreloader(false);
       });
   };
 
   submitWithdraw = async (amount: any, assetId: any, contractAddress: string) => {
     const { accountStore, lendStore, tokenStore, notificationStore } = this.rootStore;
+    lendStore.setPreloader(true);
 
     await accountStore
       .invoke({
@@ -179,19 +186,22 @@ class DashboardWalletVM {
       })
       .catch((e) => {
         console.log(e, '---e');
+        lendStore.setPreloader(false);
         notificationStore.notify(e.message ?? JSON.stringify(e), {
           type: 'error',
           title: 'Oops, transaction is not completed',
         });
       })
-      .then(() => {
-        accountStore.updateAccountAssets(true);
-        tokenStore.syncTokenStatistics(lendStore.activePoolContract);
+      .then(async () => {
+        await accountStore.updateAccountAssets(true);
+        await tokenStore.syncTokenStatistics(lendStore.activePoolContract);
+        lendStore.setPreloader(false);
       });
   };
 
   submitRepay = async (amount: any, assetId: any, contractAddress: string) => {
     const { accountStore, lendStore, tokenStore, notificationStore } = this.rootStore;
+    lendStore.setPreloader(true);
 
     await accountStore
       .invoke({
@@ -222,14 +232,16 @@ class DashboardWalletVM {
       })
       .catch((e) => {
         console.log(e, '---e');
+        lendStore.setPreloader(false);
         notificationStore.notify(e.message ?? JSON.stringify(e), {
           type: 'error',
           title: 'Oops, transaction is not completed',
         });
       })
-      .then(() => {
-        accountStore.updateAccountAssets(true);
-        tokenStore.syncTokenStatistics(lendStore.activePoolContract);
+      .then(async () => {
+        await accountStore.updateAccountAssets(true);
+        await tokenStore.syncTokenStatistics(lendStore.activePoolContract);
+        lendStore.setPreloader(false);
       });
   };
 

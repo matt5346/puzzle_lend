@@ -9,12 +9,14 @@ import useWindowSize from '@src/hooks/useWindowSize';
 import DashboardTable from '@src/pages/dashboard/DashboardTable';
 import Container from '@src/common/styles/Container';
 import { Text } from '@src/UIKit/Text';
+import { Preloader } from '@src/UIKit/Preloader';
 import { Dropdown } from '@src/UIKit/Dropdown';
 import { observer } from 'mobx-react-lite';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import { LOGIN_TYPE } from '@src/stores/AccountStore';
 import UserInfo from '@src/pages/dashboard/UserInfo';
 import LoginSideView from '@src/pages/dashboard/LoginSideView';
+import mainBg from '@src/common/assets/main_bg.png';
 
 // images
 import DashOne from '@src/common/assets/dashboard/dash1.png';
@@ -24,7 +26,28 @@ import DashFour from '@src/common/assets/dashboard/dash4.png';
 
 const SubTitleWrap = styled.div`
   width: 100%;
-  margin-bottom: 40px;
+  margin-bottom: 24px;
+`;
+
+const PreloaderWrap = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.6);
+`;
+
+const SubTitleLiquidity = styled.div`
+  display: flex;
+  margin-bottom: 24px;
+  background-image: url(${mainBg});
+  background-size: cover;
+  background-position: center;
+  padding: 8px 20px;
+  border-radius: 10px;
 `;
 
 const TitleH = styled.h1`
@@ -195,23 +218,26 @@ const Dashboard: React.FC = () => {
     <DashboardVMProvider>
       <Container>
         <DashHeader>
-          <TitleH>{lendStore && lendStore.activePoolTitle ? lendStore.activePoolTitle : ''}</TitleH>
-          <TitleH>
-            Total liquidity:
-            <>&nbsp;</>
-            <span>${currentPoolData?.poolTotal.toFixed(2)}</span>
-          </TitleH>
+          <TitleH>Lending protocol built on the Waves blockchain</TitleH>
         </DashHeader>
 
         <SubTitleWrap>
-          <Text size="medium">
-            Get interest and borrow more than 6 assets at low rate on Puzzle Lend DeFi lending protocol, which are the
-            fastest growing platform on Waves
-          </Text>
+          <Text size="medium">Supply and borrow tokens using different pools</Text>
         </SubTitleWrap>
 
+        <SubTitleLiquidity>
+          <Text size="medium" type="light" fitContent>
+            {lendStore && lendStore.activePoolTitle ? lendStore.activePoolTitle : ''} liquidity: <>&nbsp;</>
+          </Text>
+          <Text style={{ fontSize: '18px' }} type="light" fitContent>
+            ${currentPoolData?.poolTotal.toFixed(2)}
+          </Text>
+        </SubTitleLiquidity>
+
         <Row justifyContent="space-between" style={windowWidth! < 1270 ? { flexWrap: 'wrap' } : { flexWrap: 'unset' }}>
-          <Column crossAxisSize="max" style={windowWidth! < 1270 ? { order: 2 } : { order: 0 }}>
+          <Column
+            crossAxisSize="max"
+            style={windowWidth! < 1270 ? { order: 2, position: 'relative' } : { order: 0, position: 'relative' }}>
             <DashboardTable
               filteredTokens={filteredTokens}
               showSupply={showSupply}
@@ -219,6 +245,11 @@ const Dashboard: React.FC = () => {
               showAll
               isUserStats={false}
             />
+            {lendStore.isLoading && (
+              <PreloaderWrap>
+                <Preloader />
+              </PreloaderWrap>
+            )}
           </Column>
           <SizedBox width={40} />
           {address == null ? (

@@ -13,8 +13,8 @@ const tokensList = {
 };
 
 export const poolsTitles = {
-  mainPool: 'Earn interest, borrow assets.',
-  puzzlePool: 'PUZZLE Pool.',
+  mainPool: 'Main pool',
+  puzzlePool: 'PUZZLE pool',
 };
 
 export type PoolDataType = {

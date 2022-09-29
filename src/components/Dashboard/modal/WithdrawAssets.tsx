@@ -152,6 +152,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
   };
 
   const countAccountHealth = (currentBorrow: any) => {
+    console.log(+currentBorrow, 'TEST');
     let currentBorrowAmount = currentBorrow;
     const tokens = tokenStore.poolDataTokens;
     let borrowCapacity = 0;
@@ -176,6 +177,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
         borrowCapacityUsed += localCapacityused;
       }
     });
+    console.log(borrowCapacityUsed, borrowCapacity, 'borrowCapacityUsed, borrowCapacity');
 
     // case when user did'nt borrow anything
     if (borrowCapacityUsed === 0) borrowCapacityUsed = (+currentBorrowAmount / 10 ** props.decimals) * +props.rate;
@@ -188,6 +190,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
     let isError = false;
     if (!isNative) return BN.formatUnits(+val * +props.rate?.toFormat(4) + 1, 0);
     countAccountHealth(val);
+    console.log(props.userHealth, getDynamicAccountHealth, 'props.userHealth, getDynamicAccountHealth');
 
     if (props.userHealth - getDynamicAccountHealth < 1) {
       setError(`Account health in risk of liquidation`);
@@ -226,7 +229,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
       setError(`Amount of withdraw bigger than you'r supply`);
       isError = true;
     }
-    countAccountHealth(v);
+    console.log(props.userHealth, getDynamicAccountHealth, 'props.userHealth, getDynamicAccountHealth2');
 
     if (props.userHealth - getDynamicAccountHealth < 1) {
       setError(`Account health in risk of liquidation`);
@@ -234,6 +237,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
     }
 
     if (!isError) setError('');
+    countAccountHealth(v);
     setAmount(v);
     debounce(v);
   };

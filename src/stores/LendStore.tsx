@@ -27,6 +27,8 @@ export default class LendStore {
 
   dashboardModalOpened = false;
 
+  isLoading = false;
+
   dashboardModalStep = 0;
 
   activePoolContract = '';
@@ -65,6 +67,10 @@ export default class LendStore {
 
   @action.bound setModalStep = (step: number) => {
     this.dashboardModalStep = step;
+  };
+
+  @action.bound setPreloader = (isLoading: boolean) => {
+    this.isLoading = isLoading;
   };
 
   @action.bound setActivePool = (pool: string) => {
