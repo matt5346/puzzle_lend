@@ -47,6 +47,7 @@ const SubTitleLiquidity = styled.div`
   background-size: cover;
   background-position: center;
   padding: 8px 20px;
+  width: calc(100% - 40px);
   border-radius: 10px;
 `;
 
@@ -158,6 +159,7 @@ const SideViewWrap = styled.div`
     top: 117px;
     max-width: 315px;
     width: 30%;
+    margin-top: 24px;
   }
 `;
 
@@ -225,19 +227,18 @@ const Dashboard: React.FC = () => {
           <Text size="medium">Supply and borrow tokens using different pools</Text>
         </SubTitleWrap>
 
-        <SubTitleLiquidity>
-          <Text size="medium" type="light" fitContent>
-            {lendStore && lendStore.activePoolTitle ? lendStore.activePoolTitle : ''} liquidity: <>&nbsp;</>
-          </Text>
-          <Text style={{ fontSize: '18px' }} type="light" fitContent>
-            ${currentPoolData?.poolTotal.toFixed(2)}
-          </Text>
-        </SubTitleLiquidity>
-
         <Row justifyContent="space-between" style={windowWidth! < 1270 ? { flexWrap: 'wrap' } : { flexWrap: 'unset' }}>
           <Column
             crossAxisSize="max"
             style={windowWidth! < 1270 ? { order: 2, position: 'relative' } : { order: 0, position: 'relative' }}>
+            <SubTitleLiquidity>
+              <Text size="medium" type="light" fitContent>
+                {lendStore && lendStore.activePoolTitle ? lendStore.activePoolTitle : ''} liquidity: <>&nbsp;</>
+              </Text>
+              <Text style={{ fontSize: '18px' }} type="light" fitContent>
+                ${currentPoolData?.poolTotal.toFixed(2)}
+              </Text>
+            </SubTitleLiquidity>
             <DashboardTable
               filteredTokens={filteredTokens}
               showSupply={showSupply}
