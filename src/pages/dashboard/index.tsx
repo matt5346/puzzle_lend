@@ -49,6 +49,11 @@ const SubTitleLiquidity = styled.div`
   padding: 8px 20px;
   width: calc(100% - 40px);
   border-radius: 10px;
+  margin-top: 24px;
+
+  @media (min-width: 880px) {
+    margin-top: 0;
+  }
 `;
 
 const TitleH = styled.h1`
