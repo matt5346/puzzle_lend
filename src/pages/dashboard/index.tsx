@@ -159,7 +159,7 @@ const SideViewWrap = styled.div`
     top: 117px;
     max-width: 315px;
     width: 30%;
-    margin-top: 24px;
+    margin-top: 64px;
   }
 `;
 
