@@ -11,14 +11,18 @@
 }
 
 .dashboard-dialog .rc-dialog {
-    width: 100%;
+    display: flex;
+    align-items: center;
+    width: 95%;
     height: 100%;
+    margin: 0;
 }
 
 @media (min-width: 560px) {
     .dashboard-dialog .rc-dialog {
         width: 425px;
         height: 438px;
+        margin: 10px;
     }
 
     .ps--active-x > .ps__rail-x, .ps--active-y > .ps__rail-y {
