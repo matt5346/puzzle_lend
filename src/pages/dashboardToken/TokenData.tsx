@@ -13,8 +13,8 @@ interface IProps {
   setupLtv?: string;
   setupLts?: string;
   setupPenalty?: string;
-  totalSupply: number;
-  totalBorrow: number;
+  totalSupply?: number;
+  totalBorrow?: number;
 }
 
 const Root = styled.div`

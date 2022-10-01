@@ -134,7 +134,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
   const [focused, setFocused] = useState(false);
   const [amount, setAmount] = useState<BN>(props.amount);
   const [isNative, setConvertToNative] = useState<boolean>(true);
-  const [getDynamicAccountHealth, setAccountHealth] = useState<number>(0);
+  const [getDynamicAccountHealth, setAccountHealth] = useState<number>(100);
   const [error, setError] = useState<string>('');
   const { lendStore, accountStore, tokenStore } = useStores();
 
@@ -155,6 +155,11 @@ const BorrowAssets: React.FC<IProps> = (props) => {
   };
 
   const countAccountHealth = (currentBorrow: any) => {
+    if (+currentBorrow === 0) {
+      setAccountHealth(100);
+      return 100;
+    }
+
     let currentBorrowAmount = currentBorrow;
     const tokens = tokenStore.poolDataTokens;
     let borrowCapacity = 0;
@@ -185,7 +190,14 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     if (borrowCapacityUsed === 0) borrowCapacityUsed = (+currentBorrowAmount / 10 ** props.decimals) * +props.rate;
 
     const accountHealth: number = (1 - borrowCapacityUsed / borrowCapacity) * 100;
+
+    if (borrowCapacity < 0 || accountHealth < 0) {
+      setAccountHealth(0);
+      return 0;
+    }
+
     setAccountHealth(accountHealth);
+    return accountHealth;
   };
 
   // counting maximum amount for MAX btn
@@ -207,17 +219,20 @@ const BorrowAssets: React.FC<IProps> = (props) => {
       isError = true;
       return BN.formatUnits(totalReserves * 10 ** props.decimals * 0.8, 0);
     }
+    const val = BN.formatUnits(Math.ceil(maximum * 10 ** props.decimals * 0.8), 0);
+
+    if (countAccountHealth(val) === 0) {
+      setError(`Account health in risk of liquidation`);
+      isError = true;
+    }
 
     if (!isError) setError('');
-    const val = BN.formatUnits(Math.ceil(maximum * 10 ** props.decimals * 0.8), 0);
-    countAccountHealth(val);
     // current recommended maximum borrow, no more than 80% of
     return val;
   };
 
   // counting maximum after USER INPUT
   const userMaximumToBorrow = (userColatteral: number, rate: BN) => {
-    console.log(+rate, 'rate');
     let maximum = userColatteral / 10 ** 6;
 
     // if isNative, show maximum in crypto AMOUNT
@@ -266,13 +281,19 @@ const BorrowAssets: React.FC<IProps> = (props) => {
       setError('Borrow amount too low, please provide more');
       isError = true;
     }
+
     if (+formattedVal > +totalReserves) {
       setError('Not enough Reserves in Pool');
       isError = true;
     }
+    console.log(getDynamicAccountHealth, 'getDynamicAccountHealth');
+
+    if (countAccountHealth(v) === 0) {
+      setError(`Account health in risk of liquidation`);
+      isError = true;
+    }
 
     if (!isError) setError('');
-    countAccountHealth(v);
     setAmount(v);
     debounce(v);
   };
@@ -409,22 +430,24 @@ const BorrowAssets: React.FC<IProps> = (props) => {
         </Text>
         <Row alignItems="center" justifyContent="flex-end">
           <Text size="medium" type="success" fitContent>
-            {props.userHealth - getDynamicAccountHealth > 1 ? `${props.userHealth.toFixed(2)}%` : null}
+            {props.userHealth.toFixed(2)}
           </Text>
-          {props.userHealth - getDynamicAccountHealth > 1 ? (
-            <Back
-              style={{
-                minWidth: '16px',
-                maxWidth: '16px',
-                height: '18px',
-                transform: 'rotate(180deg)',
-              }}
-            />
+          {getDynamicAccountHealth !== 100 ? (
+            <>
+              <Back
+                style={{
+                  minWidth: '16px',
+                  maxWidth: '16px',
+                  height: '18px',
+                  transform: 'rotate(180deg)',
+                }}
+              />
+              <Text type={getDynamicAccountHealth < +props.userHealth ? 'error' : 'success'} size="medium" fitContent>
+                <>&nbsp;</>
+                {getDynamicAccountHealth && amount ? getDynamicAccountHealth.toFixed(2) : 0}%
+              </Text>
+            </>
           ) : null}
-          <Text type={props.userHealth - getDynamicAccountHealth > 1 ? 'error' : 'success'} size="medium" fitContent>
-            <>&nbsp;</>
-            {getDynamicAccountHealth && amount ? getDynamicAccountHealth.toFixed(2) : 0}%
-          </Text>
         </Row>
       </Row>
       <SizedBox height={14} />

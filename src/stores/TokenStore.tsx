@@ -382,6 +382,7 @@ export default class TokenStore {
     let accountHealth = 0;
 
     if (baseAmount !== 0) netAPY = (supplyAmountApy - borrowedAmountApr) / baseAmount;
+    console.log(borrowCapacityUsed, borrowCapacity, 'borrowCapacityUsed, borrowCapacity');
     if (borrowCapacity !== 0) accountHealth = (1 - borrowCapacityUsed / borrowCapacity) * 100;
 
     const poolData = {

@@ -20,6 +20,7 @@ import { SizedBox } from '@src/UIKit/SizedBox';
 import TokenData from '@src/pages/dashboardToken/TokenData';
 import { Button } from '@src/UIKit/Button';
 import { Anchor } from '@src/UIKit/Anchor';
+import { Preloader } from '@src/UIKit/Preloader';
 import Container from '@src/common/styles/Container';
 import BN from '@src/common/utils/BN';
 
@@ -48,6 +49,19 @@ const TokenStats = styled.div`
       width: 16%;
     }
   }
+`;
+
+const PreloaderWrap = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%);
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.6);
 `;
 
 const Root = styled.div`
@@ -138,8 +152,8 @@ const DashboardToken: React.FC = () => {
       const iData: IToken = TOKENS_LIST_FULL.find((item) => item.assetId === assetId) || createIToken();
       let data: TTokenStatistics = createITokenStat();
 
-      if (assetId) {
-        data = tokenStore.poolDataTokensWithStats[assetId];
+      if (assetId && poolDataTokensWithStats) {
+        data = poolDataTokensWithStats[assetId];
       }
 
       setTotalSupplyUsers(totalSupplyUsers);
@@ -154,7 +168,6 @@ const DashboardToken: React.FC = () => {
     tokenStore,
     lendStore.activePoolName,
     usersStore,
-    tokenStore.poolDataTokensWithStats,
     lendStore.activePoolContract,
     poolDataTokensWithStats,
   ]);
@@ -240,17 +253,21 @@ const DashboardToken: React.FC = () => {
             <SizedBox height={28} />
           </Column>
         )}
-        {tokenFullData && tokenFullData.assetId && (
-          <TokenData
-            key={tokenFullData.assetId}
-            rate={tokenFullData.currentPrice}
-            setupLtv={tokenFullData.setupLtv}
-            setupLts={tokenFullData.setupLts}
-            setupPenalty={tokenFullData.setupPenalty}
-            totalSupply={getSupplyUsers}
-            totalBorrow={getBorrowUsers}
-          />
-        )}
+        <TokenData
+          key={tokenFullData?.assetId || '-'}
+          rate={tokenFullData?.currentPrice || BN.ZERO}
+          setupLtv={tokenFullData?.setupLtv || '-'}
+          setupLts={tokenFullData?.setupLts || '-'}
+          setupPenalty={tokenFullData?.setupPenalty || '-'}
+          totalSupply={getSupplyUsers || 0}
+          totalBorrow={getBorrowUsers || 0}
+        />
+        {!poolDataTokensWithStats ||
+          (!tokenFullData?.assetId && (
+            <PreloaderWrap>
+              <Preloader />
+            </PreloaderWrap>
+          ))}
         <SizedBox height={24} />
         <Row style={{ flexWrap: 'wrap' }}>
           <Anchor href={`https://puzzleswap.org/trade?asset1=${assetId}`} className="details-link-btn">

@@ -126,7 +126,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
   const navigate = useNavigate();
   const [focused, setFocused] = useState(false);
   const [amount, setAmount] = useState<BN>(props.amount);
-  const [getDynamicAccountHealth, setAccountHealth] = useState<number>(0);
+  const [getDynamicAccountHealth, setAccountHealth] = useState<number>(100);
   const [isNative, setConvertToNative] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const { lendStore, accountStore, tokenStore } = useStores();
@@ -151,48 +151,59 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
       : 0;
   };
 
-  const countAccountHealth = (currentBorrow: any) => {
-    console.log(+currentBorrow, 'TEST');
-    let currentBorrowAmount = currentBorrow;
+  const countAccountHealth = (currentWithdraw: any) => {
+    if (+currentWithdraw === 0) {
+      setAccountHealth(100);
+      return 100;
+    }
+
+    let currentWithdrawAmount = currentWithdraw;
     const tokens = tokenStore.poolDataTokens;
     let borrowCapacity = 0;
     let borrowCapacityUsed = 0;
 
-    if (!isNative) currentBorrowAmount /= +props.rate?.toFormat(4);
+    if (!isNative) currentWithdrawAmount /= +props.rate?.toFormat(4);
 
     tokens.forEach((item: IToken) => {
       const tokenData: TTokenStatistics = tokenStore.poolDataTokensWithStats[item.assetId];
+
       if (+tokenData.selfSupply > 0) {
-        borrowCapacity +=
+        let localBorrowCapacity =
           (+tokenData.selfSupply / 10 ** tokenData.decimals) * +tokenData.currentPrice * (+tokenData.setupLtv / 100);
+
+        if (tokenData.assetId === props.assetId)
+          localBorrowCapacity =
+            ((+tokenData.selfSupply - +currentWithdrawAmount) / 10 ** tokenData.decimals) *
+            +tokenData.currentPrice *
+            (+tokenData.setupLtv / 100);
+
+        borrowCapacity += localBorrowCapacity;
       }
 
       if (+tokenData.selfBorrow > 0) {
-        let localCapacityused = (+tokenData.selfBorrow / 10 ** tokenData.decimals) * +tokenData.currentPrice;
-
-        if (tokenData.assetId === props.assetId)
-          localCapacityused =
-            ((+currentBorrowAmount + +tokenData.selfBorrow) / 10 ** tokenData.decimals) * +tokenData.currentPrice;
-
-        borrowCapacityUsed += localCapacityused;
+        borrowCapacityUsed += (+tokenData.selfBorrow / 10 ** tokenData.decimals) * +tokenData.currentPrice;
       }
     });
-    console.log(borrowCapacityUsed, borrowCapacity, 'borrowCapacityUsed, borrowCapacity');
 
     // case when user did'nt borrow anything
-    if (borrowCapacityUsed === 0) borrowCapacityUsed = (+currentBorrowAmount / 10 ** props.decimals) * +props.rate;
+    if (borrowCapacityUsed === 0) borrowCapacityUsed = (+currentWithdraw / 10 ** props.decimals) * +props.rate;
 
     const accountHealth: number = (1 - borrowCapacityUsed / borrowCapacity) * 100;
+
+    if (borrowCapacity < 0 || accountHealth < 0) {
+      setAccountHealth(0);
+      return 0;
+    }
+
     setAccountHealth(accountHealth);
+    return accountHealth;
   };
 
   const maxWithdraw = (val: BN) => {
     let isError = false;
     if (!isNative) return BN.formatUnits(+val * +props.rate?.toFormat(4) + 1, 0);
-    countAccountHealth(val);
-    console.log(props.userHealth, getDynamicAccountHealth, 'props.userHealth, getDynamicAccountHealth');
 
-    if (props.userHealth - getDynamicAccountHealth < 1) {
+    if (countAccountHealth(val) < 5) {
       setError(`Account health in risk of liquidation`);
       isError = true;
     }
@@ -229,15 +240,13 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
       setError(`Amount of withdraw bigger than you'r supply`);
       isError = true;
     }
-    console.log(props.userHealth, getDynamicAccountHealth, 'props.userHealth, getDynamicAccountHealth2');
 
-    if (props.userHealth - getDynamicAccountHealth < 1) {
+    if (countAccountHealth(v) < 5) {
       setError(`Account health in risk of liquidation`);
       isError = true;
     }
 
     if (!isError) setError('');
-    countAccountHealth(v);
     setAmount(v);
     debounce(v);
   };
@@ -370,22 +379,24 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
         </Text>
         <Row alignItems="center" justifyContent="flex-end">
           <Text size="medium" type="success" fitContent>
-            {props.userHealth - getDynamicAccountHealth > 1 ? `${props.userHealth.toFixed(2)}%` : null}
+            {props.userHealth.toFixed(2)}
           </Text>
-          {props.userHealth - getDynamicAccountHealth > 1 ? (
-            <Back
-              style={{
-                minWidth: '16px',
-                maxWidth: '16px',
-                height: '18px',
-                transform: 'rotate(180deg)',
-              }}
-            />
+          {getDynamicAccountHealth !== 100 ? (
+            <>
+              <Back
+                style={{
+                  minWidth: '16px',
+                  maxWidth: '16px',
+                  height: '18px',
+                  transform: 'rotate(180deg)',
+                }}
+              />
+              <Text type={getDynamicAccountHealth < +props.userHealth ? 'error' : 'success'} size="medium" fitContent>
+                <>&nbsp;</>
+                {getDynamicAccountHealth && amount ? getDynamicAccountHealth.toFixed(2) : 0}%
+              </Text>
+            </>
           ) : null}
-          <Text type={props.userHealth - getDynamicAccountHealth > 1 ? 'error' : 'success'} size="medium" fitContent>
-            <>&nbsp;</>
-            {getDynamicAccountHealth && amount ? getDynamicAccountHealth.toFixed(2) : 0}%
-          </Text>
         </Row>
       </Row>
       <SizedBox height={14} />

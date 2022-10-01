@@ -42,6 +42,7 @@ const PreloaderWrap = styled.div`
 
 const SubTitleLiquidity = styled.div`
   display: flex;
+  align-items: center;
   margin-bottom: 24px;
   background-image: url(${mainBg});
   background-size: cover;

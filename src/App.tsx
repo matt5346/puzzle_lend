@@ -56,7 +56,8 @@ const App: React.FC = () => {
         {/* specific USER STATS */}
         <Route path={ROUTES.USER_STATS} element={<UserStats />} />
         <Route path={ROUTES.USERS_LIST} element={<UsersList />} />
-        {tokenStore.poolDataTokensWithStats && <Route path={ROUTES.DASHBOARD_TOKEN} element={<DashboardToken />} />}
+        <Route path={ROUTES.DASHBOARD_TOKEN} element={<DashboardToken />} />
+        {/* // {tokenStore.poolDataTokensWithStats && />} */}
         {/* 404 */}
         <Route path={ROUTES.NOT_FOUND} element={<NotFoundPage />} />
 
