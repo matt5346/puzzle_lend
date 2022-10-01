@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
-import React, { useState } from 'react';
-import puzzleLogo from '@src/common/assets/logo.svg';
-import { Column, Row } from '@src/common/styles/Flex';
+import React, { useState, useEffect } from 'react';
+import { useStores } from '@src/stores';
+import { Row } from '@src/common/styles/Flex';
 import { ROUTES } from '@src/common/constants';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { Text } from '@src/UIKit/Text';
@@ -67,6 +67,13 @@ const Icon = styled.img`
   flex-direction: column;
 `;
 
+export interface LinkType {
+  name: string;
+  link: string;
+  icon: string;
+  params: string | null;
+}
+
 const isRoutesEquals = (a: string, b: string) => {
   const result = a.replaceAll('/', '') === b.replaceAll('/', '');
 
@@ -74,19 +81,30 @@ const isRoutesEquals = (a: string, b: string) => {
 };
 
 const Header: React.FC<IProps> = () => {
+  const [navItems, setNavItems] = useState<LinkType[]>([]);
+  const { accountStore } = useStores();
+  const { address } = accountStore;
   const location = useLocation();
   const navigate = useNavigate();
 
-  const menuItems = [
-    { name: 'My supply', link: ROUTES.DASHBOARD, params: 'supply', icon: ActionIcon },
-    { name: 'Home', link: ROUTES.DASHBOARD, icon: Home, params: null },
-    { name: 'My borrow', link: ROUTES.DASHBOARD, params: 'borrow', icon: ActionIcon },
-  ];
+  useEffect(() => {
+    const menuItems = [
+      { name: 'My supply', link: ROUTES.DASHBOARD, params: 'supply', icon: ActionIcon },
+      { name: 'Home', link: ROUTES.DASHBOARD, icon: Home, params: null },
+      { name: 'My borrow', link: ROUTES.DASHBOARD, params: 'borrow', icon: ActionIcon },
+    ];
+
+    const menuItemsWithoutUser = [{ name: 'Home', link: ROUTES.DASHBOARD, icon: Home, params: null }];
+
+    if (address == null) setNavItems(menuItemsWithoutUser);
+    if (address != null) setNavItems(menuItems);
+  }, [address]);
+
   return (
     <>
       <FooterMenu>
         <Row justifyContent="space-around" alignItems="center" crossAxisSize="max">
-          {menuItems.map(({ name, link, icon, params }) => (
+          {navItems.map(({ name, link, icon, params }) => (
             <MenuItem
               key={name}
               className={

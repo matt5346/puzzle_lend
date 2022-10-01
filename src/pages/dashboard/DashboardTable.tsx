@@ -74,6 +74,7 @@ const DashboardTable: React.FC<IProps> = ({ filteredTokens, showSupply, showBorr
     if (assetType === '') setMobileAssetType(1);
     if (assetType === 'borrow') setMobileAssetType(2);
   }, [assetType, isMobile, windowWidth]);
+
   return (
     <Root>
       {/*
