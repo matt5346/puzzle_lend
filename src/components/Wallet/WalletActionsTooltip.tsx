@@ -55,6 +55,10 @@ const WalletActionsTooltip: React.FC<IProps> = ({ address }) => {
         <Text type="secondary">View in Waves Explorer</Text>
       </Anchor>
       <Divider className="divider" />
+      <Anchor style={{ padding: '10px 0' }} target="_blank" href="https://puzzle-lend.gitbook.io/guidebook/">
+        <Text type="secondary">Check our Guidebook</Text>
+      </Anchor>
+      <Divider className="divider" />
       <Text type="secondary" onClick={handleLogout} className="menu-item">
         Disconnect
       </Text>
