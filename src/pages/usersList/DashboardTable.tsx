@@ -20,6 +20,11 @@ const Root = styled.div`
 const Wrap = styled.div`
   display: flex;
   flex-direction: column;
+  margin-bottom: 60px;
+
+  @media (min-width: 570px) {
+    margin-bottom: 0;
+  }
 `;
 
 const DashboardTable: React.FC<IProps> = ({ filteredTokens }) => {

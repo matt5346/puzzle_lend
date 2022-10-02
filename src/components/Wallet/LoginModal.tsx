@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import Dialog from '@components/Dialog';
 import { LOGIN_TYPE } from '@src/stores/AccountStore';
@@ -11,12 +11,19 @@ import { Row, Column } from '@src/common/styles/Flex';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import { Text } from '@src/UIKit/Text';
 import { Anchor } from '@src/UIKit/Anchor';
+import useWindowSize from '@src/hooks/useWindowSize';
 import LoginType from './LoginType';
 
 interface IProps {
   onClose: () => void;
   onLogin: (loginType: LOGIN_TYPE) => void;
   visible: boolean;
+}
+
+export interface LoginInterface {
+  title: string;
+  icon: string;
+  type: LOGIN_TYPE;
 }
 
 const loginTypes = [
@@ -48,39 +55,40 @@ const LinkItem = styled(Anchor)<{ selected?: boolean }>`
   }
 `;
 
-const Desktop = styled.div`
-  display: none;
-  min-width: fit-content;
-  @media (min-width: 880px) {
-    height: 100%;
-    display: flex;
-  }
-`;
-
 export const LoginTypesRender: React.FC<{
   isKeeperDisabled: boolean;
   handleLogin: (type: LOGIN_TYPE) => void;
-}> = ({ isKeeperDisabled, handleLogin }) => (
-  <Column alignItems="unset" crossAxisSize="max">
-    {loginTypes.map((t) =>
-      t.type === LOGIN_TYPE.KEEPER && isKeeperDisabled ? (
-        <LoginType {...t} key={t.type} />
-      ) : (
-        <LoginType {...t} key={t.type} onClick={() => handleLogin(t.type)} />
-      )
-    )}
-    <SizedBox height={24} />
-    <Text textAlign="center" size="medium">
-      New to Waves blockchain?{' '}
-      <LinkItem
-        target="_blank"
-        href="https://docs.waves.exchange/en/waves-exchange/waves-exchange-online-desktop/online-desktop-account/online-desktop-creation">
-        Learn more about wallets
-      </LinkItem>
-    </Text>
-    <SizedBox height={24} />
-  </Column>
-);
+}> = ({ isKeeperDisabled, handleLogin }) => {
+  const { windowWidth } = useWindowSize();
+  const [getLoginTypes, setLoginTypes] = useState<LoginInterface[]>([]);
+
+  useEffect(() => {
+    if (windowWidth! < 1270) setLoginTypes(loginTypes.slice(0, 2));
+    else setLoginTypes(loginTypes);
+  }, [windowWidth]);
+
+  return (
+    <Column alignItems="unset" crossAxisSize="max">
+      {getLoginTypes.map((t) =>
+        t.type === LOGIN_TYPE.KEEPER && isKeeperDisabled ? (
+          <LoginType {...t} key={t.type} />
+        ) : (
+          <LoginType {...t} key={t.type} onClick={() => handleLogin(t.type)} />
+        )
+      )}
+      <SizedBox height={24} />
+      <Text textAlign="center" size="medium">
+        New to Waves blockchain?{' '}
+        <LinkItem
+          target="_blank"
+          href="https://docs.waves.exchange/en/waves-exchange/waves-exchange-online-desktop/online-desktop-account/online-desktop-creation">
+          Learn more about wallets
+        </LinkItem>
+      </Text>
+      <SizedBox height={24} />
+    </Column>
+  );
+};
 
 const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
   const handleLogin = (loginType: LOGIN_TYPE) => {

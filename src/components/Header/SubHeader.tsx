@@ -24,7 +24,7 @@ const Root = styled(Column)`
   }
 `;
 
-const TopMenu = styled.header`
+const TopMenu = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;

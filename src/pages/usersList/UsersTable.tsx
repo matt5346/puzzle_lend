@@ -19,6 +19,16 @@ interface IProps {
   filteredTokens: any;
 }
 
+const GridUser = styled.div`
+  min-width: unset;
+  max-width: unset;
+
+  @media (min-width: 880px) {
+    min-width: 250px;
+    max-width: 250px;
+  }
+`;
+
 const TableTitle: React.FC<{
   sort: boolean;
   mode: 'descending' | 'ascending';
@@ -82,14 +92,14 @@ const AssetsTable: React.FC<IProps> = ({ filteredTokens }) => {
   }, [filteredTokens, sort, sortMode, tokenStore.poolDataTokensWithStats]);
 
   return (
-    <Column>
-      <Card style={{ padding: 0, overflow: 'auto', width: '100%' }} justifyContent="center">
+    <Column style={{ overflowX: 'auto' }} crossAxisSize="max">
+      <Card style={{ padding: 0, minWidth: '545px' }} justifyContent="center">
         <GridTable
           style={{ width: '100%', minWidth: '100%' }}
-          desktopTemplate="4fr 3fr 2fr 3fr"
-          mobileTemplate="2fr 1fr 2fr 2fr">
+          desktopTemplate="5fr 3fr 2fr 3fr"
+          mobileTemplate="4fr 3fr 2fr 3fr">
           <div className="gridTitle">
-            <div style={{ minWidth: '350px' }}>User</div>
+            <GridUser>User</GridUser>
             <TableTitle onClick={() => selectSort('borrowed')} mode={sortMode} sort={sort === 'borrowed'}>
               Borrowed
             </TableTitle>

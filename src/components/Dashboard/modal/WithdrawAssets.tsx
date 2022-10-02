@@ -34,6 +34,7 @@ interface IProps {
   userBalance: BN;
   setupSupplyAPY?: string;
   selfSupply: BN;
+  selfBorrow: BN;
   rate: BN;
   userHealth: number;
   setAmount?: (amount: BN) => void;
@@ -202,8 +203,10 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
   const maxWithdraw = (val: BN) => {
     let isError = false;
     if (!isNative) return BN.formatUnits(+val * +props.rate?.toFormat(4) + 1, 0);
+    console.log(+props.selfBorrow, 'BORROW');
+    console.log(+props.selfSupply, 'SUPPLY');
 
-    if (countAccountHealth(val) < 5) {
+    if (+props.selfBorrow !== 0 && countAccountHealth(val) < 5) {
       setError(`Account health in risk of liquidation`);
       isError = true;
     }
@@ -241,7 +244,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
       isError = true;
     }
 
-    if (countAccountHealth(v) < 5) {
+    if (+props.selfBorrow !== 0 && countAccountHealth(v) < 5) {
       setError(`Account health in risk of liquidation`);
       isError = true;
     }

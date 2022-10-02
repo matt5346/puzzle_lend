@@ -67,13 +67,16 @@ const wavesNodesService = {
   },
   getBorrowSupplyUsers: async (contractAddress: string, assetsId: string[]): Promise<any> => {
     let usersData: any = [];
+    const params = new URLSearchParams();
 
-    const tokensData: any = [];
+    for (let i = 0; i <= assetsId.length - 1; i++) {
+      params.append('assetIds[]=', assetsId[i]);
+    }
 
-    assetsId.forEach((item) => {
-      const asset = TOKENS_BY_ASSET_ID[item];
-      tokensData.push(asset);
-    });
+    const url = `https://wavescap.com/api/assets-info.php?${params.toString()}`;
+    const response = await axios.get(url);
+    console.log(response, 'RESPONSE1');
+    const tokensData = response.data.assets;
 
     try {
       const userData: any[] = await Promise.all(
@@ -115,7 +118,7 @@ const wavesNodesService = {
             };
 
             const objDataSplitted = userObj.key.split('_');
-            const tokenData = tokensData.find((tokenItem: any) => tokenItem.assetId === keyName);
+            const tokenData = tokensData.find((tokenItem: any) => tokenItem.id === keyName);
             const currentPrice = new BN(tokenData.data?.['lastPrice_usd-n'] ?? 0);
             let userIndex = -1;
             if (users && users.length)

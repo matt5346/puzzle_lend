@@ -116,6 +116,8 @@ const UsersList: React.FC = () => {
         usersStore.setInitialized(true)
       );
 
+      console.log(usersStore, 'DATA');
+
       if (getPoolType === 0) {
         poolsContracts.push(categoriesOptions[1].key, categoriesOptions[2].key);
       } else {
@@ -125,6 +127,7 @@ const UsersList: React.FC = () => {
       if (usersStore.initialized && tokenStore.initialized) {
         poolsContracts.forEach((item: any) => {
           const tokens = tokenStore.filterPoolDataTokensStats(item);
+          console.log(tokens, 'tokens');
 
           // counting values of TOKENS SUPPLY, depending of select value
           Object.entries(tokens).forEach(([key, tokenItem]) => {
@@ -262,9 +265,12 @@ const UsersList: React.FC = () => {
                             {(+formatVal(item.totalAssetSupply, item.decimals)).toFixed(2)} {'/ '}
                             {(+formatVal(item.totalAssetBorrow, item.decimals)).toFixed(2)} {item.symbol}
                           </Text>
-                          <Text textAlign="right" size="small" type="secondary">
+                          <Text textAlign="right" size="small" type="secondary" nowrap>
                             $ {(+formatVal(item.totalAssetSupply, item.decimals) * +item.currentPrice).toFixed(2)}{' '}
-                            {'/ '}$ {(+formatVal(item.totalAssetBorrow, item.decimals) * +item.currentPrice).toFixed(2)}
+                            {'/ '}${' '}
+                            {item.totalAssetBorrow
+                              ? (+formatVal(item.totalAssetBorrow, item.decimals) * +item.currentPrice).toFixed(2)
+                              : 0}
                           </Text>
                         </Column>
                       </AssetWrap>
