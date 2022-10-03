@@ -184,7 +184,6 @@ const BorrowAssets: React.FC<IProps> = (props) => {
         borrowCapacityUsed += localCapacityused;
       }
     });
-    console.log(borrowCapacityUsed, borrowCapacity, 'borrowCapacityUsed, borrowCapacity');
 
     // case when user did'nt borrow anything
     if (borrowCapacityUsed === 0) borrowCapacityUsed = (+currentBorrowAmount / 10 ** props.decimals) * +props.rate;

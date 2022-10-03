@@ -59,7 +59,6 @@ const wavesNodesService = {
             expr: `calculateUtilizationRatio("${item}", false)`,
           },
         });
-        console.log(response, 'updateUR');
       });
     } catch (er) {
       console.log(er, 'error');
@@ -75,7 +74,6 @@ const wavesNodesService = {
 
     const url = `https://wavescap.com/api/assets-info.php?${params.toString()}`;
     const response = await axios.get(url);
-    console.log(response, 'RESPONSE1');
     const tokensData = response.data.assets;
 
     try {
@@ -333,10 +331,8 @@ const wavesNodesService = {
       };
 
       const assetExtraData = Object.values(assetsNodeData).find((assetItem) => assetItem[tokenData.assetId]);
-      console.log(assetExtraData, assetsNodeData, 'assetExtraData');
 
       if (assetExtraData && assetExtraData[tokenData.assetId]) {
-        console.log(assetExtraData[tokenData.assetId], '1');
         const poolValue = assetExtraData[tokenData.assetId].find(
           (pool: any) => `total_supplied_${tokenData.assetId}` === pool.key
         );
@@ -358,7 +354,7 @@ const wavesNodesService = {
 
         const penalties = assetExtraData[tokenData.assetId].find((pool: any) => pool.key === 'setup_penalties')?.value;
         const lts = assetExtraData[tokenData.assetId].find((pool: any) => pool.key === 'setup_lts')?.value;
-        console.log(penalties, '----penalties');
+        // console.log(penalties, '----penalties');
 
         // setupTokens and tokensRatesArr have same order
         // so we compare them and searching for ltv and rates
@@ -423,7 +419,6 @@ const wavesNodesService = {
         //   '--titemData.supply_rate, itemData.borrow_rate----'
         // );
 
-        console.log(poolValue, 'poolValue');
         // for simplicity
         // all values gonna be convert to real numbers with decimals only in TEMPLATE
         if (poolValue) itemData.total_supply = poolValue.value * itemData.supply_rate;

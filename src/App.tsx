@@ -46,11 +46,11 @@ const App: React.FC = () => {
       <Routes>
         {/* Base */}
         <Route path={ROUTES.HOME} element={<Navigate to="/dashboard" />} />
+        {windowWidth! < 560 ? (
+          <Route path={ROUTES.DASHBOARD_MOBILE} element={<Dashboard />} key={window.location.pathname} />
+        ) : null}
         {/* for main pool with default route */}
-        <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
-        {/* for pools on MOBILE */}
-        <Route path={ROUTES.HOME} element={<Navigate to="/dashboard" />} />
-        {windowWidth! < 560 ? <Route path={ROUTES.DASHBOARD_MOBILE} element={<Dashboard />} /> : null}
+        <Route path={ROUTES.DASHBOARD} element={<Dashboard />} key="dashboard_main" />
         {/* for other pools with ids routes */}
         <Route path={ROUTES.DASHBOARD_POOl} element={<Dashboard />} />
         {/* specific USER STATS */}
@@ -65,7 +65,7 @@ const App: React.FC = () => {
       </Routes>
 
       <WalletModal onClose={() => accountStore.setWalletModalOpened(false)} visible={accountStore.walletModalOpened} />
-      {windowWidth! < 560 ? <MobileFooterMenu /> : null}
+      {windowWidth! < 560 && accountStore.address ? <MobileFooterMenu /> : null}
     </Root>
   );
 };

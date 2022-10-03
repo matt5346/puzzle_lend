@@ -67,31 +67,36 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
   };
 
   useEffect(() => {
-    const data = filteredTokens.sort((a, b) => {
-      const stats1: TTokenStatistics | undefined = tokenStore.poolDataTokensWithStats[a.assetId];
-      const stats2: TTokenStatistics | undefined = tokenStore.poolDataTokensWithStats[b.assetId];
-      let key: keyof TTokenStatistics | undefined;
-      if (sort === 'totalAssetSupply') key = 'totalAssetSupply';
-      if (sort === 'setupSupplyAPY') key = 'setupSupplyAPY';
-      if (sort === 'totalAssetBorrow') key = 'totalAssetBorrow';
-      if (sort === 'setupBorrowAPR') key = 'setupBorrowAPR';
-      if (key == null) return 0;
+    let data: any = [];
 
-      if (stats1 == null && stats2 == null) return 0;
-      if (stats1[key] == null && stats2[key] != null) {
-        return sortMode === 'descending' ? 1 : -1;
-      }
-      if (stats1[key] == null && stats2[key] == null) {
-        return sortMode === 'descending' ? -1 : 1;
-      }
-      return sortMode === 'descending'
-        ? BN.formatUnits(stats1[key], 0).lt(stats2[key])
-          ? 1
-          : -1
-        : BN.formatUnits(stats1[key], 0).lt(stats2[key])
-        ? -1
-        : 1;
-    });
+    if (filteredTokens && filteredTokens.length) {
+      data = filteredTokens.sort((a, b) => {
+        const stats1: TTokenStatistics | undefined = tokenStore.poolDataTokensWithStats[a.assetId];
+        const stats2: TTokenStatistics | undefined = tokenStore.poolDataTokensWithStats[b.assetId];
+        let key: keyof TTokenStatistics | undefined;
+        if (sort === 'totalAssetSupply') key = 'totalAssetSupply';
+        if (sort === 'setupSupplyAPY') key = 'setupSupplyAPY';
+        if (sort === 'totalAssetBorrow') key = 'totalAssetBorrow';
+        if (sort === 'setupBorrowAPR') key = 'setupBorrowAPR';
+        if (key == null) return 0;
+
+        if (stats1 == null || stats2 == null) return 0;
+        if (stats1[key] == null && stats2[key] != null) {
+          return sortMode === 'descending' ? 1 : -1;
+        }
+        if (stats1[key] == null && stats2[key] == null) {
+          return sortMode === 'descending' ? -1 : 1;
+        }
+
+        return sortMode === 'descending'
+          ? BN.formatUnits(stats1[key], 0).lt(stats2[key])
+            ? 1
+            : -1
+          : BN.formatUnits(stats1[key], 0).lt(stats2[key])
+          ? -1
+          : 1;
+      });
+    }
     setSortedTokens(data);
   }, [filteredTokens, sort, sortMode, tokenStore.poolDataTokensWithStats]);
 

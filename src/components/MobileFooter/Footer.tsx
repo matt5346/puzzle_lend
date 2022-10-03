@@ -1,6 +1,5 @@
 import styled from '@emotion/styled';
-import React, { useState, useEffect } from 'react';
-import { useStores } from '@src/stores';
+import React from 'react';
 import { Row } from '@src/common/styles/Flex';
 import { ROUTES } from '@src/common/constants';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
@@ -67,44 +66,27 @@ const Icon = styled.img`
   flex-direction: column;
 `;
 
-export interface LinkType {
-  name: string;
-  link: string;
-  icon: string;
-  params: string | null;
-}
-
 const isRoutesEquals = (a: string, b: string) => {
   const result = a.replaceAll('/', '') === b.replaceAll('/', '');
 
   return result;
 };
 
+const menuItems = [
+  { name: 'My supply', link: ROUTES.DASHBOARD, params: 'supply', icon: ActionIcon },
+  { name: 'Home', link: ROUTES.DASHBOARD, icon: Home, params: null },
+  { name: 'My borrow', link: ROUTES.DASHBOARD, params: 'borrow', icon: ActionIcon },
+];
+
 const Header: React.FC<IProps> = () => {
-  const [navItems, setNavItems] = useState<LinkType[]>([]);
-  const { accountStore } = useStores();
-  const { address } = accountStore;
   const location = useLocation();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const menuItems = [
-      { name: 'My supply', link: ROUTES.DASHBOARD, params: 'supply', icon: ActionIcon },
-      { name: 'Home', link: ROUTES.DASHBOARD, icon: Home, params: null },
-      { name: 'My borrow', link: ROUTES.DASHBOARD, params: 'borrow', icon: ActionIcon },
-    ];
-
-    const menuItemsWithoutUser = [{ name: 'Home', link: ROUTES.DASHBOARD, icon: Home, params: null }];
-
-    if (address == null) setNavItems(menuItemsWithoutUser);
-    if (address != null) setNavItems(menuItems);
-  }, [address]);
 
   return (
     <>
       <FooterMenu>
         <Row justifyContent="space-around" alignItems="center" crossAxisSize="max">
-          {navItems.map(({ name, link, icon, params }) => (
+          {menuItems.map(({ name, link, icon, params }) => (
             <MenuItem
               key={name}
               className={
@@ -112,7 +94,7 @@ const Header: React.FC<IProps> = () => {
               }
               onClick={(e) => {
                 e.preventDefault();
-                return navigate(params !== null ? `${link}/${params}` : link);
+                return navigate(params !== null ? `${link}/${params}` : link, { replace: false });
               }}>
               <Icon src={icon} alt={name} />
               <Text>{name}</Text>

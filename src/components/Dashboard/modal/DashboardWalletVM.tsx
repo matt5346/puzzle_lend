@@ -158,7 +158,7 @@ class DashboardWalletVM {
   submitWithdraw = async (amount: any, assetId: any, contractAddress: string) => {
     const { accountStore, lendStore, tokenStore, notificationStore } = this.rootStore;
     lendStore.setPreloader(true);
-    console.log(+amount, 'submitWithdraw');
+    console.log(+amount, assetId, 'submitWithdraw');
 
     await accountStore
       .invoke({
@@ -192,12 +192,12 @@ class DashboardWalletVM {
           type: 'error',
           title: 'Oops, transaction is not completed',
         });
+      })
+      .then(async () => {
+        await accountStore.updateAccountAssets(true);
+        await tokenStore.syncTokenStatistics(lendStore.activePoolContract);
+        lendStore.setPreloader(false);
       });
-    // .then(async () => {
-    //   await accountStore.updateAccountAssets(true);
-    //   await tokenStore.syncTokenStatistics(lendStore.activePoolContract);
-    //   lendStore.setPreloader(false);
-    // });
   };
 
   submitRepay = async (amount: any, assetId: any, contractAddress: string) => {

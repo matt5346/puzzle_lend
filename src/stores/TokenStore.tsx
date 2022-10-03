@@ -278,10 +278,6 @@ export default class TokenStore {
     const assets = TOKENS_LIST(contractPoolName).map(({ assetId }) => assetId);
     const userContract = userId || accountStore.address;
 
-    console.log(
-      lendStore.poolNameById(contractId || lendStore.activePoolContract),
-      'endStore.poolNameById(contractId)'
-    );
     const stats = await wavesNodesService.getPoolsStats(assets, userContract!, contractPoolId).catch((e) => {
       // notifi\cationStore.notify(e.message ?? e.toString(), {
       //   type: 'error',
@@ -382,7 +378,6 @@ export default class TokenStore {
     let accountHealth = 0;
 
     if (baseAmount !== 0) netAPY = (supplyAmountApy - borrowedAmountApr) / baseAmount;
-    console.log(borrowCapacityUsed, borrowCapacity, 'borrowCapacityUsed, borrowCapacity');
     if (borrowCapacity !== 0) accountHealth = (1 - borrowCapacityUsed / borrowCapacity) * 100;
 
     const poolData = {

@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState, useReducer } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useStores } from '@src/stores';
 import { IToken } from '@src/common/constants';
 import styled from '@emotion/styled';
@@ -185,12 +188,16 @@ const Dashboard: React.FC = () => {
   const { windowWidth } = useWindowSize();
   const { address } = accountStore;
   const isKeeperDisabled = !accountStore.isWavesKeeperInstalled;
+  const history = useLocation();
 
   const [filteredTokens, setFilteredTokens] = useState<IToken[]>([]);
   const [showBorrow, showBorrowTable] = useState<boolean>(false);
   const [showSupply, showSupplyTable] = useState<boolean>(false);
+  const [_, forceUpdate] = useReducer((x) => x + 1, 0);
 
-  useMemo(() => {
+  useEffect(() => {
+    console.log('> Router', history.pathname);
+    forceUpdate();
     const poolsData = tokenStore.poolDataTokens;
 
     if (poolsData.every((item) => +tokenStore.poolDataTokensWithStats[item.assetId].selfBorrow === 0))
@@ -214,7 +221,7 @@ const Dashboard: React.FC = () => {
     });
 
     setFilteredTokens(poolsData);
-  }, [showBorrow, tokenStore.poolDataTokensWithStats, tokenStore.poolDataTokens]);
+  }, [showBorrow, tokenStore.poolDataTokensWithStats, tokenStore.poolDataTokens, history]);
 
   const handleLogin = (loginType: LOGIN_TYPE) => {
     accountStore.login(loginType);
