@@ -7,9 +7,10 @@ import { useStores } from '@src/stores';
 import GridTable from '@src/common/styles/GridTable';
 import Card from '@src/common/styles/Card';
 import MobileCardsWrap from '@src/common/styles/MobileCardsWrap';
-import { Row, Column } from '@src/common/styles/Flex';
+import { TableTitle } from '@src/components/Dashboard/tables/AllAssetsTable';
+import { Tooltip } from '@src/UIKit/Tooltip';
+import { Text } from '@src/UIKit/Text';
 import { IToken, TTokenStatistics } from '@src/common/constants';
-import { ReactComponent as SortDownIcon } from '@src/common/assets/icons/sortDown.svg';
 import DesktopTokenTableRow from '@src/components/Dashboard/tables/DesktopTokenTableRow';
 import MobileTokenTableRow from '@src/components/Dashboard/tables/MobileTokenTableRow';
 import useWindowSize from '@src/hooks/useWindowSize';
@@ -20,26 +21,6 @@ interface IProps {
   isUserStats: boolean;
   handleSupplyAssetClick: (assetId: string, step: number) => void;
 }
-
-const TableTitle: React.FC<{
-  sort: boolean;
-  mode: 'descending' | 'ascending';
-  onClick: () => void;
-}> = ({ sort, mode, onClick, children }) => (
-  <Row
-    alignItems="center"
-    justifyContent="flex-end"
-    onClick={onClick}
-    style={{
-      userSelect: 'none',
-      cursor: 'pointer',
-      ...(sort ? { color: '#363870' } : {}),
-    }}>
-    <div>{children}</div>
-    {sort && mode === 'descending' && <SortDownIcon style={{ marginLeft: 8 }} />}
-    {sort && mode === 'ascending' && <SortDownIcon style={{ marginLeft: 8, transform: 'scale(1, -1)' }} />}
-  </Row>
-);
 
 const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClick, isUserStats }) => {
   const { windowWidth } = useWindowSize();
@@ -98,9 +79,18 @@ const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
               <TableTitle onClick={() => selectSort('selfBorrow')} mode={sortMode} sort={sort === 'selfBorrow'}>
                 To be repaid
               </TableTitle>
-              <TableTitle onClick={() => selectSort('setupBorrowAPR')} mode={sortMode} sort={sort === 'setupBorrowAPR'}>
-                Borrow APY
-              </TableTitle>
+              <Tooltip
+                width="100%"
+                containerStyles={{ display: 'flex', alignItems: 'center', width: '100%' }}
+                content={<Text>Annual interest paid by borrowers taking into account compounding.</Text>}>
+                <TableTitle
+                  isTooltip
+                  onClick={() => selectSort('setupBorrowAPR')}
+                  mode={sortMode}
+                  sort={sort === 'setupBorrowAPR'}>
+                  Borrow APY
+                </TableTitle>
+              </Tooltip>
               <TableTitle
                 onClick={() => selectSort('selfDailyBorrowInterest')}
                 mode={sortMode}

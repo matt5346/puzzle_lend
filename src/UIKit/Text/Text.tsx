@@ -10,8 +10,8 @@ const Text = styled.p<{
   size?: TTextSize;
   fitContent?: boolean;
   nowrap?: boolean;
-  crossed?: boolean;
   ellipsis?: number;
+  decoration?: string;
   margin?: string;
   textAlign?: TTextAlign;
 }>`
@@ -19,7 +19,7 @@ const Text = styled.p<{
   width: ${({ fitContent }) => (fitContent ? 'fit-content' : '100%')};
   font-weight: ${({ weight }) => weight ?? 400};
   white-space: ${({ nowrap }) => (nowrap ? 'nowrap' : 'unset')};
-  text-decoration: ${({ crossed }) => (crossed ? 'line-through' : 'unset')};
+  text-decoration: ${({ decoration }) => decoration || 'unset'};
   text-align: ${({ textAlign }) => textAlign ?? 'default'};
   ${({ type }) =>
     (() => {

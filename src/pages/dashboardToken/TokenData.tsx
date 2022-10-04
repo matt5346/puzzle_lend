@@ -1,5 +1,5 @@
 /* eslint-disable react/require-default-props */
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
 import { Text } from '@src/UIKit/Text';
@@ -7,6 +7,7 @@ import Card from '@src/common/styles/Card';
 import BN from '@src/common/utils/BN';
 import { Row, Column } from '@src/common/styles/Flex';
 import { SizedBox } from '@src/UIKit/SizedBox';
+import { Tooltip } from '@src/UIKit/Tooltip';
 
 interface IProps {
   rate?: BN;
@@ -76,18 +77,28 @@ const TokenData: React.FC<IProps> = ({ rate, totalSupply, totalBorrow, setupLtv,
         <Row
           justifyContent="space-between"
           style={{ borderBottom: '1px solid #F1F2FE', paddingBottom: '8px', marginBottom: '8px' }}>
-          <Text size="medium" type="secondary" fitContent>
-            Liquidation threshold
-          </Text>
-          <Text size="medium" type="secondary" fitContent>
+          <Tooltip
+            width="100%"
+            containerStyles={{ display: 'flex', alignItems: 'center', width: '100%' }}
+            content={<Text>Reserve margin when the Account health is considered low enough to start liquidation</Text>}>
+            <Text decoration="underline dotted" size="medium" type="secondary" fitContent>
+              Liquidation threshold
+            </Text>
+          </Tooltip>
+          <Text size="medium" type="secondary" fitContent nowrap>
             {setupLts || 0}%
           </Text>
         </Row>
         <Row justifyContent="space-between">
-          <Text size="medium" type="secondary" fitContent>
-            Liquidation penalty
-          </Text>
-          <Text size="medium" type="secondary" fitContent>
+          <Tooltip
+            width="100%"
+            containerStyles={{ display: 'flex', alignItems: 'center', width: '100%' }}
+            content={<Text>Premium to a liquidator for repaying an underwater loan in a particular asset</Text>}>
+            <Text decoration="underline dotted" size="medium" type="secondary" fitContent>
+              Liquidation penalty
+            </Text>
+          </Tooltip>
+          <Text size="medium" type="secondary" fitContent nowrap>
             {setupPenalty || 0}%
           </Text>
         </Row>

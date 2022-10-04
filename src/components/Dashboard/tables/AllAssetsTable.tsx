@@ -3,7 +3,6 @@
 /* eslint-disable array-callback-return */
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import styled from '@emotion/styled';
 import useWindowSize from '@src/hooks/useWindowSize';
 import { useStores } from '@src/stores';
 import GridTable from '@src/common/styles/GridTable';
@@ -26,7 +25,7 @@ interface IProps {
   handleSupplyAssetClick: (assetId: string, step: number) => void;
 }
 
-const TableTitle: React.FC<{
+export const TableTitle: React.FC<{
   sort: boolean;
   isTooltip?: boolean | false;
   mode: 'descending' | 'ascending';
@@ -107,20 +106,22 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
           <GridTable style={{ width: '100%', minWidth: '100%' }} desktopTemplate="2fr 1fr 1fr 1fr 1fr 2fr">
             <div className="gridTitle">
               <div>Asset</div>
-              <TableTitle
-                onClick={() => selectSort('totalAssetSupply')}
-                mode={sortMode}
-                sort={sort === 'totalAssetSupply'}>
-                Total supply
-              </TableTitle>
               <Tooltip
                 width="100%"
                 containerStyles={{ display: 'flex', alignItems: 'center', width: '100%' }}
-                content={
-                  <Text>
-                    Annual percentage rate (APY) earned for supplying assets. APYs are dynamic and fluctuate over time.
-                  </Text>
-                }>
+                content={<Text>Amount of deposited tokens in total.</Text>}>
+                <TableTitle
+                  isTooltip
+                  onClick={() => selectSort('totalAssetSupply')}
+                  mode={sortMode}
+                  sort={sort === 'totalAssetSupply'}>
+                  Total supply
+                </TableTitle>
+              </Tooltip>
+              <Tooltip
+                width="100%"
+                containerStyles={{ display: 'flex', alignItems: 'center', width: '100%' }}
+                content={<Text>Annual interest paid to investors taking into account compounding.</Text>}>
                 <TableTitle
                   isTooltip
                   onClick={() => selectSort('setupSupplyAPY')}
@@ -129,15 +130,30 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
                   Supply APY
                 </TableTitle>
               </Tooltip>
-              <TableTitle
-                onClick={() => selectSort('totalAssetBorrow')}
-                mode={sortMode}
-                sort={sort === 'totalAssetBorrow'}>
-                Total borrow
-              </TableTitle>
-              <TableTitle onClick={() => selectSort('setupBorrowAPR')} mode={sortMode} sort={sort === 'setupBorrowAPR'}>
-                Borrow APY
-              </TableTitle>
+              <Tooltip
+                width="100%"
+                containerStyles={{ display: 'flex', alignItems: 'center', width: '100%' }}
+                content={<Text>Amount of borrowed tokens in total.</Text>}>
+                <TableTitle
+                  isTooltip
+                  onClick={() => selectSort('totalAssetBorrow')}
+                  mode={sortMode}
+                  sort={sort === 'totalAssetBorrow'}>
+                  Total borrow
+                </TableTitle>
+              </Tooltip>
+              <Tooltip
+                width="100%"
+                containerStyles={{ display: 'flex', alignItems: 'center', width: '100%' }}
+                content={<Text>Annual interest paid by borrowers taking into account compounding.</Text>}>
+                <TableTitle
+                  isTooltip
+                  onClick={() => selectSort('setupBorrowAPR')}
+                  mode={sortMode}
+                  sort={sort === 'setupBorrowAPR'}>
+                  Borrow APY
+                </TableTitle>
+              </Tooltip>
             </div>
             {sortedTokens.length === 0 && (
               <Column justifyContent="center" alignItems="center" crossAxisSize="max">

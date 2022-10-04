@@ -1,6 +1,6 @@
 /* eslint-disable react/require-default-props */
 import styled from '@emotion/styled';
-import React, { useRef } from 'react';
+import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { Row, Column } from '@src/common/styles/Flex';
 import { Text } from '@src/UIKit/Text';
@@ -66,30 +66,49 @@ const UserInfo: React.FC<IProps> = () => {
       </HealthWrap>
       <Divider />
       <Row justifyContent="space-between">
-        <Text fitContent margin="0 0 10px 0" type="secondary" size="medium-2">
-          Supply balance
-        </Text>
+        <Tooltip
+          width="100%"
+          containerStyles={{ display: 'flex', alignItems: 'center', width: '100%' }}
+          content={<Text>USD value of your deposits in total</Text>}>
+          <Text decoration="underline dotted" fitContent margin="0 0 10px 0" type="secondary" size="medium-2">
+            Supply balance
+          </Text>
+        </Tooltip>
         {currentPoolData && currentPoolData.supplyUserTotal != null ? (
-          <Text fitContent>$ {currentPoolData.supplyUserTotal.toFixed(4)}</Text>
+          <Text fitContent nowrap>
+            $ {currentPoolData.supplyUserTotal.toFixed(4)}
+          </Text>
         ) : (
           <Text>-</Text>
         )}
       </Row>
       <Row justifyContent="space-between">
-        <Text fitContent margin="0 0 10px 0" type="secondary" size="medium-2">
-          Borrow balance
-        </Text>
+        <Tooltip
+          width="100%"
+          containerStyles={{ display: 'flex', alignItems: 'center', width: '100%' }}
+          content={<Text>USD value of your borrows in total</Text>}>
+          <Text decoration="underline dotted" fitContent margin="0 0 10px 0" type="secondary" size="medium-2">
+            Borrow balance
+          </Text>
+        </Tooltip>
         {currentPoolData && currentPoolData.borrowUserTotal != null ? (
-          <Text fitContent>$ {currentPoolData.borrowUserTotal.toFixed(4)}</Text>
+          <Text fitContent nowrap>
+            $ {currentPoolData.borrowUserTotal.toFixed(4)}
+          </Text>
         ) : (
           <Text>-</Text>
         )}
       </Row>
       <LineDivider />
       <Row justifyContent="space-between">
-        <Text fitContent margin="10px 0" type="secondary" size="medium-2">
-          NET APY
-        </Text>
+        <Tooltip
+          width="100%"
+          containerStyles={{ display: 'flex', alignItems: 'center', width: '100%' }}
+          content={<Text>Your annual net profit(expenses) relative to your deposits(loans) USD value.</Text>}>
+          <Text decoration="underline dotted" fitContent margin="0 0 10px 0" type="secondary" size="medium-2">
+            NET APY
+          </Text>
+        </Tooltip>
         {currentPoolData && currentPoolData.netAPY ? (
           <Text fitContent margin="10px 0">
             {currentPoolData.netAPY.toFixed(2)}%

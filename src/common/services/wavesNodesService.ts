@@ -295,6 +295,7 @@ const wavesNodesService = {
         return { [itemId]: responseAssets.data };
       })
     );
+    console.log(assetsNodeData, '----assetsNodeData');
 
     const fullAssetsData = assetsArrData.map((tokenData: any) => {
       const itemData = {
@@ -354,7 +355,7 @@ const wavesNodesService = {
 
         const penalties = assetExtraData[tokenData.assetId].find((pool: any) => pool.key === 'setup_penalties')?.value;
         const lts = assetExtraData[tokenData.assetId].find((pool: any) => pool.key === 'setup_lts')?.value;
-        // console.log(penalties, '----penalties');
+        console.log(penalties, '----penalties');
 
         // setupTokens and tokensRatesArr have same order
         // so we compare them and searching for ltv and rates

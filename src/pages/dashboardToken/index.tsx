@@ -156,6 +156,8 @@ const DashboardToken: React.FC = () => {
         data = poolDataTokensWithStats[assetId];
       }
 
+      console.log(data, '---DATA');
+
       setTotalSupplyUsers(totalSupplyUsers);
       setTotalBorrowUsers(totalBorrowUsers);
       setFilteredTokens(data);

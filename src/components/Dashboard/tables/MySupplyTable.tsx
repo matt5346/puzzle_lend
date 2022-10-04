@@ -8,7 +8,9 @@ import { useStores } from '@src/stores';
 import GridTable from '@src/common/styles/GridTable';
 import Card from '@src/common/styles/Card';
 import MobileCardsWrap from '@src/common/styles/MobileCardsWrap';
-import { Row, Column } from '@src/common/styles/Flex';
+import { TableTitle } from '@src/components/Dashboard/tables/AllAssetsTable';
+import { Tooltip } from '@src/UIKit/Tooltip';
+import { Text } from '@src/UIKit/Text';
 import { IToken, TTokenStatistics } from '@src/common/constants';
 import DesktopTokenTableRow from '@src/components/Dashboard/tables/DesktopTokenTableRow';
 import MobileTokenTableRow from '@src/components/Dashboard/tables/MobileTokenTableRow';
@@ -21,26 +23,6 @@ interface IProps {
   isUserStats: boolean;
   handleSupplyAssetClick: (assetId: string, step: number) => void;
 }
-
-const TableTitle: React.FC<{
-  sort: boolean;
-  mode: 'descending' | 'ascending';
-  onClick: () => void;
-}> = ({ sort, mode, onClick, children }) => (
-  <Row
-    alignItems="center"
-    justifyContent="flex-end"
-    onClick={onClick}
-    style={{
-      userSelect: 'none',
-      cursor: 'pointer',
-      ...(sort ? { color: '#363870' } : {}),
-    }}>
-    <div>{children}</div>
-    {sort && mode === 'descending' && <SortDownIcon style={{ marginLeft: 8 }} />}
-    {sort && mode === 'ascending' && <SortDownIcon style={{ marginLeft: 8, transform: 'scale(1, -1)' }} />}
-  </Row>
-);
 
 const MySupplyTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClick, isUserStats }) => {
   const { windowWidth } = useWindowSize();
@@ -96,15 +78,30 @@ const MySupplyTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
             mobileTemplate="2fr 1fr">
             <div className="gridTitle">
               <div>Asset</div>
-              <TableTitle
-                onClick={() => selectSort('totalAssetSupply')}
-                mode={sortMode}
-                sort={sort === 'totalAssetSupply'}>
-                Supplied
-              </TableTitle>
-              <TableTitle onClick={() => selectSort('setupSupplyAPY')} mode={sortMode} sort={sort === 'setupSupplyAPY'}>
-                Supply APY
-              </TableTitle>
+              <Tooltip
+                width="100%"
+                containerStyles={{ display: 'flex', alignItems: 'center', width: '100%' }}
+                content={<Text>Annual interest paid by borrowers taking into account compounding.</Text>}>
+                <TableTitle
+                  isTooltip
+                  onClick={() => selectSort('totalAssetSupply')}
+                  mode={sortMode}
+                  sort={sort === 'totalAssetSupply'}>
+                  Supplied
+                </TableTitle>
+              </Tooltip>
+              <Tooltip
+                width="100%"
+                containerStyles={{ display: 'flex', alignItems: 'center', width: '100%' }}
+                content={<Text>Annual interest paid to investors taking into account compounding.</Text>}>
+                <TableTitle
+                  isTooltip
+                  onClick={() => selectSort('setupSupplyAPY')}
+                  mode={sortMode}
+                  sort={sort === 'setupSupplyAPY'}>
+                  Supply APY
+                </TableTitle>
+              </Tooltip>
               <TableTitle
                 onClick={() => selectSort('selfDailyIncome')}
                 mode={sortMode}
