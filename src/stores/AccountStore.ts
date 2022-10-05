@@ -311,12 +311,13 @@ class AccountStore {
       await this.login(this.loginType ?? LOGIN_TYPE.SIGNER_EMAIL);
     }
     if (this.signer == null) {
-      // this.rootStore.notificationStore.notify("You need to login firstly", {
-      //   title: "Error",
-      //   type: "error",
-      // });
+      this.rootStore.notificationStore.notify('You need to login firstly', {
+        title: 'Error',
+        type: 'error',
+      });
       return null;
     }
+    console.log(txParams, 'SIGNER');
     const ttx = this.signer.invoke({
       dApp: txParams.dApp,
       fee: txParams.fee != null ? txParams.fee : this.isAccScripted ? 900000 : 500000,

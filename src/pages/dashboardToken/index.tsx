@@ -258,9 +258,9 @@ const DashboardToken: React.FC = () => {
         <TokenData
           key={tokenFullData?.assetId || '-'}
           rate={tokenFullData?.currentPrice || BN.ZERO}
-          setupLtv={tokenFullData?.setupLtv || '-'}
-          setupLts={tokenFullData?.setupLts || '-'}
-          setupPenalty={tokenFullData?.setupPenalty || '-'}
+          setupLtv={tokenFullData?.setupLtv || '0'}
+          setupLts={tokenFullData?.setupLts || '0'}
+          setupPenalty={tokenFullData?.setupPenalty || '0'}
           totalSupply={getSupplyUsers || 0}
           totalBorrow={getBorrowUsers || 0}
         />

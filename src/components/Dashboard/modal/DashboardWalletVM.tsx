@@ -77,7 +77,7 @@ class DashboardWalletVM {
           function: 'borrow',
           args: [
             { type: 'string', value: assetId },
-            { type: 'integer', value: amount },
+            { type: 'integer', value: amount.toString() },
           ],
         },
       })
@@ -168,7 +168,7 @@ class DashboardWalletVM {
           function: 'withdraw',
           args: [
             { type: 'string', value: assetId },
-            { type: 'integer', value: amount },
+            { type: 'integer', value: amount.toString() },
           ],
         },
       })
