@@ -9,6 +9,7 @@ import { ROUTES } from '@src/common/constants';
 import { useLocation, Link } from 'react-router-dom';
 import { Anchor } from '@src/UIKit/Anchor';
 import { observer } from 'mobx-react-lite';
+import LinkItem from '@src/common/styles/LinkItem';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IProps {}
@@ -79,6 +80,10 @@ const MenuItem = styled(Anchor)<{ selected?: boolean }>`
   height: 100%;
   margin: 0 12px;
 
+  a {
+    color: ${({ selected }) => (selected ? '#363870' : '#8082c5')};
+  }
+
   &:hover {
     border-bottom: 4px solid #c6c9f4;
     color: #7075e9;
@@ -107,7 +112,10 @@ const isRoutesEquals = (a: string, b: string) => {
 const Header: React.FC<IProps> = () => {
   const location = useLocation();
 
-  const menuItems = [{ name: 'Dashboard', link: ROUTES.HOME }];
+  const menuItems = [
+    { name: 'Dashboard', link: ROUTES.HOME, isBlank: false },
+    { name: 'Puzzle Guidebook', link: 'https://puzzle-lend.gitbook.io/guidebook/', isBlank: true },
+  ];
   return (
     <Root>
       <TopMenu>
@@ -117,9 +125,15 @@ const Header: React.FC<IProps> = () => {
           </Link>
           <Desktop>
             <SizedBox width={54} />
-            {menuItems.map(({ name, link }) => (
+            {menuItems.map(({ name, link, isBlank }) => (
               <MenuItem key={name} selected={isRoutesEquals(link, location.pathname)}>
-                <Link to={link}>{name}</Link>
+                {!isBlank ? (
+                  <Link to={link}>{name}</Link>
+                ) : (
+                  <LinkItem isRouterLink target="_blank" href="https://puzzle-lend.gitbook.io/guidebook/">
+                    {name}
+                  </LinkItem>
+                )}
               </MenuItem>
             ))}
           </Desktop>

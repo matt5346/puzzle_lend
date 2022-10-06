@@ -9,7 +9,10 @@ import tokensFullList from '@src/common/constants/tokens_full.json';
 const tokensList = {
   mainPool: tokensWavesList,
   puzzlePool: tokensPuzzleList,
-  allTokens: tokensFullList,
+  allTokens: [
+    ...tokensWavesList,
+    ...tokensPuzzleList,
+  ],
 };
 
 export const poolsTitles = {
@@ -160,12 +163,21 @@ export const ROUTES = {
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function TOKENS_LIST(poolName: string): IToken[] {
-  const object = Object.entries(tokensList).filter(([key, value]) => {
+  let objectValues: any = Object.entries(tokensList).filter(([key, value]) => {
     return key === poolName ? value : false
   })[0]
 
-  if (object && object.length) {
-    return Object.values(object[1]).map((t: any) => ({
+  objectValues = Object.values(objectValues[1]);
+
+  // case for merged pools token list
+  if (poolName === 'allTokens') {
+    objectValues = objectValues.filter((v: any, i: any, a: any) => {
+      return a.findIndex((t: any) => (t.assetId === v.assetId)) === i
+    })
+  }
+
+  if (objectValues && objectValues.length) {
+    return objectValues.map((t: any) => ({
       ...t,
       logo: tokenLogos[t.symbol],
     }));
@@ -173,6 +185,7 @@ export function TOKENS_LIST(poolName: string): IToken[] {
 
   return []
 }
+console.log(TOKENS_LIST('allTokens'), 'TOKENS_LIST(1allTokens)');
 
 export const TOKENS_LIST_FULL: Array<IToken> = Object.values(tokensFullList).map((t) => ({
   ...t,

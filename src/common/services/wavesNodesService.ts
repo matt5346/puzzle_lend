@@ -81,7 +81,7 @@ const wavesNodesService = {
         assetsId.map(async (itemId) => {
           const stringParams = buildUrlParams(
             {
-              total_suppliers: `.*_(supplied%7Cborrowed)_${itemId}`,
+              all_borrowers_suppliers: `.*_(supplied%7Cborrowed)_${itemId}`,
             },
             'matches'
           );
@@ -178,7 +178,7 @@ const wavesNodesService = {
           'Content-type': 'application/json',
         },
         data: {
-          expr: `getUserCollateral(false, "${userId}", true)`,
+          expr: `getUserCollateral(false, "${userId}", true, "")`,
         },
       });
 
@@ -355,7 +355,6 @@ const wavesNodesService = {
 
         const penalties = assetExtraData[tokenData.assetId].find((pool: any) => pool.key === 'setup_penalties')?.value;
         const lts = assetExtraData[tokenData.assetId].find((pool: any) => pool.key === 'setup_lts')?.value;
-        console.log(penalties, '----penalties');
 
         // setupTokens and tokensRatesArr have same order
         // so we compare them and searching for ltv and rates
@@ -370,8 +369,9 @@ const wavesNodesService = {
               // bRate should be always bigger than sRate
               // bRate/sRate format = 16 decimals which are percents
               // because of it 10 ** 16 (Decimal) and / 100 to get integer for use it later
-              itemData.borrow_rate = +(Number(splittedRates[0]!) / 10 ** 16).toFixed(8);
-              itemData.supply_rate = +(Number(splittedRates[1]!) / 10 ** 16).toFixed(8);
+              console.log(splittedRates[0], 'splittedRates[0]');
+              itemData.borrow_rate = +(+splittedRates[0]! / 10 ** 16).toFixed(8);
+              itemData.supply_rate = +(+splittedRates[1]! / 10 ** 16).toFixed(8);
             }
 
             if (penalties && penalties.length) {
@@ -430,6 +430,7 @@ const wavesNodesService = {
 
         const UR = itemData.total_borrow / itemData.total_supply;
         const supplyInterest = +itemData.setup_interest * UR;
+        console.log(+itemData.setup_interest, tokenData.name, 'supplyAPY[0]');
         const supplyAPY = ((1 + supplyInterest) ** 365 - 1) * 100;
 
         // borrow daily interest && daily INCOME

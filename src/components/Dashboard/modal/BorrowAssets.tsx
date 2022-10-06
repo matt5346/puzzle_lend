@@ -203,6 +203,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
   const userMaximumToBorrowBN = (userColatteral: number, rate: BN) => {
     let maximum = 0;
     let isError = false;
+    console.log(+rate, userColatteral, '+val1');
 
     // if !isNative, show maximum in dollars, collateral in dollars by default
     maximum = userColatteral / 10 ** 6;
@@ -218,7 +219,9 @@ const BorrowAssets: React.FC<IProps> = (props) => {
       isError = true;
       return BN.formatUnits(totalReserves * 10 ** props.decimals * 0.8, 0);
     }
+
     const val = BN.formatUnits(Math.ceil(maximum * 10 ** props.decimals * 0.8), 0);
+    console.log(+val, '+val');
 
     if (countAccountHealth(val) === 0) {
       setError(`Account health in risk of liquidation`);

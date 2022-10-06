@@ -68,7 +68,7 @@ const TokenData: React.FC<IProps> = ({ rate, totalSupply, totalBorrow, setupLtv,
           justifyContent="space-between"
           style={{ borderBottom: '1px solid #F1F2FE', paddingBottom: '8px', marginBottom: '8px' }}>
           <Text size="medium" type="secondary" fitContent>
-            LTV
+            Collateral Factor
           </Text>
           <Text size="medium" type="secondary" fitContent>
             {setupLtv || 0}%

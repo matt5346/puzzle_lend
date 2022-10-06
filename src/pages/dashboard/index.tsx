@@ -2,19 +2,21 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useEffect, useState, useReducer } from 'react';
+import styled from '@emotion/styled';
+import { observer } from 'mobx-react-lite';
 import { useLocation } from 'react-router-dom';
 import { useStores } from '@src/stores';
 import { IToken } from '@src/common/constants';
-import styled from '@emotion/styled';
 import { Row, Column } from '@src/common/styles/Flex';
 import { DashboardVMProvider } from '@src/pages/dashboard/DashboardVm';
 import useWindowSize from '@src/hooks/useWindowSize';
 import DashboardTable from '@src/pages/dashboard/DashboardTable';
 import Container from '@src/common/styles/Container';
+import LinkItem from '@src/common/styles/LinkItem';
 import { Text } from '@src/UIKit/Text';
+import { Button } from '@src/UIKit/Button';
 import { Preloader } from '@src/UIKit/Preloader';
 import { Dropdown } from '@src/UIKit/Dropdown';
-import { observer } from 'mobx-react-lite';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import { LOGIN_TYPE } from '@src/stores/AccountStore';
 import UserInfo from '@src/pages/dashboard/UserInfo';
@@ -157,6 +159,7 @@ const SideViewWrap = styled.div`
   flex-direction: column;
   align-self: flex-start;
   width: 100%;
+  align-items: center;
 
   @media (min-width: 880px) {
     width: 50%;
@@ -270,6 +273,14 @@ const Dashboard: React.FC = () => {
             <SideViewWrap>
               <SizedBox height={34} />
               <LoginSideView isKeeperDisabled={isKeeperDisabled} handleLogin={handleLogin} />
+              <SizedBox height={12} />
+              {windowWidth! < 880 && (
+                <Button size="medium" maxWidth="156px" fixed>
+                  <LinkItem target="_blank" href="https://puzzle-lend.gitbook.io/guidebook/" inverse isRouterLink>
+                    Check GuideBook
+                  </LinkItem>
+                </Button>
+              )}
             </SideViewWrap>
           ) : (
             <SideViewWrap>

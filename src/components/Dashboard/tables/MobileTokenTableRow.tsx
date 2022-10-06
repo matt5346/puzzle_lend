@@ -130,17 +130,6 @@ const MobileTokenTableRow: React.FC<IProps> = ({
           </StatsRow>
         ) : null}
 
-        {setupSupplyAPY && (
-          <StatsRow>
-            <Text type="secondary" size="medium">
-              Supply APY
-            </Text>
-            <Text size="medium" textAlign="right">
-              {(+setupSupplyAPY).toFixed(2)}%
-            </Text>
-          </StatsRow>
-        )}
-
         {totalBorrow != null && rate ? (
           <StatsRow>
             <Text type="secondary" size="medium">
@@ -186,6 +175,17 @@ const MobileTokenTableRow: React.FC<IProps> = ({
                 $ {Number(selfDailyBorrowInterest).toFixed(8)}
               </Text>
             </Column>
+          </StatsRow>
+        )}
+
+        {setupSupplyAPY && (
+          <StatsRow>
+            <Text type="secondary" size="medium">
+              Supply APY
+            </Text>
+            <Text size="medium" textAlign="right">
+              {(+setupSupplyAPY).toFixed(2)}%
+            </Text>
           </StatsRow>
         )}
 

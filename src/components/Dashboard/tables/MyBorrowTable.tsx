@@ -48,7 +48,7 @@ const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
       if (sort === 'selfDailyBorrowInterest') key = 'selfDailyBorrowInterest';
       if (key == null) return 0;
 
-      if (stats1 == null && stats2 == null) return 0;
+      if (stats1 == null || stats2 == null) return 0;
       if (stats1[key] == null && stats2[key] != null) {
         return sortMode === 'descending' ? 1 : -1;
       }
@@ -137,6 +137,7 @@ const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
                     key={t.assetId}
                     rate={stats.currentPrice}
                     selfBorrow={stats.selfBorrow}
+                    setupSupplyAPY={stats.setupSupplyAPY}
                     setupBorrowAPR={stats.setupBorrowAPR}
                     selfDailyBorrowInterest={stats.selfDailyBorrowInterest}
                     handleSupplyAssetClick={handleSupplyAssetClick}

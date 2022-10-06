@@ -68,6 +68,7 @@ class DashboardWalletVM {
   submitBorrow = async (amount: any, assetId: any, contractAddress: string) => {
     const { accountStore, lendStore, tokenStore, notificationStore } = this.rootStore;
     lendStore.setPreloader(true);
+    console.log('submit uspply');
 
     await accountStore
       .invoke({
@@ -83,6 +84,7 @@ class DashboardWalletVM {
       })
       .then((txId) => {
         lendStore.setDashboardModalOpened(false, '', 0);
+        lendStore.setPreloader(false);
         txId &&
           notificationStore.notify(
             `Congrats, You successfully borrowed some money! You can track the transaction on Waves Explorer.`,
@@ -112,6 +114,7 @@ class DashboardWalletVM {
   submitSupply = async (amount: any, assetId: any, contractAddress: string) => {
     const { accountStore, lendStore, tokenStore, notificationStore } = this.rootStore;
     lendStore.setPreloader(true);
+    console.log('submit uspply');
 
     await accountStore
       .invoke({

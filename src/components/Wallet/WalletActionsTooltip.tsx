@@ -8,6 +8,7 @@ import copy from 'copy-to-clipboard';
 import { observer } from 'mobx-react-lite';
 import { useStores } from '@src/stores';
 import { EXPLORER_URL } from '@src/common/constants';
+import useWindowSize from '@src/hooks/useWindowSize';
 
 interface IProps {
   address: string;
@@ -34,15 +35,17 @@ const Root = styled(Column)`
 `;
 
 const WalletActionsTooltip: React.FC<IProps> = ({ address }) => {
-  const { accountStore } = useStores();
+  const { accountStore, notificationStore } = useStores();
+  const { windowWidth } = useWindowSize();
 
   const handleCopyAddress = () => {
+    console.log('handleCopyAddress');
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     address && copy(address);
-    // notificationStore.notify("Your address was copied", {
-    //   type: "success",
-    //   title: "Congratulations!",
-    // });
+    notificationStore.notify('Your address was copied', {
+      type: 'success',
+      title: 'Congratulations!',
+    });
   };
   const handleLogout = () => accountStore.logout();
 
@@ -55,9 +58,11 @@ const WalletActionsTooltip: React.FC<IProps> = ({ address }) => {
         <Text type="secondary">View in Waves Explorer</Text>
       </Anchor>
       <Divider className="divider" />
-      <Anchor style={{ padding: '10px 0' }} target="_blank" href="https://puzzle-lend.gitbook.io/guidebook/">
-        <Text type="secondary">Check our Guidebook</Text>
-      </Anchor>
+      {windowWidth! < 880 && (
+        <Anchor style={{ padding: '10px 0' }} target="_blank" href="https://puzzle-lend.gitbook.io/guidebook/">
+          <Text type="secondary">Puzzle Guidebook</Text>
+        </Anchor>
+      )}
       <Divider className="divider" />
       <Text type="secondary" onClick={handleLogout} className="menu-item">
         Disconnect
