@@ -333,14 +333,14 @@ const SupplyAssets: React.FC<IProps> = (props) => {
           0.005 WAVES
         </Text>
       </Row>
-      <SizedBox height={24} />
+      {/* <SizedBox height={24} />
       <Row justifyContent="space-between">
         <Checkbox
           label="You will not be able to withdraw your funds if they are all borrowed"
           checked={props.isAgree}
           onChange={(e) => props.onChange(e)}
         />
-      </Row>
+      </Row> */}
       <SizedBox height={24} />
       <Footer>
         {accountStore && accountStore.address ? (

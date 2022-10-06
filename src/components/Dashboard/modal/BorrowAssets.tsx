@@ -461,14 +461,14 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           0.005 WAVES
         </Text>
       </Row>
-      <SizedBox height={24} />
+      {/* <SizedBox height={24} />
       <Row justifyContent="space-between">
         <Checkbox
           label="You will be liquidated if you can not cover your borrow"
           checked={props.isAgree}
           onChange={(e) => props.onChange(e)}
         />
-      </Row>
+      </Row> */}
       <SizedBox height={24} />
       {/* if NO liquidity show ERROR, else borrow or login */}
       <Footer>
