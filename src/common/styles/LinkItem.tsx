@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { Anchor } from '@src/UIKit/Anchor';
 
 const LinkItem = styled(Anchor)<{ selected?: boolean; isRouterLink?: boolean; inverse?: boolean }>`
-  display: inline-block;
+  display: flex;
   text-decoration: none;
   color: ${({ inverse }) => (inverse ? '#fff' : '#7075e9')};
 

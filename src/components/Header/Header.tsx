@@ -11,6 +11,7 @@ import { Anchor } from '@src/UIKit/Anchor';
 import { observer } from 'mobx-react-lite';
 import LinkItem from '@src/common/styles/LinkItem';
 
+import { ReactComponent as External } from '@src/common/assets/icons/external.svg';
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IProps {}
 
@@ -99,6 +100,11 @@ const Desktop = styled.div`
   }
 `;
 
+const ExternalLink = styled.div`
+  position: relative;
+  top: -5px;
+`;
+
 const isRoutesEquals = (a: string, b: string) => {
   let result = a.replaceAll('/', '') === b.replaceAll('/', '');
 
@@ -132,6 +138,9 @@ const Header: React.FC<IProps> = () => {
                 ) : (
                   <LinkItem isRouterLink target="_blank" href="https://puzzle-lend.gitbook.io/guidebook/">
                     {name}
+                    <ExternalLink>
+                      <External />
+                    </ExternalLink>
                   </LinkItem>
                 )}
               </MenuItem>

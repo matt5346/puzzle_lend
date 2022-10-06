@@ -8,6 +8,7 @@ import keeper from '@src/common/assets/icons/keeper.svg';
 import { observer } from 'mobx-react-lite';
 import { useStores } from '@src/stores';
 import { Row, Column } from '@src/common/styles/Flex';
+import LinkItem from '@src/common/styles/LinkItem';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import { Text } from '@src/UIKit/Text';
 import { Anchor } from '@src/UIKit/Anchor';
@@ -44,17 +45,6 @@ const loginTypes = [
   },
 ];
 
-const LinkItem = styled(Anchor)<{ selected?: boolean }>`
-  display: inline-block;
-  text-decoration: none;
-  color: #7075e9;
-
-  &:hover {
-    text-decoration: underline;
-    color: #8082c5;
-  }
-`;
-
 export const LoginTypesRender: React.FC<{
   isKeeperDisabled: boolean;
   handleLogin: (type: LOGIN_TYPE) => void;
@@ -80,6 +70,7 @@ export const LoginTypesRender: React.FC<{
       <Text textAlign="center" size="medium">
         New to Waves blockchain?{' '}
         <LinkItem
+          style={{ display: 'inline-block' }}
           target="_blank"
           href="https://docs.waves.exchange/en/waves-exchange/waves-exchange-online-desktop/online-desktop-account/online-desktop-creation">
           Learn more about wallets
