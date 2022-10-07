@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { observer } from 'mobx-react-lite';
 import { Route, Routes, Navigate } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
 import { ROUTES } from '@src/common/constants';
 
 import { useStores } from '@src/stores';

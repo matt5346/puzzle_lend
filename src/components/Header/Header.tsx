@@ -103,6 +103,7 @@ const Desktop = styled.div`
 const ExternalLink = styled.div`
   position: relative;
   top: -5px;
+  left: 4px;
 `;
 
 const isRoutesEquals = (a: string, b: string) => {
