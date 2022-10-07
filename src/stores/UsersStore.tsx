@@ -54,12 +54,12 @@ export default class UsersStore {
     }
   };
 
-  private setUserHealth = (v: number) => {
-    if (v > 100) {
+  private setUserHealth = (v: BN) => {
+    if (+v > 100) {
       return 100;
     }
 
-    if (v < 0) {
+    if (+v < 0) {
       return 0;
     }
 
@@ -212,19 +212,19 @@ export default class UsersStore {
     });
 
     // count pool Total
-    let poolTotal = 0;
+    let poolTotal = BN.ZERO;
 
     // count net apy
-    let supplyAmountApy = 0;
-    let borrowedAmountApr = 0;
+    let supplyAmountApy = BN.ZERO;
+    let borrowedAmountApr = BN.ZERO;
 
     // count current user Balance
-    let supplyAmountCurrent = 0;
-    let borrowedAmountCurrent = 0;
+    let supplyAmountCurrent = BN.ZERO;
+    let borrowedAmountCurrent = BN.ZERO;
 
-    let baseAmount = 0;
-    let borrowCapacity = 0;
-    let borrowCapacityUsed = 0;
+    let baseAmount = BN.ZERO;
+    let borrowCapacity = BN.ZERO;
+    let borrowCapacityUsed = BN.ZERO;
 
     const statistics = stats.map((details: any) => {
       const asset = TOKENS_BY_ASSET_ID[details.id] ?? details.precision;
@@ -232,24 +232,43 @@ export default class UsersStore {
       const currentPrice = new BN(details.min_price ?? 0);
 
       // pool Total
-      poolTotal += (details.total_supply / 10 ** details.precision) * +currentPrice;
+      poolTotal = BN.formatUnits(details.total_supply, details.precision).times(currentPrice).plus(poolTotal);
 
       // net APY
-      supplyAmountApy += (details.self_supply / 10 ** details.precision) * +currentPrice * details.setup_supply_apy;
-      borrowedAmountApr += (details.self_borrowed / 10 ** details.precision) * +currentPrice * details.setup_borrow_apr;
-      baseAmount += (details.self_supply / 10 ** details.precision) * +currentPrice;
+      supplyAmountApy = BN.formatUnits(details.self_supply, details.precision)
+        .times(currentPrice)
+        .times(details.setup_supply_apy)
+        .plus(supplyAmountApy);
+
+      borrowedAmountApr = BN.formatUnits(details.self_borrowed, details.precision)
+        .times(currentPrice)
+        .times(details.setup_borrow_apr)
+        .plus(borrowedAmountApr);
+
+      baseAmount = BN.formatUnits(details.self_supply, details.precision).times(currentPrice).plus(baseAmount);
 
       // user Borrow/Supply Total
-      supplyAmountCurrent += (details.self_supply / 10 ** details.precision) * +currentPrice;
-      borrowedAmountCurrent += (details.self_borrowed / 10 ** details.precision) * +currentPrice;
+      supplyAmountCurrent = BN.formatUnits(details.self_supply, details.precision)
+        .times(currentPrice)
+        .plus(supplyAmountCurrent);
+
+      borrowedAmountCurrent = BN.formatUnits(details.self_borrowed, details.precision)
+        .times(currentPrice)
+        .plus(borrowedAmountCurrent);
 
       // count USER HEALTH for SAME ASSETS
-      if (details.self_supply > 0) {
-        borrowCapacity += (details.self_supply / 10 ** details.precision) * +currentPrice * (details.setup_ltv / 100);
+      if (+details.self_supply > 0) {
+        borrowCapacity = BN.formatUnits(details.self_supply, details.precision)
+          .times(currentPrice)
+          .times(details.setup_ltv)
+          .div(100)
+          .plus(borrowCapacity);
       }
 
-      if (details.self_borrowed > 0) {
-        borrowCapacityUsed += (details.self_borrowed / 10 ** details.precision) * +currentPrice;
+      if (+details.self_borrowed > 0) {
+        borrowCapacityUsed = BN.formatUnits(details.self_borrowed, details.precision)
+          .times(currentPrice)
+          .plus(borrowCapacityUsed);
       }
 
       return {
@@ -275,8 +294,12 @@ export default class UsersStore {
       };
     });
 
-    const netAPY: number = (supplyAmountApy - borrowedAmountApr) / baseAmount;
-    const accountHealth: number = (1 - borrowCapacityUsed / borrowCapacity) * 100;
+    let netAPY = BN.ZERO;
+    let accountHealth = BN.ZERO;
+
+    if (+baseAmount !== 0) netAPY = supplyAmountApy.minus(borrowedAmountApr).div(baseAmount);
+    if (+borrowCapacity !== 0)
+      accountHealth = BN.formatUnits(1, 0).minus(borrowCapacityUsed.div(borrowCapacity)).times(100);
 
     const poolData = {
       netAPY,
@@ -293,10 +316,7 @@ export default class UsersStore {
     return poolData;
   };
 
-  constructor(rootStore: RootStore, initState?: ISerializedTokenStore) {
+  constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
-    // Promise.all(Object.values(LENDS_CONTRACTS).map((item) => this.loadBorrowSupplyUsers(item))).then(() =>
-    //   this.setInitialized(true)
-    // );
   }
 }

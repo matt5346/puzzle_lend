@@ -18,10 +18,10 @@ interface IProps {
   rate?: BN;
   selfSupply?: BN;
   selfBorrow?: BN;
-  dailyIncome?: string;
-  selfDailyBorrowInterest?: string;
-  setupBorrowAPR?: string;
-  setupSupplyAPY?: string;
+  dailyIncome?: BN;
+  selfDailyBorrowInterest?: BN;
+  setupBorrowAPR?: BN;
+  setupSupplyAPY?: BN;
   totalSupply?: BN;
   totalBorrow?: BN;
   isUserStats: boolean;

@@ -11,10 +11,10 @@ import RoundTokenIcon from '@src/common/styles/RoundTokenIcon';
 interface IProps extends HTMLAttributes<HTMLDivElement> {
   token: IToken;
   rate?: BN;
-  setupLtv?: string;
-  setupSupplyAPY?: string;
+  setupLtv?: BN;
+  setupSupplyAPY?: BN;
   selfSupply: BN;
-  supplyRate?: string;
+  supplyRate?: BN;
   rateChange?: BN | null;
 }
 

@@ -3,10 +3,7 @@ import styled from '@emotion/styled';
 import BN from '@src/common/utils/BN';
 import React, { HTMLAttributes } from 'react';
 import { Column, Row } from '@src/common/styles/Flex';
-import SquareTokenIcon from '@src/common/styles/SquareTokenIcon';
-import { SizedBox } from '@src/UIKit/SizedBox';
 import { Text } from '@src/UIKit/Text';
-import Skeleton from 'react-loading-skeleton';
 import tokenLogos from '@src/common/constants/tokenLogos';
 import { IToken } from '@src/common/constants';
 import RoundTokenIcon from '@src/common/styles/RoundTokenIcon';
@@ -14,9 +11,9 @@ import RoundTokenIcon from '@src/common/styles/RoundTokenIcon';
 interface IProps extends HTMLAttributes<HTMLDivElement> {
   token: IToken;
   rate?: BN;
-  setupLtv?: string;
+  setupLtv?: BN;
   selfBorrow?: BN;
-  setupBorrowAPR?: string;
+  setupBorrowAPR?: BN;
   rateChange?: BN | null;
 }
 

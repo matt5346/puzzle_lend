@@ -59,7 +59,7 @@ const UserInfo: React.FC<IProps> = () => {
           <PercentageCircleBar
             size={100}
             strokeWidth={3}
-            percentage={currentPoolData && currentPoolData.userHealth ? currentPoolData.userHealth : 100}
+            percentage={(currentPoolData && currentPoolData.userHealth) || 0}
             color="purple"
           />
         </Tooltip>

@@ -9,7 +9,6 @@ import NotificationStore from '@src/stores/NotificationStore';
 export interface ISerializedRootStore {
   accountStore?: ISerializedAccountStore;
   tokenStore?: ISerializedTokenStore;
-  usersStore?: ISerializedTokenStore;
   lendStore?: ISerializedLendStore;
 }
 
@@ -28,7 +27,7 @@ export default class RootStore {
     this.accountStore = new AccountStore(this, initState?.accountStore);
     this.lendStore = new LendStore(this, initState?.lendStore);
     this.tokenStore = new TokenStore(this, initState?.tokenStore);
-    this.usersStore = new UsersStore(this, initState?.usersStore);
+    this.usersStore = new UsersStore(this);
     this.notificationStore = new NotificationStore(this);
     makeAutoObservable(this);
   }

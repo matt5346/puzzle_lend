@@ -30,7 +30,7 @@ interface IProps {
   assetName?: string;
   totalSupply: BN;
   userBalance: BN;
-  setupBorrowAPR?: string;
+  setupBorrowAPR?: BN;
   selfBorrow: BN;
   rate: BN;
   setAmount?: (amount: BN) => void;
@@ -131,8 +131,8 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     setConvertToNative(isNativeToken);
   };
 
-  const formatVal = (valArg: BN, decimal: number) => {
-    return (+valArg / 10 ** decimal).toFixed(4);
+  const formatVal = (valArg: BN | number, decimal: number) => {
+    return BN.formatUnits(valArg, decimal);
   };
 
   useEffect(() => {
@@ -150,13 +150,13 @@ const BorrowAssets: React.FC<IProps> = (props) => {
   );
 
   const getUserRepay = () => {
-    if (!isNative && props.selfBorrow)
-      return (
-        +formatVal(props.selfBorrow, props.decimals) * +props.rate?.toFormat(4) -
-        +formatVal(amount, props.decimals)
-      ).toFixed(2);
+    if (!isNative && +props.selfBorrow > 0)
+      return formatVal(props.selfBorrow, props.decimals)
+        .times(props.rate)
+        .minus(formatVal(amount, props.decimals))
+        .toFixed(2);
 
-    return (+formatVal(props.selfBorrow, props.decimals) - +formatVal(amount, props.decimals)).toFixed(2);
+    return formatVal(props.selfBorrow, props.decimals).minus(formatVal(amount, props.decimals)).toFixed(2);
   };
 
   const handleChangeAmount = (v: BN) => {
@@ -217,7 +217,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
         <Column alignItems="flex-end">
           <Row alignItems="center" justifyContent="flex-end">
             <Text size="medium" type="secondary" fitContent>
-              {formatVal(amount, props.decimals) || 0}
+              {(+formatVal(amount, props.decimals)).toFixed(4) || 0}
             </Text>
             <Back
               style={{
@@ -282,7 +282,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
         {isNative ? (
           <TokenToDollar onClick={() => setInputAmountMeasure(false)}>
             <Text size="small" type="secondary">
-              ~${props.rate && amount ? (+formatVal(amount, props.decimals) * +props.rate?.toFormat(4)).toFixed(3) : 0}
+              ~${props.rate && amount ? (+formatVal(amount, props.decimals).times(props.rate)).toFixed(4) : 0}
             </Text>
             <Swap />
           </TokenToDollar>
@@ -290,7 +290,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           <TokenToDollar onClick={() => setInputAmountMeasure(true)}>
             <Text size="small" type="secondary">
               ~{props.assetSymbol}{' '}
-              {props.rate && amount && +formatVal(BN.parseUnits(+amount / +props.rate?.toFormat(4), 0), props.decimals)}
+              {props.rate && amount && (+formatVal(amount.div(props.rate), props.decimals)).toFixed(4)}
             </Text>
             <Swap />
           </TokenToDollar>
@@ -311,7 +311,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           Borrowed
         </Text>
         <Text size="medium" fitContent>
-          {props.selfBorrow ? formatVal(props.selfBorrow, props.decimals) : 0}
+          {props.selfBorrow ? +formatVal(props.selfBorrow, props.decimals) : 0}
         </Text>
       </Row>
       <SizedBox height={14} />

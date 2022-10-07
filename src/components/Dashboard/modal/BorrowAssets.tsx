@@ -37,8 +37,8 @@ interface IProps {
   totalSupply: BN;
   totalBorrow: BN;
   userBalance: BN;
-  setupLtv: string;
-  setupBorrowAPR?: string;
+  setupLtv: BN;
+  setupBorrowAPR: BN;
   selfBorrow: BN;
   rate: BN;
   maxPrice: BN;
@@ -142,8 +142,8 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     props.amount && setAmount(props.amount);
   }, [props.amount]);
 
-  const formatVal = (valArg: BN, decimal: number) => {
-    return (+valArg / 10 ** decimal).toFixed(2);
+  const formatVal = (valArg: BN | number, decimal: number) => {
+    return BN.formatUnits(valArg, decimal);
   };
 
   const setInputAmountMeasure = (isNativeToken: boolean) => {
@@ -151,9 +151,10 @@ const BorrowAssets: React.FC<IProps> = (props) => {
   };
 
   const getReserves = () => {
-    return (+formatVal(props.totalSupply, props.decimals) - +formatVal(props.totalBorrow, props.decimals)).toFixed(2);
+    return formatVal(props.totalSupply, props.decimals).minus(formatVal(props.totalBorrow, props.decimals)).toFixed(2);
   };
 
+  // todo: BNNNN
   const countAccountHealth = (currentBorrow: any) => {
     if (+currentBorrow === 0) {
       setAccountHealth(100);
@@ -201,26 +202,28 @@ const BorrowAssets: React.FC<IProps> = (props) => {
 
   // counting maximum amount for MAX btn
   const userMaximumToBorrowBN = (userColatteral: number, rate: BN) => {
-    let maximum = 0;
+    let maximum = BN.ZERO;
     let isError = false;
     console.log(+rate, userColatteral, '+val1');
 
     // if !isNative, show maximum in dollars, collateral in dollars by default
-    maximum = userColatteral / 10 ** 6;
+    maximum = formatVal(userColatteral, 6);
 
     // if isNative, show maximum in crypto AMOUNT
-    if (isNative) maximum = userColatteral / 10 ** 6 / +rate.toFormat(4);
+    if (isNative) maximum = formatVal(userColatteral, 6).div(rate);
 
-    const totalReserves = +formatVal(props.totalSupply, props.decimals) - +formatVal(props.totalBorrow, props.decimals);
+    const totalReserves = formatVal(props.totalSupply, props.decimals).minus(
+      formatVal(props.totalBorrow, props.decimals)
+    );
 
     // cause if market liquidity lower, asset cant provide requested amount of money to user
     if (totalReserves < maximum) {
       setError('Not enough Reserves in Pool');
       isError = true;
-      return BN.formatUnits(totalReserves * 10 ** props.decimals * 0.8, 0);
+      return totalReserves.times(10 ** props.decimals).times(0.8);
     }
 
-    const val = BN.formatUnits(Math.ceil(maximum * 10 ** props.decimals * 0.8), 0);
+    const val = maximum.times(10 ** props.decimals).times(0.8);
     console.log(+val, '+val');
 
     if (countAccountHealth(val) === 0) {
@@ -235,20 +238,22 @@ const BorrowAssets: React.FC<IProps> = (props) => {
 
   // counting maximum after USER INPUT
   const userMaximumToBorrow = (userColatteral: number, rate: BN) => {
-    let maximum = userColatteral / 10 ** 6;
+    let maximum = formatVal(userColatteral, 6);
 
     // if isNative, show maximum in crypto AMOUNT
     // else in dollars
-    if (isNative) maximum = userColatteral / 10 ** 6 / +rate.toFormat(4);
+    if (isNative) maximum = formatVal(userColatteral, 6).div(rate);
 
-    const totalReserves = +formatVal(props.totalSupply, props.decimals) - +formatVal(props.totalBorrow, props.decimals);
+    const totalReserves = formatVal(props.totalSupply, props.decimals).minus(
+      formatVal(props.totalBorrow, props.decimals)
+    );
 
     // cause if market liquidity lower, asset cant provide requested amount of money to user
     if (totalReserves < maximum) {
       return (+totalReserves - +formatVal(amount, props.decimals)).toFixed(2);
     }
 
-    return (maximum - +formatVal(amount, props.decimals)).toFixed(4);
+    return maximum.minus(formatVal(amount, props.decimals));
   };
 
   const submitForm = () => {
@@ -270,14 +275,16 @@ const BorrowAssets: React.FC<IProps> = (props) => {
   const handleChangeAmount = (v: BN) => {
     const formattedVal = formatVal(v, props.decimals);
     // if !isNative, show maximum in dollars, collateral in dollars by default
-    let maxCollateral = props.userColatteral / 10 ** 6;
+    let maxCollateral = formatVal(props.userColatteral, 6);
     // reserves in crypto amount by default
-    let totalReserves = +formatVal(props.totalSupply, props.decimals) - +formatVal(props.totalBorrow, props.decimals);
+    let totalReserves = formatVal(props.totalSupply, props.decimals).minus(
+      formatVal(props.totalBorrow, props.decimals)
+    );
     let isError = false;
 
     // if isNative, show maximum in crypto AMOUNT
-    if (isNative) maxCollateral = props.userColatteral / 10 ** 6 / +props.rate?.toFormat(4);
-    if (!isNative) totalReserves *= +props.rate?.toFormat(4);
+    if (isNative) maxCollateral = formatVal(props.userColatteral, 6).div(props.rate);
+    if (!isNative) totalReserves = totalReserves.times(props.rate);
 
     if (+formattedVal > +maxCollateral) {
       setError('Borrow amount too low, please provide more');
@@ -319,7 +326,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
         <Column alignItems="flex-end">
           <Row alignItems="center" justifyContent="flex-end">
             <Text size="medium" type="secondary" fitContent>
-              {formatVal(amount, props.decimals) || 0}
+              {+formatVal(amount, props.decimals).toFixed(4) || 0}
             </Text>
             <Back
               style={{
@@ -336,7 +343,9 @@ const BorrowAssets: React.FC<IProps> = (props) => {
                 props.onMaxClick && props.onMaxClick(userMaximumToBorrowBN(props.userColatteral, props.maxPrice));
               }}
               style={{ cursor: 'pointer' }}>
-              {props.userColatteral && props.maxPrice ? userMaximumToBorrow(props.userColatteral, props.maxPrice) : 0}
+              {+props.userColatteral && +props.maxPrice
+                ? (+userMaximumToBorrow(props.userColatteral, props.maxPrice)).toFixed(4)
+                : 0}
               <>&nbsp;</>
               {isNative ? props.assetSymbol : '$'}
             </Text>
@@ -384,7 +393,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
         {isNative ? (
           <TokenToDollar onClick={() => setInputAmountMeasure(false)}>
             <Text size="small" type="secondary">
-              ~${props.rate && amount ? (+formatVal(amount, props.decimals) * +props.rate?.toFormat(4)).toFixed(3) : 0}
+              ~${props.rate && amount ? (+formatVal(amount, props.decimals).times(props.rate)).toFixed(4) : 0}
             </Text>
             <Swap />
           </TokenToDollar>
@@ -392,7 +401,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           <TokenToDollar onClick={() => setInputAmountMeasure(true)}>
             <Text size="small" type="secondary">
               ~{props.assetSymbol}{' '}
-              {props.rate && amount && +formatVal(BN.parseUnits(+amount / +props.rate?.toFormat(4), 0), props.decimals)}
+              {props.rate && amount && (+formatVal(amount.div(props.rate), props.decimals)).toFixed(4)}
             </Text>
             <Swap />
           </TokenToDollar>
@@ -404,7 +413,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           {props.assetName} liquidity
         </Text>
         <Text size="medium" fitContent>
-          {props.totalSupply && props.totalBorrow && getReserves()} {props.assetSymbol}
+          {+props.totalSupply && +props.totalBorrow && getReserves()} {props.assetSymbol}
         </Text>
       </Row>
       <SizedBox height={14} />
@@ -413,7 +422,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           Borrow APY
         </Text>
         <Text size="medium" fitContent>
-          {props.setupBorrowAPR ? (+props.setupBorrowAPR).toFixed(2) : 0}%
+          {+props.setupBorrowAPR ? (+props.setupBorrowAPR).toFixed(2) : 0}%
         </Text>
       </Row>
       <SizedBox height={14} />
@@ -422,7 +431,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           Borrowed
         </Text>
         <Text size="medium" fitContent>
-          {props.selfBorrow ? formatVal(props.selfBorrow, props.decimals) : 0}
+          {+props.selfBorrow ? (+formatVal(props.selfBorrow, props.decimals)).toFixed(4) : 0}
         </Text>
       </Row>
       <SizedBox height={14} />

@@ -11,9 +11,9 @@ import { Tooltip } from '@src/UIKit/Tooltip';
 
 interface IProps {
   rate?: BN;
-  setupLtv?: string;
-  setupLts?: string;
-  setupPenalty?: string;
+  setupLtv?: BN;
+  setupLts?: BN;
+  setupPenalty?: BN;
   totalSupply?: number;
   totalBorrow?: number;
 }

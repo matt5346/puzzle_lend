@@ -31,8 +31,8 @@ interface IProps {
   assetName?: string;
   assetSymbol?: string;
   userBalance: BN;
-  supplyInterest: string;
-  setupSupplyAPY?: string;
+  supplyInterest: BN;
+  setupSupplyAPY: BN;
   rate: BN;
   selfBorrow: BN;
   selfSupply: BN;
@@ -131,8 +131,8 @@ const SupplyAssets: React.FC<IProps> = (props) => {
   const [amount, setAmount] = useState<BN>(props.amount);
   const { lendStore, accountStore } = useStores();
 
-  const formatVal = (valArg: BN, decimal: number) => {
-    return (+valArg / 10 ** decimal).toFixed(2);
+  const formatVal = (valArg: BN | number, decimal: number) => {
+    return BN.formatUnits(valArg, decimal);
   };
 
   const setInputAmountMeasure = (isNativeToken: boolean) => {
@@ -140,7 +140,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
   };
 
   const getDailyIncome = () => {
-    return (+props.supplyInterest * +formatVal(amount, props.decimals)).toFixed(6);
+    return +props.supplyInterest ? props.supplyInterest.times(formatVal(amount, props.decimals)) : 0;
   };
 
   useEffect(() => {
@@ -160,9 +160,9 @@ const SupplyAssets: React.FC<IProps> = (props) => {
     let walletBal = formatVal(props.userBalance, props.decimals);
     let isError = false;
 
-    if (!isNative) walletBal = (+walletBal * +props.rate?.toFormat(4)).toString();
+    if (!isNative) walletBal = walletBal.times(props.rate);
 
-    if (+formattedVal > +walletBal) {
+    if (formattedVal > walletBal) {
       setError('Wallet Balance too low');
       isError = true;
     }
@@ -174,18 +174,17 @@ const SupplyAssets: React.FC<IProps> = (props) => {
 
   const getUserBalance = () => {
     if (!isNative)
-      return (
-        +formatVal(props.userBalance, props.decimals) * +props.rate?.toFormat(4) -
-        +formatVal(amount, props.decimals)
-      ).toFixed(4);
+      return (+formatVal(props.userBalance, props.decimals)
+        .times(props.rate)
+        .minus(formatVal(amount, props.decimals))).toFixed(4);
 
-    return props.userBalance
-      ? (+formatVal(props.userBalance, props.decimals) - +formatVal(amount, props.decimals)).toFixed(2)
+    return +props.userBalance
+      ? (+formatVal(props.userBalance, props.decimals).minus(formatVal(amount, props.decimals))).toFixed(4)
       : 0;
   };
 
   const getMaxSupply = (val: BN) => {
-    if (!isNative) return BN.formatUnits(+val * +props.rate?.toFormat(4), 0);
+    if (!isNative) return val.times(props.rate);
 
     return val;
   };
@@ -193,7 +192,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
   const submitForm = () => {
     let amountVal = props.amount;
 
-    if (!isNative) amountVal = BN.parseUnits(Math.ceil(+amountVal / +props.rate?.toFormat(4)), 0);
+    if (!isNative) amountVal = amountVal.div(props.rate);
 
     props.onSubmit!(amountVal, props.assetId, lendStore.activePoolContract);
   };
@@ -217,7 +216,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
         <Column alignItems="flex-end">
           <Row alignItems="center">
             <Text size="medium" type="secondary" fitContent>
-              {formatVal(amount, props.decimals) || 0}
+              {(+formatVal(amount, props.decimals)).toFixed(4) || 0}
             </Text>
             <Back
               style={{
@@ -282,7 +281,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
         {isNative ? (
           <TokenToDollar onClick={() => setInputAmountMeasure(false)}>
             <Text size="small" type="secondary">
-              ~${props.rate && amount ? (+formatVal(amount, props.decimals) * +props.rate?.toFormat(4)).toFixed(3) : 0}
+              ~${props.rate && amount ? (+formatVal(amount, props.decimals).times(props.rate)).toFixed(4) : 0}
             </Text>
             <Swap />
           </TokenToDollar>
@@ -290,7 +289,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
           <TokenToDollar onClick={() => setInputAmountMeasure(true)}>
             <Text size="small" type="secondary">
               ~{props.assetSymbol}{' '}
-              {props.rate && amount && +formatVal(amount.div(props.rate?.toFormat(4)), props.decimals)}
+              {props.rate && amount && (+formatVal(amount.div(props.rate), props.decimals)).toFixed(4)}
             </Text>
             <Swap />
           </TokenToDollar>
@@ -303,7 +302,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
           Daily Income
         </Text>
         <Text size="medium" type={+getDailyIncome() > 0 ? 'success' : 'primary'} fitContent>
-          $ {props.supplyInterest ? getDailyIncome() : 0}
+          $ {+props.supplyInterest ? (+getDailyIncome()).toFixed(6) : 0}
         </Text>
       </Row>
       <SizedBox height={14} />
@@ -312,7 +311,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
           Supply APY
         </Text>
         <Text size="medium" fitContent>
-          {props.setupSupplyAPY ? (+props.setupSupplyAPY).toFixed(2) : 0}%
+          {+props.setupSupplyAPY ? (+props.setupSupplyAPY).toFixed(2) : 0}%
         </Text>
       </Row>
       <SizedBox height={14} />
@@ -321,7 +320,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
           Borrowed
         </Text>
         <Text size="medium" fitContent>
-          {props.selfBorrow ? formatVal(props.selfBorrow, props.decimals) : 0}
+          {+props.selfBorrow ? +formatVal(props.selfBorrow, props.decimals) : 0}
         </Text>
       </Row>
       <SizedBox height={14} />

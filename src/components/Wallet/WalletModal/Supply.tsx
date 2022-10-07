@@ -8,9 +8,6 @@ import { Button } from '@src/UIKit/Button';
 import { Text } from '@src/UIKit/Text';
 import { Column, Row } from '@src/common/styles/Flex';
 import { useStores } from '@src/stores';
-import { Link } from 'react-router-dom';
-import Skeleton from 'react-loading-skeleton';
-import { ROUTES } from '@src/common/constants';
 import { ReactComponent as NotFoundIcon } from '@src/common/assets/icons/notFound.svg';
 import SupplyTokensRow from '@src/components/Wallet/WalletModal/SupplyTokensRow';
 

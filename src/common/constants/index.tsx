@@ -21,11 +21,11 @@ export const poolsTitles = {
 };
 
 export type PoolDataType = {
-  netAPY: number;
+  netAPY: BN;
   userHealth: number;
-  supplyUserTotal: number;
-  borrowUserTotal: number;
-  poolTotal: number;
+  supplyUserTotal: BN;
+  borrowUserTotal: BN;
+  poolTotal: BN;
   userCollateral: number;
   contractId: string;
   tokens: Array<TTokenStatistics>;
@@ -40,17 +40,17 @@ export type TTokenStatistics = {
   decimals: number;
   name: string;
   symbol: string;
-  setupLtv: string;
-  setupLts: string;
-  setupPenalty: string;
-  setupBorrowAPR: string;
-  setupSupplyAPY: string;
+  setupLtv: BN;
+  setupLts: BN;
+  setupPenalty: BN;
+  setupBorrowAPR: BN;
+  setupSupplyAPY: BN;
   selfSupply: BN;
   selfBorrow: BN;
-  selfSupplyRate: string;
-  selfDailyIncome: string;
-  selfDailyBorrowInterest: string;
-  supplyInterest: string;
+  selfSupplyRate: BN;
+  selfDailyIncome: BN;
+  selfDailyBorrowInterest: BN;
+  supplyInterest: BN;
   totalAssetSupply: BN;
   totalAssetBorrow: BN;
   maxPrice: BN;
@@ -63,17 +63,17 @@ export function createITokenStat(): TTokenStatistics {
     name: '',
     symbol: '',
     decimals: 0,
-    setupLtv: '',
-    setupLts: '',
-    setupPenalty: '',
-    setupBorrowAPR: '',
-    setupSupplyAPY: '',
-    selfSupplyRate: '',
+    setupLtv: BN.ZERO,
+    setupLts: BN.ZERO,
+    setupPenalty: BN.ZERO,
+    setupBorrowAPR: BN.ZERO,
+    setupSupplyAPY: BN.ZERO,
+    selfSupplyRate: BN.ZERO,
     selfSupply: BN.ZERO,
     selfBorrow: BN.ZERO,
-    selfDailyIncome: '',
-    selfDailyBorrowInterest: '',
-    supplyInterest: '',
+    selfDailyIncome: BN.ZERO,
+    selfDailyBorrowInterest: BN.ZERO,
+    supplyInterest: BN.ZERO,
     totalAssetSupply: BN.ZERO,
     totalAssetBorrow: BN.ZERO,
     currentPrice: BN.ZERO,

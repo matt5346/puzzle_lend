@@ -32,7 +32,7 @@ interface IProps {
   totalSupply: BN;
   totalBorrow: BN;
   userBalance: BN;
-  setupSupplyAPY?: string;
+  setupSupplyAPY?: BN;
   selfSupply: BN;
   selfBorrow: BN;
   rate: BN;
@@ -136,22 +136,23 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
     setConvertToNative(isNativeToken);
   };
 
-  const formatVal = (valArg: BN, decimal: number) => {
-    return (+valArg / 10 ** decimal).toFixed(2);
+  const formatVal = (valArg: BN | number, decimal: number) => {
+    return BN.formatUnits(valArg, decimal);
   };
 
   const getUserBalance = () => {
     if (!isNative)
-      return (
-        +formatVal(props.userBalance, props.decimals) * +props.rate?.toFormat(4) +
-        +formatVal(amount, props.decimals)
-      ).toFixed(4);
+      return formatVal(props.userBalance, props.decimals)
+        .times(props.rate)
+        .plus(formatVal(amount, props.decimals))
+        .toFixed(4);
 
     return props.userBalance
-      ? (+formatVal(props.userBalance, props.decimals) + +formatVal(amount, props.decimals)).toFixed(2)
+      ? (+formatVal(props.userBalance, props.decimals).plus(formatVal(amount, props.decimals))).toFixed(4)
       : 0;
   };
 
+  // todo: BNNNN
   const countAccountHealth = (currentWithdraw: any) => {
     if (+currentWithdraw === 0) {
       setAccountHealth(100);
@@ -202,9 +203,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
 
   const maxWithdraw = (val: BN) => {
     let isError = false;
-    if (!isNative) return BN.formatUnits(+val * +props.rate?.toFormat(4) + 1, 0);
-    console.log(+props.selfBorrow, 'BORROW');
-    console.log(+props.selfSupply, 'SUPPLY');
+    if (!isNative) return val.times(props.rate);
 
     if (+props.selfBorrow !== 0 && countAccountHealth(val) < 5) {
       setError(`Account health in risk of liquidation`);
@@ -213,7 +212,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
 
     if (!isError) setError('');
 
-    return BN.formatUnits(+val + 1, 0);
+    return val;
   };
 
   useEffect(() => {
@@ -229,7 +228,9 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
   );
 
   const getReserves = () => {
-    return (+formatVal(props.totalSupply, props.decimals) - +formatVal(props.totalBorrow, props.decimals)).toFixed(2);
+    return (+formatVal(props.totalSupply, props.decimals).minus(formatVal(props.totalBorrow, props.decimals))).toFixed(
+      4
+    );
   };
 
   const handleChangeAmount = (v: BN) => {
@@ -237,9 +238,9 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
     let selfSupply = formatVal(props.selfSupply, props.decimals);
     let isError = false;
 
-    if (!isNative) selfSupply = (+selfSupply * +props.rate?.toFormat(4)).toString();
+    if (!isNative) selfSupply = selfSupply.times(props.rate);
 
-    if (+formattedVal > +selfSupply) {
+    if (formattedVal > selfSupply) {
       setError(`Amount of withdraw bigger than you'r supply`);
       isError = true;
     }
@@ -257,9 +258,9 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
   const submitForm = () => {
     let amountVal = props.amount;
 
-    if (!isNative) amountVal = BN.parseUnits(Math.ceil(+amountVal / +props.rate?.toFormat(4)), 0);
+    if (!isNative) amountVal = amountVal.div(props.rate);
 
-    props.onSubmit!(amountVal, props.assetId, lendStore.activePoolContract);
+    props.onSubmit!(formatVal(Math.ceil(+amountVal), 0), props.assetId, lendStore.activePoolContract);
   };
 
   return (
@@ -327,7 +328,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
         {isNative ? (
           <TokenToDollar onClick={() => setInputAmountMeasure(false)}>
             <Text size="small" type="secondary">
-              ~${props.rate && amount ? (+formatVal(amount, props.decimals) * +props.rate?.toFormat(4)).toFixed(3) : 0}
+              ~${props.rate && amount ? (+formatVal(amount, props.decimals).times(props.rate)).toFixed(4) : 0}
             </Text>
             <Swap />
           </TokenToDollar>
@@ -335,7 +336,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
           <TokenToDollar onClick={() => setInputAmountMeasure(true)}>
             <Text size="small" type="secondary">
               ~{props.assetSymbol}{' '}
-              {props.rate && amount && +formatVal(amount.div(props.rate?.toFormat(4)), props.decimals)}
+              {props.rate && amount && (+formatVal(amount.div(props.rate), props.decimals)).toFixed(4)}
             </Text>
             <Swap />
           </TokenToDollar>
@@ -372,7 +373,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
             props.onMaxClick && props.onMaxClick(maxWithdraw(props.selfSupply));
           }}
           style={{ cursor: 'pointer' }}>
-          {formatVal(props.selfSupply, props.decimals)}
+          {+formatVal(props.selfSupply, props.decimals)}
         </Text>
       </Row>
       <SizedBox height={14} />

@@ -15,7 +15,7 @@ import {
   POOL_CONFIG,
 } from '@src/common/constants';
 import wavesNodesService from '@src/common/services/wavesNodesService';
-import Pool, { IData, IShortPoolInfo } from '@src/common/entities/Pool';
+import Pool from '@src/common/entities/Pool';
 import BN from '@src/common/utils/BN';
 
 export default class TokenStore {
@@ -59,12 +59,12 @@ export default class TokenStore {
 
   private setInitialized = (v: boolean) => (this.initialized = v);
 
-  private setUserHealth = (v: number) => {
-    if (v > 100) {
+  private setUserHealth = (v: BN) => {
+    if (+v > 100) {
       return 100;
     }
 
-    if (v < 0) {
+    if (+v < 0) {
       return 0;
     }
 
@@ -272,83 +272,75 @@ export default class TokenStore {
 
   // loading all data about tokens, their apy/apr, supply/borrow and evth
   public syncTokenStatistics = async (contractId?: string, userId?: string) => {
-    const { accountStore, lendStore } = this.rootStore;
+    const { accountStore, lendStore, notificationStore } = this.rootStore;
     const contractPoolId = contractId || lendStore.activePoolContract;
     const contractPoolName = lendStore.poolNameById(contractPoolId);
     const assets = TOKENS_LIST(contractPoolName).map(({ assetId }) => assetId);
     const userContract = userId || accountStore.address;
 
     const stats = await wavesNodesService.getPoolsStats(assets, userContract!, contractPoolId).catch((e) => {
-      // notifi\cationStore.notify(e.message ?? e.toString(), {
-      //   type: 'error',
-      // });
       console.log(e, 'getAssetsStats');
       return [];
     });
 
     // count pool Total
-    let poolTotal = 0;
+    let poolTotal = BN.ZERO;
 
     // count net apy
-    let supplyAmountApy = 0;
-    let borrowedAmountApr = 0;
+    let supplyAmountApy = BN.ZERO;
+    let borrowedAmountApr = BN.ZERO;
 
     // count current user Balance
-    let supplyAmountCurrent = 0;
-    let borrowedAmountCurrent = 0;
+    let supplyAmountCurrent = BN.ZERO;
+    let borrowedAmountCurrent = BN.ZERO;
 
-    let baseAmount = 0;
-    let borrowCapacity = 0;
-    let borrowCapacityUsed = 0;
-    // const base =
-    // const net_apy =
+    let baseAmount = BN.ZERO;
+    let borrowCapacity = BN.ZERO;
+    let borrowCapacityUsed = BN.ZERO;
 
     const statistics = stats.map((details: any) => {
       const asset = TOKENS_BY_ASSET_ID[details.assetId] ?? details.precision;
       const { decimals } = asset;
-      const currentPrice = new BN(details.min_price ?? 0);
+      const currentPrice = details.min_price;
 
       // pool Total
-      poolTotal += (details.total_supply / 10 ** details.precision) * +currentPrice;
+      poolTotal = BN.formatUnits(details.total_supply, details.precision).times(currentPrice).plus(poolTotal);
 
       // net APY
-      supplyAmountApy += (details.self_supply / 10 ** details.precision) * +currentPrice * details.setup_supply_apy;
-      borrowedAmountApr += (details.self_borrowed / 10 ** details.precision) * +currentPrice * details.setup_borrow_apr;
-      baseAmount += (details.self_supply / 10 ** details.precision) * +currentPrice;
+      supplyAmountApy = BN.formatUnits(details.self_supply, details.precision)
+        .times(currentPrice)
+        .times(details.setup_supply_apy)
+        .plus(supplyAmountApy);
 
-      // console.log(
-      //   details.name,
-      //   details.self_supply / 10 ** details.precision,
-      //   details.supply_rate,
-      //   'supplyAmountCurrent'
-      // );
-      // console.log(
-      //   details.name,
-      //   details.self_borrowed / 10 ** details.precision,
-      //   details.borrow_rate,
-      //   +currentPrice,
-      //   'borrowedAmountCurrent'
-      // );
+      borrowedAmountApr = BN.formatUnits(details.self_borrowed, details.precision)
+        .times(currentPrice)
+        .times(details.setup_borrow_apr)
+        .plus(borrowedAmountApr);
+
+      baseAmount = BN.formatUnits(details.self_supply, details.precision).times(currentPrice).plus(baseAmount);
+
       // count balance supply/borrow
-      supplyAmountCurrent += (details.self_supply / 10 ** details.precision) * +currentPrice;
-      borrowedAmountCurrent += (details.self_borrowed / 10 ** details.precision) * +currentPrice;
+      supplyAmountCurrent = BN.formatUnits(details.self_supply, details.precision)
+        .times(currentPrice)
+        .plus(supplyAmountCurrent);
 
-      // console.log(
-      //   details.self_supply,
-      //   details.setup_ltv,
-      //   details.self_borrowed,
-      //   +currentPrice,
-      //   details.name,
-      //   '(details.self_supply * details.setup_ltv) / details.self_borrowed'
-      // );
+      borrowedAmountCurrent = BN.formatUnits(details.self_borrowed, details.precision)
+        .times(currentPrice)
+        .plus(borrowedAmountCurrent);
 
       // count USER HEALTH for SAME ASSETS
-      if (details.self_supply > 0) {
-        borrowCapacity += (details.self_supply / 10 ** details.precision) * +currentPrice * (details.setup_ltv / 100);
+      if (+details.self_supply > 0) {
+        borrowCapacity = BN.formatUnits(details.self_supply, details.precision)
+          .times(currentPrice)
+          .times(details.setup_ltv)
+          .div(100)
+          .plus(borrowCapacity);
       }
 
-      if (details.self_borrowed > 0) {
-        borrowCapacityUsed += (details.self_borrowed / 10 ** details.precision) * +currentPrice;
+      if (+details.self_borrowed > 0) {
+        borrowCapacityUsed = BN.formatUnits(details.self_borrowed, details.precision)
+          .times(currentPrice)
+          .plus(borrowCapacityUsed);
       }
 
       return {
@@ -361,24 +353,25 @@ export default class TokenStore {
         setupPenalty: details.setup_penalties,
         setupBorrowAPR: details.setup_borrow_apr,
         setupSupplyAPY: details.setup_supply_apy,
-        selfSupply: BN.formatUnits(details.self_supply, 0),
-        selfBorrow: BN.formatUnits(details.self_borrowed, 0),
+        selfSupply: details.self_supply,
+        selfBorrow: details.self_borrowed,
         selfDailyIncome: details.self_daily_income,
         selfDailyBorrowInterest: details.self_daily_borrow_interest,
         supplyInterest: details.supply_interest,
         selfSupplyRate: details.supply_rate,
-        totalAssetBorrow: BN.formatUnits(details.total_borrow, 0),
-        totalAssetSupply: BN.formatUnits(details.total_supply, 0),
+        totalAssetBorrow: details.total_borrow,
+        totalAssetSupply: details.total_supply,
         currentPrice,
-        maxPrice: BN.formatUnits(details.max_price, 0),
+        maxPrice: details.max_price,
       };
     });
 
-    let netAPY = 0;
-    let accountHealth = 0;
+    let netAPY = BN.ZERO;
+    let accountHealth = BN.ZERO;
 
-    if (baseAmount !== 0) netAPY = (supplyAmountApy - borrowedAmountApr) / baseAmount;
-    if (borrowCapacity !== 0) accountHealth = (1 - borrowCapacityUsed / borrowCapacity) * 100;
+    if (+baseAmount !== 0) netAPY = supplyAmountApy.minus(borrowedAmountApr).div(baseAmount);
+    if (+borrowCapacity !== 0)
+      accountHealth = BN.formatUnits(1, 0).minus(borrowCapacityUsed.div(borrowCapacity)).times(100);
 
     const poolData = {
       netAPY,

@@ -301,34 +301,34 @@ const wavesNodesService = {
       const itemData = {
         ...tokenData,
         precision: tokenData.decimals,
-        total_supply: 0,
-        total_borrow: 0,
+        total_supply: BN.ZERO,
+        total_borrow: BN.ZERO,
         // penalties/ltv
-        setup_penalties: 0,
-        setup_lts: 0,
+        setup_penalties: BN.ZERO,
+        setup_lts: BN.ZERO,
         // loan to value %
-        setup_ltv: 0,
+        setup_ltv: BN.ZERO,
         // interest rate for supply/borrow interest
-        setup_interest: 0,
+        setup_interest: BN.ZERO,
         // borrow APY
         // todo: change to Apy naming
-        setup_borrow_apr: 0,
+        setup_borrow_apr: BN.ZERO,
         // supply APY/ supply interest
-        setup_supply_apy: 0,
-        supply_interest: 0,
+        setup_supply_apy: BN.ZERO,
+        supply_interest: BN.ZERO,
         // user borrow/supply + daily income
-        self_supply: 0,
-        self_borrowed: 0,
-        self_daily_income: 0,
-        self_daily_borrow_interest: 0,
+        self_supply: BN.ZERO,
+        self_borrowed: BN.ZERO,
+        self_daily_income: BN.ZERO,
+        self_daily_borrow_interest: BN.ZERO,
         // sRate, need for counting SUPPLY compound on front
-        supply_rate: 0,
+        supply_rate: BN.ZERO,
         // bRate, need for counting BORROW compound on front
-        borrow_rate: 0,
+        borrow_rate: BN.ZERO,
         // min price for all counting except ->
         // max price only for counting borrow and withdraw
-        min_price: 0,
-        max_price: 0,
+        min_price: BN.ZERO,
+        max_price: BN.ZERO,
       };
 
       const assetExtraData = Object.values(assetsNodeData).find((assetItem) => assetItem[tokenData.assetId]);
@@ -360,7 +360,7 @@ const wavesNodesService = {
         // so we compare them and searching for ltv and rates
         setupTokens.forEach((token_id: any, key: any) => {
           if (itemData.assetId === token_id) {
-            itemData.setup_ltv = ltv[key] / 10 ** 6;
+            itemData.setup_ltv = BN.formatUnits(ltv[key], 6);
 
             if (tokensRatesArr && tokensRatesArr.length) {
               const rates = tokensRatesArr[key];
@@ -369,36 +369,35 @@ const wavesNodesService = {
               // bRate should be always bigger than sRate
               // bRate/sRate format = 16 decimals which are percents
               // because of it 10 ** 16 (Decimal) and / 100 to get integer for use it later
-              console.log(splittedRates[0], 'splittedRates[0]');
-              itemData.borrow_rate = +(+splittedRates[0]! / 10 ** 16).toFixed(8);
-              itemData.supply_rate = +(+splittedRates[1]! / 10 ** 16).toFixed(8);
+              itemData.borrow_rate = BN.formatUnits(+splittedRates[0], 16);
+              itemData.supply_rate = BN.formatUnits(+splittedRates[1], 16);
             }
 
             if (penalties && penalties.length) {
               const penaltyArr = penalties.split(',');
               const penaltyItem = penaltyArr[key];
 
-              itemData.setup_penalties = +penaltyItem / 10 ** 6;
+              itemData.setup_penalties = BN.formatUnits(penaltyItem, 6);
             }
 
             if (lts && lts.length) {
               const ltsArr = lts.split(',');
               const ltsItem = ltsArr[key];
 
-              itemData.setup_lts = +ltsItem / 10 ** 6;
+              itemData.setup_lts = BN.formatUnits(ltsItem, 6);
             }
 
             // same as Rates, passing setup_interest
             // firstly its %, all percents in 6 decimals
             if (tokensinterestArr && +tokensinterestArr[key])
-              itemData.setup_interest = +tokensinterestArr[key] / 10 ** 6 / 100;
+              itemData.setup_interest = BN.formatUnits(+tokensinterestArr[key], 8);
 
             // adding ORACLE prices of tokens, price in $ (6 decimals)
             // 0 - min price, 1 - max price
             if (tokensPricesArr && tokensPricesArr[key]) {
               const prices = tokensPricesArr[key].split(',');
-              itemData.min_price = +prices[0] / 10 ** 6;
-              itemData.max_price = +prices[1] / 10 ** 6;
+              itemData.min_price = BN.formatUnits(prices[0], 6);
+              itemData.max_price = BN.formatUnits(prices[1], 6);
             }
           }
         });
@@ -406,41 +405,31 @@ const wavesNodesService = {
         assetExtraData[tokenData.assetId].forEach((pool: any) => {
           // setup_roi === borrow interest
           if (pool.key === 'setup_interest') {
-            itemData.setup_borrow_apr = ((1 + itemData.setup_interest) ** 365 - 1) * 100;
+            itemData.setup_borrow_apr = itemData.setup_interest.plus(1).pow(365).minus(1).times(100);
           }
         });
 
-        // debug, remove later
-        // console.log(poolValue, poolBorrowed, itemData.supply_rate, '--poolValue, poolBorrowed---spply');
-        // console.log(selfSupply, selfBorrowed, itemData.borrow_rate, '--selfSupply, selfBorrowe---spply');
-        // console.log(
-        //   itemData.name,
-        //   itemData.supply_rate,
-        //   itemData.borrow_rate,
-        //   '--titemData.supply_rate, itemData.borrow_rate----'
-        // );
-
         // for simplicity
         // all values gonna be convert to real numbers with decimals only in TEMPLATE
-        if (poolValue) itemData.total_supply = poolValue.value * itemData.supply_rate;
-        if (poolBorrowed) itemData.total_borrow = poolBorrowed.value * itemData.borrow_rate;
+        if (poolValue) itemData.total_supply = BN.formatUnits(poolValue.value, 0).times(itemData.supply_rate);
+        if (poolBorrowed) itemData.total_borrow = BN.formatUnits(poolBorrowed.value, 0).times(itemData.borrow_rate);
 
-        if (selfSupply) itemData.self_supply = selfSupply.value * +itemData.supply_rate;
-        if (selfBorrowed) itemData.self_borrowed = selfBorrowed.value * +itemData.borrow_rate;
+        if (selfSupply) itemData.self_supply = BN.formatUnits(selfSupply.value, 0).times(itemData.supply_rate);
+        if (selfBorrowed) itemData.self_borrowed = BN.formatUnits(selfBorrowed.value, 0).times(itemData.borrow_rate);
 
-        const UR = itemData.total_borrow / itemData.total_supply;
-        const supplyInterest = +itemData.setup_interest * UR;
-        console.log(+itemData.setup_interest, tokenData.name, 'supplyAPY[0]');
-        const supplyAPY = ((1 + supplyInterest) ** 365 - 1) * 100;
+        const UR = BN.formatUnits(itemData.total_borrow, 0).div(itemData.total_supply);
+        const supplyInterest = itemData.setup_interest.times(UR);
+        const supplyAPY = supplyInterest.plus(1).pow(365).minus(1).times(100);
 
         // borrow daily interest && daily INCOME
-        const dailyIncome = supplyInterest * ((itemData.self_supply / 10 ** itemData.precision) * +itemData.min_price);
-        const dailyBorrowInterest =
-          +itemData.setup_interest * ((itemData.self_borrowed / 10 ** itemData.precision) * +itemData.min_price);
+        const supplyFormatted = BN.formatUnits(itemData.self_supply, itemData.precision);
+        const borrowFormatted = BN.formatUnits(itemData.self_borrowed, itemData.precision);
+        const dailyIncome = supplyFormatted.times(itemData.min_price).times(supplyInterest);
+        const dailyBorrowInterest = borrowFormatted.times(itemData.min_price).times(itemData.setup_interest);
 
-        itemData.self_daily_borrow_interest = dailyBorrowInterest || null;
-        itemData.self_daily_income = dailyIncome || null;
-        itemData.setup_supply_apy = supplyAPY || null;
+        itemData.self_daily_borrow_interest = dailyBorrowInterest;
+        itemData.self_daily_income = dailyIncome;
+        itemData.setup_supply_apy = supplyAPY;
         itemData.supply_interest = supplyInterest;
       }
 
