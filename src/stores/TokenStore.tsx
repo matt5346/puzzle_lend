@@ -397,6 +397,7 @@ export default class TokenStore {
       Object.values(LENDS_CONTRACTS).map((item) => this.syncTokenStatistics(item, rootStore.accountStore.address!))
     ).then(() => this.setInitialized(true));
 
+    console.log(rootStore, 'STORE');
     // Object.values(LENDS_CONTRACTS).map((item) => this.calculateUR(item));
     setInterval(() => {
       this.syncTokenStatistics(rootStore.lendStore.activePoolContract, rootStore.accountStore.address!);

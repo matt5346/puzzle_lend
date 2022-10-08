@@ -48,9 +48,7 @@ const UserStats: React.FC = () => {
 
   useEffect(() => {
     async function fetchMyAPI() {
-      const response = await Promise.all(
-        Object.values(LENDS_CONTRACTS).map((item) => usersStore.syncTokenStatistics(item, userId!))
-      );
+      await Promise.all(Object.values(LENDS_CONTRACTS).map((item) => usersStore.syncTokenStatistics(item, userId!)));
       setReady(true);
     }
 
