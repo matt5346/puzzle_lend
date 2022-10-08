@@ -419,12 +419,14 @@ const wavesNodesService = {
 
         const UR = BN.formatUnits(itemData.total_borrow, 0).div(itemData.total_supply);
         const supplyInterest = itemData.setup_interest.times(UR);
-        const supplyAPY = supplyInterest.plus(1).pow(365).minus(1).times(100);
+        // protocol SHARE 20% because of it, .times(0.8)
+        const supplyAPY = supplyInterest.plus(1).pow(365).minus(1).times(100).times(0.8);
 
         // borrow daily interest && daily INCOME
         const supplyFormatted = BN.formatUnits(itemData.self_supply, itemData.precision);
         const borrowFormatted = BN.formatUnits(itemData.self_borrowed, itemData.precision);
-        const dailyIncome = supplyFormatted.times(itemData.min_price).times(supplyInterest);
+        // protocol SHARE 20% because of it, .times(0.8)
+        const dailyIncome = supplyFormatted.times(itemData.min_price).times(supplyInterest).times(0.8);
         const dailyBorrowInterest = borrowFormatted.times(itemData.min_price).times(itemData.setup_interest);
 
         itemData.self_daily_borrow_interest = dailyBorrowInterest;
