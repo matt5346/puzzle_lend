@@ -216,7 +216,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
         <Column alignItems="flex-end">
           <Row alignItems="center">
             <Text size="medium" type="secondary" fitContent>
-              {(+formatVal(amount, props.decimals)).toFixed(4) || 0}
+              {(+formatVal(amount, props.decimals) || 0).toFixed(4)}
             </Text>
             <Back
               style={{
@@ -233,7 +233,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
                 props.onMaxClick && props.onMaxClick(getMaxSupply(props.userBalance));
               }}
               style={{ cursor: 'pointer' }}>
-              {getUserBalance()}
+              {+getUserBalance() || 0}
               <>&nbsp;</>
               {isNative ? props.assetSymbol : '$'}
             </Text>
@@ -281,7 +281,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
         {isNative ? (
           <TokenToDollar onClick={() => setInputAmountMeasure(false)}>
             <Text size="small" type="secondary">
-              ~${props.rate && amount ? (+formatVal(amount, props.decimals).times(props.rate)).toFixed(4) : 0}
+              ~${+props.rate && +amount ? (+formatVal(amount, props.decimals).times(props.rate)).toFixed(4) : 0}
             </Text>
             <Swap />
           </TokenToDollar>
@@ -289,7 +289,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
           <TokenToDollar onClick={() => setInputAmountMeasure(true)}>
             <Text size="small" type="secondary">
               ~{props.assetSymbol}{' '}
-              {props.rate && amount && (+formatVal(amount.div(props.rate), props.decimals)).toFixed(4)}
+              {+props.rate && +amount && (+formatVal(amount.div(props.rate), props.decimals)).toFixed(4)}
             </Text>
             <Swap />
           </TokenToDollar>

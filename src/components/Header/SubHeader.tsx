@@ -98,26 +98,33 @@ const Header: React.FC<IProps> = () => {
       poolContract: LENDS_CONTRACTS.puzzlePool,
     },
   ];
+
   return (
     <Root>
       <TopMenu>
         <Row alignItems="center" crossAxisSize="max">
-          {menuItems.map(({ name, link, poolContract }) => (
-            <MenuItem key={name} selected={isRoutesEquals(link, location.pathname)}>
-              <Text
-                weight={500}
-                style={{
-                  cursor: 'pointer',
-                }}
-                onClick={() => {
-                  lendStore.setActivePool(poolContract);
-                  tokenStore.syncTokenStatistics(lendStore.activePoolName);
-                  navigate(link, { replace: true });
-                }}>
-                {name}
-              </Text>
-            </MenuItem>
-          ))}
+          {menuItems.map(({ name, link, poolContract }) => {
+            if (poolContract) {
+              return (
+                <MenuItem key={name} selected={isRoutesEquals(link, location.pathname)}>
+                  <Text
+                    weight={500}
+                    style={{
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => {
+                      lendStore.setActivePool(poolContract);
+                      tokenStore.syncTokenStatistics(lendStore.activePoolName);
+                      navigate(link, { replace: true });
+                    }}>
+                    {name}
+                  </Text>
+                </MenuItem>
+              );
+            }
+
+            return null;
+          })}
         </Row>
       </TopMenu>
     </Root>

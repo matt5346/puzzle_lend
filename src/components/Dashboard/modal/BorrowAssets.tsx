@@ -441,7 +441,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
         </Text>
         <Row alignItems="center" justifyContent="flex-end">
           <Text size="medium" type="success" fitContent>
-            {props.userHealth.toFixed(2)}
+            {+props.userHealth.toFixed(2) || 0}
           </Text>
           {getDynamicAccountHealth !== 100 ? (
             <>

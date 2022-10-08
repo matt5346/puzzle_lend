@@ -1,6 +1,5 @@
 import { ITransaction } from '@src/common/utils/types';
 import makeNodeRequest from '@src/common/utils/makeNodeRequest';
-import { CONTRACT_ADDRESSES } from '@src/common/constants';
 
 interface INodeData {
   key: string;
@@ -91,13 +90,6 @@ const nodeService = {
     const search = new URLSearchParams(searchKeys?.map((s) => ['key', s]));
     const keysArray = search.toString();
     const response = await makeNodeRequest(`/addresses/data/${contract}?${keysArray}`);
-    if (response.data) {
-      return response.data;
-    }
-    return [];
-  },
-  getNFTPictures: async (): Promise<INodeData[]> => {
-    const response = await makeNodeRequest(`/addresses/data/${CONTRACT_ADDRESSES.nfts}?matches=nft_(.*)_image`);
     if (response.data) {
       return response.data;
     }

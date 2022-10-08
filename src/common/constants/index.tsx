@@ -2,15 +2,16 @@
 import tokenLogos from '@src/common/constants/tokenLogos';
 import BN from '@src/common/utils/BN';
 
-import tokensPuzzleList from '@src/common/constants/tokens_mainPool.json';
-import tokensWavesList from '@src/common/constants/tokens_wavesPool.json';
+import tokensPuzzleList from '@src/common/constants/tokens_puzzlePool.json';
+import tokensMainList from '@src/common/constants/tokens_mainPool.json';
 import tokensFullList from '@src/common/constants/tokens_full.json';
 
+console.log(process.env, '---ENV')
 const tokensList = {
-  mainPool: tokensWavesList,
+  mainPool: tokensMainList,
   puzzlePool: tokensPuzzleList,
   allTokens: [
-    ...tokensWavesList,
+    ...tokensMainList,
     ...tokensPuzzleList,
   ],
 };
@@ -133,18 +134,9 @@ export interface IPoolConfigStatistics {
   volume: Array<{ date: number; volume: string }>;
 }
 
-export const CONTRACT_ADDRESSES = {
-  staking: '3PFTbywqxtFfukX3HyT881g4iW5K4QL3FAS',
-  ultraStaking: '3PKUxbZaSYfsR7wu2HaAgiirHYwAMupDrYW',
-  aggregator: '3PGFHzVGT4NTigwCKP1NcwoXkodVZwvBuuU',
-  nfts: '3PFQjjDMiZKQZdu5JqTHD7HwgSXyp9Rw9By',
-  createArtefacts: '3PFkgvC9y6zHy64zEAscKKgaNY3yipiLqbW',
-  boost: '3PAeY7RgwuNUZNscGqahqJxFTFDkh7fbNwJ',
-};
-
 export const LENDS_CONTRACTS = {
-  mainPool: '3P6dkRGSqgsNpQFbSYn9m8n4Dd8KRaj5TUU',
-  puzzlePool: '3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT',
+  mainPool: process.env.REACT_APP_MAIN_POOL!,
+  puzzlePool: process.env.REACT_APP_PUZZLE_POOL ? process.env.REACT_APP_PUZZLE_POOL : '',
 };
 
 export const ROUTES = {
