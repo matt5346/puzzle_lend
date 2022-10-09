@@ -21,6 +21,16 @@ export const poolsTitles = {
   puzzlePool: 'PUZZLE pool',
 };
 
+export const LENDS_CONTRACTS = {
+  mainPool: process.env.REACT_APP_MAIN_POOL!,
+  puzzlePool: process.env.REACT_APP_PUZZLE_POOL ? process.env.REACT_APP_PUZZLE_POOL : '',
+};
+
+export const FILTERED_CONTRACTS = () => {
+  return Object.values(LENDS_CONTRACTS).filter((item) => item);
+}
+
+
 export type PoolDataType = {
   netAPY: BN;
   userHealth: number;
@@ -133,11 +143,6 @@ export interface IPoolConfigStatistics {
   liquidity: string;
   volume: Array<{ date: number; volume: string }>;
 }
-
-export const LENDS_CONTRACTS = {
-  mainPool: process.env.REACT_APP_MAIN_POOL!,
-  puzzlePool: process.env.REACT_APP_PUZZLE_POOL ? process.env.REACT_APP_PUZZLE_POOL : '',
-};
 
 export const ROUTES = {
   HOME: '/',

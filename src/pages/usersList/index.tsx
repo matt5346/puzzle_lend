@@ -14,7 +14,7 @@ import DashboardTable from '@src/pages/usersList/DashboardTable';
 import SquareTokenIcon from '@src/common/styles/SquareTokenIcon';
 import tokenLogos from '@src/common/constants/tokenLogos';
 import Container from '@src/common/styles/Container';
-import { LENDS_CONTRACTS, TOKENS_LIST_FULL, ROUTES } from '@src/common/constants';
+import { FILTERED_CONTRACTS, LENDS_CONTRACTS, TOKENS_LIST_FULL, ROUTES } from '@src/common/constants';
 import BN from '@src/common/utils/BN';
 
 import { ReactComponent as LineDivider } from '@src/common/assets/icons/line_divider.svg';
@@ -89,11 +89,7 @@ const SideViewWrap = styled.div`
   }
 `;
 
-const categoriesOptions = [
-  { title: 'All Pools', key: 'all' },
-  { title: 'Main Pool', key: '3P6dkRGSqgsNpQFbSYn9m8n4Dd8KRaj5TUU' },
-  { title: 'Puzzle Pool', key: '3PEhGDwvjrjVKRPv5kHkjfDLmBJK1dd2frT' },
-];
+const categoriesOptions = [{ title: 'All Pools', key: 'all' }];
 
 const moneyOptions = [{ title: 'USDN', key: 'usdn' }];
 
@@ -107,22 +103,29 @@ const UsersList: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    Object.entries(LENDS_CONTRACTS).forEach((item) => {
+      if (categoriesOptions.find((option) => option.key === item[1])) return;
+      if (item[1] !== '') categoriesOptions.push({ title: item[0], key: item[1] });
+    });
+
     async function fetchMyAPI() {
       const poolsData: any = [];
       let arr: any = [];
       const poolsContracts: any = [];
+      console.log(categoriesOptions, 'categoriesOptionsFiltered');
 
-      await Promise.all(Object.values(LENDS_CONTRACTS).map((item) => usersStore.loadBorrowSupplyUsers(item))).then(() =>
+      await Promise.all(FILTERED_CONTRACTS().map((item) => usersStore.loadBorrowSupplyUsers(item))).then(() =>
         usersStore.setInitialized(true)
       );
 
-      console.log(usersStore, 'DATA');
+      console.log(usersStore, categoriesOptions, 'DATA');
 
       if (getPoolType === 0) {
-        poolsContracts.push(categoriesOptions[1].key, categoriesOptions[2].key);
+        categoriesOptions.forEach((item, index) => (index !== 0 ? poolsContracts.push(item.key) : false));
       } else {
         poolsContracts.push(categoriesOptions[getPoolType].key);
       }
+      console.log(poolsContracts, 'poolsContracts');
 
       if (usersStore.initialized && tokenStore.initialized) {
         poolsContracts.forEach((item: any) => {

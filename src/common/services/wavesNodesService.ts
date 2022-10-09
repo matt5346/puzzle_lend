@@ -306,8 +306,6 @@ const wavesNodesService = {
         return { [itemId]: responseAssets.data };
       })
     );
-    console.log(tokensPoolSetup, '----tokensPoolSetup');
-    console.log(assetsNodeData, '----assetsNodeData');
 
     const fullAssetsData = assetsArrData.map((tokenData: any) => {
       const itemData = {
@@ -399,7 +397,6 @@ const wavesNodesService = {
 
             // same as Rates, passing setup_interest
             // firstly its %, all percents in 6 decimals
-            console.log(tokensinterestArr, itemData.name, '----tokensinterestArr');
             if (tokensinterestArr && +tokensinterestArr[key])
               itemData.setup_interest = BN.formatUnits(+tokensinterestArr[key], 8);
 

@@ -3,7 +3,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useStores } from '@src/stores';
 import { observer } from 'mobx-react-lite';
-import { LENDS_CONTRACTS, ROUTES } from '@src/common/constants';
+import { LENDS_CONTRACTS, FILTERED_CONTRACTS, ROUTES } from '@src/common/constants';
 import { Text } from '@src/UIKit/Text';
 import { Column } from '@src/common/styles/Flex';
 import { SizedBox } from '@src/UIKit/SizedBox';
@@ -48,7 +48,7 @@ const UserStats: React.FC = () => {
 
   useEffect(() => {
     async function fetchMyAPI() {
-      await Promise.all(Object.values(LENDS_CONTRACTS).map((item) => usersStore.syncTokenStatistics(item, userId!)));
+      await Promise.all(FILTERED_CONTRACTS().map((item) => usersStore.syncTokenStatistics(item, userId!)));
       console.log(usersStore, 'usersStore ready');
       setReady(true);
     }
@@ -72,7 +72,7 @@ const UserStats: React.FC = () => {
           </Text>
           <SizedBox height={54} />
           {isReady &&
-            Object.values(LENDS_CONTRACTS).map((pool: any) => {
+            FILTERED_CONTRACTS().map((pool: any) => {
               return <UsersTable key={pool} poolId={pool} />;
             })}
         </Column>
