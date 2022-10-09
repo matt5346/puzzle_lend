@@ -237,7 +237,8 @@ const Dashboard: React.FC = () => {
       <Container>
         <DashHeader>
           <TitleH>
-            Lending protocol built on the <>&nbsp;</> <span>Waves blockchain</span>
+            Lending protocol built on the<>&nbsp;</>
+            <span>Waves blockchain</span>
           </TitleH>
         </DashHeader>
 
