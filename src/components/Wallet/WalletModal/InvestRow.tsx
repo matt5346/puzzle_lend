@@ -3,17 +3,19 @@ import styled from '@emotion/styled';
 import BN from '@src/common/utils/BN';
 import React, { HTMLAttributes } from 'react';
 import { Column, Row } from '@src/common/styles/Flex';
-import SquareTokenIcon from '@src/common/styles/SquareTokenIcon';
 import { SizedBox } from '@src/UIKit/SizedBox';
 import { Text } from '@src/UIKit/Text';
+import SquareTokenIcon from '@src/common/styles/SquareTokenIcon';
+import DefaultIcon from '@src/common/styles/DefaultIcon';
 import Skeleton from 'react-loading-skeleton';
 
 interface IProps extends HTMLAttributes<HTMLDivElement> {
   logo?: string;
+  symbol?: string;
+  rate: BN;
   topLeftInfo?: string;
-  topRightInfo?: string;
+  topRightInfo: string;
   bottomLeftInfo?: string;
-  bottomRightInfo?: string;
   withClickLogic?: boolean;
   rateChange?: BN | null;
 }
@@ -39,19 +41,14 @@ const Root = styled.div<{ withClickLogic?: boolean }>`
     color: #ed827e;
   }
 `;
-const DefaultIcon = styled.div`
-  width: 40px;
-  height: 40px;
-  color: #000;
-  border: 1px solid #f1f2fe;
-  border-radius: 8px;
-`;
+
 const InvestRow: React.FC<IProps> = ({
   logo,
+  symbol,
+  rate,
   topLeftInfo,
   topRightInfo,
   bottomLeftInfo,
-  bottomRightInfo,
   withClickLogic,
   rateChange,
   ...rest
@@ -65,24 +62,20 @@ const InvestRow: React.FC<IProps> = ({
           <Text weight={500} size="medium" type="primary">
             {topLeftInfo}
           </Text>
-          <Text size="medium" type="primary">
-            {bottomLeftInfo}&nbsp;
-            {rateChange != null &&
-              !rateChange.eq(0) &&
-              (rateChange.lt(0) ? (
-                <span className="red">{rateChange.toFormat(2)}%</span>
-              ) : (
-                <span className="green">+{rateChange.toFormat(2)}%</span>
-              ))}
+          <Text weight={500} size="medium" type="primary">
+            {+rate.toFixed(2) || 0} $
           </Text>
         </Column>
       </Row>
       <Column alignItems="flex-end">
-        <Text weight={500} size="medium" style={{ whiteSpace: 'nowrap' }} type="primary" textAlign="right">
-          {topRightInfo}
+        <Text size="medium" style={{ whiteSpace: 'nowrap' }} type="primary" textAlign="right">
+          {topRightInfo} {symbol}
         </Text>
         <Text style={{ whiteSpace: 'nowrap' }} textAlign="right" type="primary" size="small">
-          {bottomRightInfo}
+          {+BN.formatUnits(+topRightInfo, 0)
+            .times(rate)
+            .toDecimalPlaces(2) || 0}{' '}
+          $
         </Text>
       </Column>
     </Root>

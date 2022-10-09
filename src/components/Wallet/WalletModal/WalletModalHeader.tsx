@@ -80,7 +80,7 @@ const WalletModalHeader: React.FC<IProps> = () => {
         </Text>
         <Text fitContent type="light" size="large">
           $&nbsp;
-          {vm.totalInvestmentAmount}
+          {+vm.totalInvestmentAmount || 0}
         </Text>
         <SizedBox height={16} />
         <Actions>

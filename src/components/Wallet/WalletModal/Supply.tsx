@@ -24,7 +24,6 @@ const Supply: React.FC = () => {
   return (
     <Root>
       <Column justifyContent="center" alignItems="center" crossAxisSize="max">
-        <SizedBox height={12} />
         {vm.assetsStats.length === 0 && (
           <Column alignItems="center">
             <SizedBox height={24} />

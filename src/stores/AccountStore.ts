@@ -62,6 +62,7 @@ class AccountStore {
       if (initState.loginType === LOGIN_TYPE.KEEPER) {
         this.setupSynchronizationWithKeeper();
       }
+      console.log(initState, 'initState');
       this.setAddress(initState.address);
     }
     Promise.all([this.checkScriptedAccount(), this.updateAccountAssets()]);
@@ -234,7 +235,7 @@ class AccountStore {
     const assetBalances = TOKENS_LIST_FULL.map((asset) => {
       const t = data.find(({ assetId }) => asset.assetId === assetId);
       const balance = new BN(t != null ? t.balance : 0);
-      const rate = this.rootStore.tokenStore.usdnRate(asset.assetId, 1) ?? BN.ZERO;
+      const rate = this.rootStore.tokenStore.usdnRate(asset.assetId) ?? BN.ZERO;
       const usdnEquivalent = rate ? rate.times(BN.formatUnits(balance, asset.decimals)) : BN.ZERO;
       return new Balance({ balance, usdnEquivalent, ...asset });
     });

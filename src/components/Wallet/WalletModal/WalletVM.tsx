@@ -1,7 +1,7 @@
 /* eslint-disable no-return-assign */
 import React, { useMemo } from 'react';
 import { useVM } from '@src/hooks/useVM';
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, reaction, when } from 'mobx';
 import { RootStore, useStores } from '@src/stores';
 import copy from 'copy-to-clipboard';
 import Balance from '@src/common/entities/Balance';
@@ -35,13 +35,9 @@ class WalletVM {
 
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
-    this.getAssetsStats();
     makeAutoObservable(this);
-    // when(
-    //   () => this.rootStore.accountStore.assetBalances != null,
-    //   this.getAssetsStats
-    // );
-    // reaction(() => this.rootStore.accountStore?.address, this.getAssetsStats);
+    when(() => this.rootStore.accountStore.assetBalances != null, this.getAssetsStats);
+    reaction(() => this.rootStore.accountStore?.address, this.getAssetsStats);
     setInterval(this.getAssetsStats, 60 * 1000);
   }
 
@@ -88,8 +84,19 @@ class WalletVM {
   }
 
   get totalInvestmentAmount() {
-    const balancesAmount = this.balances.reduce((acc, b) => acc.plus(b.usdnEquivalent ?? 0), BN.ZERO);
-    return balancesAmount.plus(BN.ZERO).toFormat(2);
+    const { tokenStore } = this.rootStore;
+
+    const balancesAmount = this.balances.reduce((acc: any, b) => {
+      const stats = tokenStore.poolDataTokensWithStats[b.assetId];
+
+      tokenStore.usdnRate(b.assetId);
+
+      return BN.formatUnits(b?.balance || BN.ZERO, b.decimals)
+        .times(stats?.minPrice)
+        .plus(acc);
+    }, BN.ZERO);
+
+    return balancesAmount.toFixed(4);
   }
 
   getAssetsStats = async () => {
