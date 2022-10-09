@@ -274,11 +274,9 @@ export default class TokenStore {
   public syncTokenStatistics = async (contractId?: string, userId?: string) => {
     const { accountStore, lendStore, notificationStore } = this.rootStore;
     const contractPoolId = contractId || lendStore.activePoolContract;
-    const contractPoolName = lendStore.poolNameById(contractPoolId);
-    const assets = TOKENS_LIST(contractPoolName).map(({ assetId }) => assetId);
     const userContract = userId || accountStore.address;
 
-    const stats = await wavesNodesService.getPoolsStats(assets, userContract!, contractPoolId).catch((e) => {
+    const stats = await wavesNodesService.getPoolsStats(userContract!, contractPoolId).catch((e) => {
       console.log(e, 'getAssetsStats');
       return [];
     });

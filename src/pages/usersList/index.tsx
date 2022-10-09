@@ -164,7 +164,7 @@ const UsersList: React.FC = () => {
   }, [usersStore, tokenStore, usersStore.initialized, tokenStore.initialized, getPoolType]);
 
   const formatVal = (val: BN, decimal: number) => {
-    return BN.formatUnits(val, decimal).toSignificant(6).toFormat(5);
+    return BN.formatUnits(val, decimal);
   };
 
   return (
@@ -266,10 +266,10 @@ const UsersList: React.FC = () => {
                             {(+formatVal(item.totalAssetBorrow, item.decimals)).toFixed(2)} {item.symbol}
                           </Text>
                           <Text textAlign="right" size="small" type="secondary" nowrap>
-                            $ {(+formatVal(item.totalAssetSupply, item.decimals) * +item.currentPrice).toFixed(2)}{' '}
+                            $ {formatVal(item.totalAssetSupply, item.decimals).times(item.currentPrice).toFixed(2)}{' '}
                             {'/ '}${' '}
                             {item.totalAssetBorrow
-                              ? (+formatVal(item.totalAssetBorrow, item.decimals) * +item.currentPrice).toFixed(2)
+                              ? formatVal(item.totalAssetBorrow, item.decimals).times(item.currentPrice).toFixed(2)
                               : 0}
                           </Text>
                         </Column>

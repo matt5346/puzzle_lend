@@ -115,7 +115,7 @@ const DashboardToken: React.FC = () => {
   const getUtilizationRatio = (borrow: BN, supply: BN) => {
     if (+borrow === 0 || +supply === 0) return 0;
 
-    return ((+borrow / +supply) * 100).toFixed(2);
+    return borrow.div(supply).times(100).toFixed(2);
   };
 
   useEffect(() => {
@@ -184,7 +184,7 @@ const DashboardToken: React.FC = () => {
           </Text>
         </Text>
         <SizedBox height={24} />
-        {tokenIData && tokenFullData && (
+        {tokenIData && tokenFullData && tokenFullData.assetId && (
           <Column crossAxisSize="max">
             <Row alignItems="center">
               <RoundTokenIcon src={tokenLogos[tokenIData.symbol]} />
@@ -204,7 +204,7 @@ const DashboardToken: React.FC = () => {
                   Total supply
                 </Text>
                 <Text size="medium" type="primary" fitContent>
-                  {formatVal(tokenFullData.totalAssetSupply, tokenFullData.decimals)} {tokenFullData.symbol}
+                  {+formatVal(tokenFullData.totalAssetSupply, tokenFullData.decimals)} {tokenFullData.symbol}
                 </Text>
               </Column>
               <Column>
@@ -212,7 +212,7 @@ const DashboardToken: React.FC = () => {
                   Total borrow
                 </Text>
                 <Text size="medium" type="primary" fitContent>
-                  {formatVal(tokenFullData.totalAssetBorrow, tokenFullData.decimals)} {tokenFullData.symbol}
+                  {+formatVal(tokenFullData.totalAssetBorrow, tokenFullData.decimals)} {tokenFullData.symbol}
                 </Text>
               </Column>
               <Column>
@@ -220,7 +220,7 @@ const DashboardToken: React.FC = () => {
                   Utilization ratio
                 </Text>
                 <Text size="medium" type="primary" fitContent>
-                  {getUtilizationRatio(tokenFullData.totalAssetBorrow, tokenFullData.totalAssetSupply)}%
+                  {+getUtilizationRatio(tokenFullData.totalAssetBorrow, tokenFullData.totalAssetSupply)}%
                 </Text>
               </Column>
               <Column>
@@ -240,7 +240,7 @@ const DashboardToken: React.FC = () => {
                   Supply APY
                 </Text>
                 <Text size="medium" type="primary" fitContent>
-                  {tokenFullData.setupSupplyAPY ? (+tokenFullData.setupSupplyAPY).toFixed(2) : 0} %
+                  {+tokenFullData.setupSupplyAPY ? (+tokenFullData.setupSupplyAPY).toFixed(2) : 0} %
                 </Text>
               </Column>
               <Column>
@@ -248,7 +248,7 @@ const DashboardToken: React.FC = () => {
                   Borrow APY
                 </Text>
                 <Text size="medium" type="primary" fitContent>
-                  {tokenFullData.setupBorrowAPR ? (+tokenFullData.setupBorrowAPR).toFixed(2) : 0} %
+                  {+tokenFullData.setupBorrowAPR ? (+tokenFullData.setupBorrowAPR).toFixed(2) : 0} %
                 </Text>
               </Column>
             </TokenStats>
@@ -256,11 +256,11 @@ const DashboardToken: React.FC = () => {
           </Column>
         )}
         <TokenData
-          key={tokenFullData?.assetId || '-'}
+          key={tokenFullData?.assetId}
           rate={tokenFullData?.currentPrice}
-          setupLtv={tokenFullData?.setupLtv}
-          setupLts={tokenFullData?.setupLts}
-          setupPenalty={tokenFullData?.setupPenalty}
+          setupLtv={tokenFullData?.setupLtv || BN.ZERO}
+          setupLts={tokenFullData?.setupLts || BN.ZERO}
+          setupPenalty={tokenFullData?.setupPenalty || BN.ZERO}
           totalSupply={getSupplyUsers || 0}
           totalBorrow={getBorrowUsers || 0}
         />

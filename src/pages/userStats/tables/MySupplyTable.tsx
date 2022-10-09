@@ -68,7 +68,7 @@ const MySupplyTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
       if (sort === 'selfDailyIncome') key = 'selfDailyIncome';
       if (key == null) return 0;
 
-      if (stats1 == null && stats2 == null) return 0;
+      if (stats1 == null || stats2 == null) return 0;
       if (stats1[key] == null && stats2[key] != null) {
         return sortMode === 'descending' ? 1 : -1;
       }

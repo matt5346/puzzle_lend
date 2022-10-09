@@ -49,6 +49,7 @@ const UserStats: React.FC = () => {
   useEffect(() => {
     async function fetchMyAPI() {
       await Promise.all(Object.values(LENDS_CONTRACTS).map((item) => usersStore.syncTokenStatistics(item, userId!)));
+      console.log(usersStore, 'usersStore ready');
       setReady(true);
     }
 
