@@ -199,14 +199,9 @@ export default class UsersStore {
   public syncTokenStatistics = async (contractId?: string, userId?: string): Promise<PoolDataType> => {
     const { accountStore, lendStore } = this.rootStore;
     const contractPoolId = contractId || lendStore.activePoolContract;
-    const contractPoolName = lendStore.poolNameById(contractPoolId);
-    const assets = TOKENS_LIST(contractPoolName).map(({ assetId }) => assetId);
     const userContract = userId || accountStore.address;
 
-    const stats = await wavesNodesService.getPoolsStats(assets, userContract!, contractPoolId).catch((e) => {
-      // notifi\cationStore.notify(e.message ?? e.toString(), {
-      //   type: 'error',
-      // });
+    const stats = await wavesNodesService.getPoolsStats(userContract!, contractPoolId).catch((e) => {
       console.log(e, 'getAssetsStats');
       return [];
     });
@@ -227,9 +222,9 @@ export default class UsersStore {
     let borrowCapacityUsed = BN.ZERO;
 
     const statistics = stats.map((details: any) => {
-      const asset = TOKENS_BY_ASSET_ID[details.id] ?? details.precision;
-      const { decimals } = asset;
-      const currentPrice = new BN(details.min_price ?? 0);
+      const decimals = details.precision;
+      const currentPrice = details.min_price;
+      console.log(decimals, details, details.name, 'statistics');
 
       // pool Total
       poolTotal = BN.formatUnits(details.total_supply, details.precision).times(currentPrice).plus(poolTotal);
@@ -278,19 +273,19 @@ export default class UsersStore {
         symbol: details.shortcode,
         setupLtv: details.setup_ltv,
         setupLts: details.setup_lts,
-        setupPenalty: details.setup_penalty,
+        setupPenalty: details.setup_penalties,
         setupBorrowAPR: details.setup_borrow_apr,
         setupSupplyAPY: details.setup_supply_apy,
-        selfSupply: BN.formatUnits(details.self_supply, 0),
-        selfBorrow: BN.formatUnits(details.self_borrowed, 0),
+        selfSupply: details.self_supply,
+        selfBorrow: details.self_borrowed,
         selfDailyIncome: details.self_daily_income,
         selfDailyBorrowInterest: details.self_daily_borrow_interest,
         supplyInterest: details.supply_interest,
         selfSupplyRate: details.supply_rate,
-        totalAssetBorrow: BN.formatUnits(details.total_borrow, 0),
-        totalAssetSupply: BN.formatUnits(details.total_supply, 0),
+        totalAssetBorrow: details.total_borrow,
+        totalAssetSupply: details.total_supply,
         currentPrice,
-        maxPrice: BN.formatUnits(details.max_price, 0),
+        maxPrice: details.max_price,
       };
     });
 
@@ -311,6 +306,7 @@ export default class UsersStore {
       userCollateral: 0,
       tokens: statistics,
     };
+    console.log(poolData, 'poolData ready 111');
 
     this.setUsersPoolData(poolData);
     return poolData;

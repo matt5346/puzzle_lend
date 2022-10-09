@@ -63,7 +63,7 @@ const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
       if (sort === 'selfDailyBorrowInterest') key = 'selfDailyBorrowInterest';
       if (key == null) return 0;
 
-      if (stats1 == null && stats2 == null) return 0;
+      if (stats1 == null || stats2 == null) return 0;
       if (stats1[key] == null && stats2[key] != null) {
         return sortMode === 'descending' ? 1 : -1;
       }
@@ -107,7 +107,7 @@ const MyBorrowTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetClic
           sortedTokens.map((t) => {
             const stats = usersStore.poolDataTokensWithStats[t.assetId];
 
-            if (stats && Number(stats.selfBorrow) > 0) {
+            if (stats && +stats.selfBorrow > 0) {
               return (
                 <DesktopTokenTableRow
                   isUserStats={isUserStats}

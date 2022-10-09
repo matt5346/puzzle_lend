@@ -11,11 +11,11 @@ import { Tooltip } from '@src/UIKit/Tooltip';
 
 interface IProps {
   rate?: BN;
-  setupLtv?: BN;
-  setupLts?: BN;
-  setupPenalty?: BN;
-  totalSupply?: number;
-  totalBorrow?: number;
+  setupLtv: BN;
+  setupLts: BN;
+  setupPenalty: BN;
+  totalSupply: number;
+  totalBorrow: number;
 }
 
 const Root = styled.div`
@@ -51,7 +51,7 @@ const TokenData: React.FC<IProps> = ({ rate, totalSupply, totalBorrow, setupLtv,
             Number of suppliers
           </Text>
           <Text size="medium" type="secondary" fitContent>
-            {totalSupply || 0}
+            {+totalSupply || 0}
           </Text>
         </Row>
         <Row
@@ -61,7 +61,7 @@ const TokenData: React.FC<IProps> = ({ rate, totalSupply, totalBorrow, setupLtv,
             Number of borrowers
           </Text>
           <Text size="medium" type="secondary" fitContent>
-            {totalBorrow || 0}
+            {+totalBorrow || 0}
           </Text>
         </Row>
         <Row
@@ -71,7 +71,7 @@ const TokenData: React.FC<IProps> = ({ rate, totalSupply, totalBorrow, setupLtv,
             Collateral Factor
           </Text>
           <Text size="medium" type="secondary" fitContent>
-            {setupLtv || 0}%
+            {+setupLtv || 0}%
           </Text>
         </Row>
         <Row
@@ -86,7 +86,7 @@ const TokenData: React.FC<IProps> = ({ rate, totalSupply, totalBorrow, setupLtv,
             </Text>
           </Tooltip>
           <Text size="medium" type="secondary" fitContent nowrap>
-            {setupLts || 0}%
+            {+setupLts || 0}%
           </Text>
         </Row>
         <Row justifyContent="space-between">
@@ -99,7 +99,7 @@ const TokenData: React.FC<IProps> = ({ rate, totalSupply, totalBorrow, setupLtv,
             </Text>
           </Tooltip>
           <Text size="medium" type="secondary" fitContent nowrap>
-            {setupPenalty || 0}%
+            {+setupPenalty || 0}%
           </Text>
         </Row>
       </Card>

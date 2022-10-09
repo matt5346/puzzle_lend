@@ -208,20 +208,32 @@ const wavesNodesService = {
     return response.data.assets != null ? response.data.assets.filter((v: any) => v != null) : [];
   },
   // loading assets data for current pool
-  // assetsId: any number of assets
   // address: CURRENT USER
   // contractAddress: contract Address of POOL
-  getPoolsStats: async (assetsId: string[], address?: string, contractAddress?: string): Promise<IAssetResponse[]> => {
+  getPoolsStats: async (address?: string, contractAddress?: string): Promise<IAssetResponse[]> => {
     const assetsArrData: any = [];
 
-    assetsId.forEach((item) => {
-      const asset = TOKENS_BY_ASSET_ID[item];
-      assetsArrData.push(asset);
-    });
-
+    let tokensPoolSetup: any = [];
     let tokensRates: any = {};
     let setupRate: any = {};
     let tokensPricesRates: any = {};
+
+    try {
+      const stringParams = buildUrlParams({
+        setup_tokens: 'setup_tokens',
+      });
+
+      const urlSupply = `https://nodes.wavesnodes.com/addresses/data/${contractAddress}?${stringParams}`;
+      const responseAssets = await axios.get(urlSupply);
+      tokensPoolSetup = responseAssets?.data[0]?.value?.split(',');
+    } catch (err) {
+      console.log(err, 'ERR');
+    }
+
+    tokensPoolSetup.forEach((item: string) => {
+      const asset = TOKENS_BY_ASSET_ID[item];
+      assetsArrData.push(asset);
+    });
 
     try {
       const tokensRatesUrl = `http://nodes.wavesnodes.com/utils/script/evaluate/${contractAddress}`;
@@ -271,12 +283,13 @@ const wavesNodesService = {
     } catch (err) {
       console.log(err, 'ERR');
     }
+
     const tokensRatesArr: string[] = tokensRates?.data?.result?.value?._2?.value.split(',');
     const tokensinterestArr: string[] = setupRate?.data?.result?.value?._2?.value.split(',');
     const tokensPricesArr: string[] = tokensPricesRates?.data?.result?.value?._2?.value.split('|');
 
     const assetsNodeData = await Promise.all(
-      assetsId.map(async (itemId) => {
+      tokensPoolSetup.map(async (itemId: string) => {
         const stringParams = buildUrlParams({
           total_supply: `total_supplied_${itemId}`,
           total_borrow: `total_borrowed_${itemId}`,
@@ -284,8 +297,6 @@ const wavesNodesService = {
           setup_ltvs: 'setup_ltvs',
           setup_lts: 'setup_lts',
           setup_penalties: 'setup_penalties',
-          setup_tokens: 'setup_tokens',
-          setup_interest: 'setup_interest',
           address_supply: `${address}_supplied_${itemId}`,
           address_borrow: `${address}_borrowed_${itemId}`,
         });
@@ -295,6 +306,7 @@ const wavesNodesService = {
         return { [itemId]: responseAssets.data };
       })
     );
+    console.log(tokensPoolSetup, '----tokensPoolSetup');
     console.log(assetsNodeData, '----assetsNodeData');
 
     const fullAssetsData = assetsArrData.map((tokenData: any) => {
@@ -311,7 +323,7 @@ const wavesNodesService = {
         // interest rate for supply/borrow interest
         setup_interest: BN.ZERO,
         // borrow APY
-        // todo: change to Apy naming
+        // todo: change to APY naming
         setup_borrow_apr: BN.ZERO,
         // supply APY/ supply interest
         setup_supply_apy: BN.ZERO,
@@ -343,9 +355,7 @@ const wavesNodesService = {
         const ltv = assetExtraData[tokenData.assetId].find((pool: any) => pool.key === 'setup_ltvs')?.value?.split(',');
         // setupToken is order for Tokens in current pool > [Waves, pluto...]
         // all other rates comparing to it
-        const setupTokens = assetExtraData[tokenData.assetId]
-          .find((pool: any) => pool.key === 'setup_tokens')
-          ?.value?.split(',');
+        const setupTokens = tokensPoolSetup;
         const selfSupply = assetExtraData[tokenData.assetId].find(
           (pool: any) => pool.key === `${address}_supplied_${tokenData.assetId}`
         );
@@ -389,6 +399,7 @@ const wavesNodesService = {
 
             // same as Rates, passing setup_interest
             // firstly its %, all percents in 6 decimals
+            console.log(tokensinterestArr, itemData.name, '----tokensinterestArr');
             if (tokensinterestArr && +tokensinterestArr[key])
               itemData.setup_interest = BN.formatUnits(+tokensinterestArr[key], 8);
 
@@ -402,12 +413,9 @@ const wavesNodesService = {
           }
         });
 
-        assetExtraData[tokenData.assetId].forEach((pool: any) => {
-          // setup_roi === borrow interest
-          if (pool.key === 'setup_interest') {
-            itemData.setup_borrow_apr = itemData.setup_interest.plus(1).pow(365).minus(1).times(100);
-          }
-        });
+        // setup_roi === borrow interest
+        if (itemData.setup_interest)
+          itemData.setup_borrow_apr = itemData.setup_interest.plus(1).pow(365).minus(1).times(100);
 
         // for simplicity
         // all values gonna be convert to real numbers with decimals only in TEMPLATE

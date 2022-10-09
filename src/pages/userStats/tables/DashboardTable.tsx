@@ -50,7 +50,7 @@ const DashboardTable: React.FC<IProps> = ({ filteredTokens, showSupply, showBorr
       {showSupply ? (
         <Wrap>
           <Text weight={500} type="secondary" margin="0 0 10px 0">
-            My supply
+            User supply
           </Text>
           <MySupplyTable
             filteredTokens={filteredTokens}
@@ -64,7 +64,7 @@ const DashboardTable: React.FC<IProps> = ({ filteredTokens, showSupply, showBorr
       {showBorrow ? (
         <Wrap>
           <Text weight={500} type="secondary" margin="0 0 10px 0">
-            My borrow
+            User borrow
           </Text>
           <MyBorrowTable
             filteredTokens={filteredTokens}

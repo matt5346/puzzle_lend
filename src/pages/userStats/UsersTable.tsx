@@ -43,25 +43,27 @@ const UserTable: React.FC<IProps> = ({ poolId }) => {
   useEffect(() => {
     const poolsData = usersStore.filterPoolDataTokens(poolId);
 
-    if (poolsData.every((item) => +usersStore.poolDataTokensWithStats[item.assetId].selfBorrow === 0))
+    if (poolsData.every((item) => +usersStore.poolDataTokensWithStats[item.assetId]?.selfBorrow === 0) || false)
       showBorrowTable(false);
 
-    if (poolsData.every((item) => +usersStore.poolDataTokensWithStats[item.assetId].selfSupply === 0))
+    if (poolsData.every((item) => +usersStore.poolDataTokensWithStats[item.assetId]?.selfSupply === 0) || false)
       showSupplyTable(false);
 
     // filtering USER supply/borrow values
     // for showing or hiding supply/borrow TABLES
     poolsData.forEach((t) => {
       const stats = usersStore.poolDataTokensWithStats[t.assetId];
+      console.log(stats, '---stats');
 
-      if (showBorrow === false && Number(stats.selfBorrow) > 0) {
+      if (showBorrow === false && +stats?.selfBorrow > 0) {
         showBorrowTable(true);
       }
 
-      if (showBorrow === false && Number(stats.selfSupply) > 0) {
+      if (showBorrow === false && +stats?.selfSupply > 0) {
         showSupplyTable(true);
       }
     });
+    console.log(poolsData, '---poldata');
     setFilteredTokens(poolsData);
   }, [lendStore.activePoolContract, showBorrow, poolId, usersStore]);
 
@@ -75,7 +77,7 @@ const UserTable: React.FC<IProps> = ({ poolId }) => {
         {filteredTokens && filteredTokens.length ? (
           <DashboardTable filteredTokens={filteredTokens} showBorrow={showBorrow} showSupply={showSupply} isUserStats />
         ) : (
-          <Text>No Tokens in pool</Text>
+          <Text>No borrowed/supplied Tokens in pool</Text>
         )}
       </Wrap>
     </Root>

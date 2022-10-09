@@ -4,12 +4,8 @@ import styled from '@emotion/styled';
 import React, { useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useNavigate } from 'react-router-dom';
-import { SizedBox } from '@src/UIKit/SizedBox';
 import { Text } from '@src/UIKit/Text';
 import { Button } from '@src/UIKit/Button';
-import { IToken } from '@src/common/constants';
-import tokenLogos from '@src/common/constants/tokenLogos';
-import SquareTokenIcon from '@src/common/styles/SquareTokenIcon';
 import { Column, Row } from '@src/common/styles/Flex';
 import BN from '@src/common/utils/BN';
 
@@ -64,7 +60,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({ owner, totalSupply, totalBorro
 
       {totalBorrow != null ? (
         <Column crossAxisSize="max" mainAxisSize="stretch">
-          <Text textAlign="right">$ {totalBorrow.toFixed(2)}</Text>
+          <Text textAlign="right">$ {+totalBorrow.toFixed(2)}</Text>
         </Column>
       ) : (
         <Column crossAxisSize="max" mainAxisSize="stretch">
@@ -74,7 +70,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({ owner, totalSupply, totalBorro
 
       {totalSupply != null ? (
         <Column crossAxisSize="max" mainAxisSize="stretch">
-          <Text textAlign="right">$ {totalSupply.toFixed(2)}</Text>
+          <Text textAlign="right">$ {+totalSupply.toFixed(2)}</Text>
         </Column>
       ) : (
         <Column crossAxisSize="max" mainAxisSize="stretch">
