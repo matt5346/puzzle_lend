@@ -64,6 +64,7 @@ export type TTokenStatistics = {
   supplyInterest: BN;
   totalAssetSupply: BN;
   totalAssetBorrow: BN;
+  minPrice: BN;
   maxPrice: BN;
   currentPrice: BN;
 };
@@ -88,6 +89,7 @@ export function createITokenStat(): TTokenStatistics {
     totalAssetSupply: BN.ZERO,
     totalAssetBorrow: BN.ZERO,
     currentPrice: BN.ZERO,
+    minPrice: BN.ZERO,
     maxPrice: BN.ZERO,
   };
 }

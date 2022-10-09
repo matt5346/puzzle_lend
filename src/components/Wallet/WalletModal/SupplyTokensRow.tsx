@@ -3,10 +3,12 @@ import styled from '@emotion/styled';
 import BN from '@src/common/utils/BN';
 import React, { HTMLAttributes } from 'react';
 import { Column, Row } from '@src/common/styles/Flex';
+import { SizedBox } from '@src/UIKit/SizedBox';
 import { Text } from '@src/UIKit/Text';
 import tokenLogos from '@src/common/constants/tokenLogos';
 import { IToken } from '@src/common/constants';
-import RoundTokenIcon from '@src/common/styles/RoundTokenIcon';
+import SquareTokenIcon from '@src/common/styles/SquareTokenIcon';
+import DefaultIcon from '@src/common/styles/DefaultIcon';
 
 interface IProps extends HTMLAttributes<HTMLDivElement> {
   token: IToken;
@@ -47,23 +49,36 @@ const SupplyTokensRow: React.FC<IProps> = ({ token, rate, setupSupplyAPY, selfSu
 
   return (
     <Root {...rest}>
-      <RoundTokenIcon src={tokenLogos[token.symbol]} />
-      <Column>
-        <Text type="primary" className="text" textAlign="center">
-          Supply APY
-        </Text>
-        {setupSupplyAPY != null ? <Text type="primary">{(+setupSupplyAPY).toFixed(2)}%</Text> : <Text>-</Text>}
-      </Column>
-      <Column>
-        <Text type="primary" className="text" textAlign="center">
-          My Supply
-        </Text>
-        {selfSupply != null ? (
-          <Text type="primary">{(+formatVal(selfSupply, token.decimals)).toFixed(4)}$</Text>
-        ) : (
-          <Text>-</Text>
-        )}
-      </Column>
+      <Row>
+        {token?.symbol ? <SquareTokenIcon size="small" src={tokenLogos[token.symbol]} /> : <DefaultIcon />}
+        <SizedBox width={8} />
+        <Column crossAxisSize="max">
+          <Row>
+            <Text weight={500} size="medium" type="primary" className="text" textAlign="left">
+              My Supply
+            </Text>
+            {selfSupply != null ? (
+              <Text type="primary" size="medium" textAlign="right">
+                {(+formatVal(selfSupply, token.decimals)).toFixed(4)} {token.symbol}
+              </Text>
+            ) : (
+              <Text>-</Text>
+            )}
+          </Row>
+          <Row>
+            <Text weight={500} size="medium" type="primary" className="text" textAlign="left">
+              Supply APY
+            </Text>
+            {setupSupplyAPY != null ? (
+              <Text size="small" type="primary" textAlign="right">
+                {(+setupSupplyAPY).toFixed(2)}%
+              </Text>
+            ) : (
+              <Text>-</Text>
+            )}
+          </Row>
+        </Column>
+      </Row>
     </Root>
   );
 };

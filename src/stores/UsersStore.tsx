@@ -285,6 +285,7 @@ export default class UsersStore {
         totalAssetBorrow: details.total_borrow,
         totalAssetSupply: details.total_supply,
         currentPrice,
+        minPrice: details.min_price,
         maxPrice: details.max_price,
       };
     });

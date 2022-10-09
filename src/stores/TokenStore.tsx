@@ -107,33 +107,17 @@ export default class TokenStore {
     });
   }
 
-  usdnRate = (tokenAssetId: string, coefficient = 1): BN | null => {
+  usdnRate = (tokenAssetId: string): BN | null => {
     const { tokenStore } = this.rootStore;
-    const usdn = TOKENS_BY_SYMBOL.USDN.assetId;
-    const puzzle = TOKENS_BY_SYMBOL.PUZZLE.assetId;
-    const pool = this.pools.find(({ tokens }) => tokens.some((t) => t.assetId === tokenAssetId));
-    const startPrice = TOKENS_BY_ASSET_ID[tokenAssetId]?.startPrice;
-    // todo fix this pizdez !!!
-    if (pool == null && startPrice != null) {
-      return new BN(startPrice ?? 0);
-    }
-    if (pool == null) return null;
-    if (pool.currentPrice(tokenAssetId, puzzle) == null && pool.tokens.some((t) => t.assetId === puzzle)) {
-      return new BN(startPrice ?? 0);
-    }
-    if (pool.currentPrice(tokenAssetId, usdn) == null && pool.tokens.some((t) => t.assetId === usdn)) {
-      return new BN(startPrice ?? 0);
-    }
+    let rate = BN.ZERO;
 
-    if (pool.tokens.some(({ assetId }) => assetId === usdn)) {
-      return pool.currentPrice(tokenAssetId, usdn, coefficient);
-    }
-    if (pool.tokens.some(({ assetId }) => assetId === puzzle)) {
-      const puzzleRate = tokenStore.poolDataTokensWithStats[puzzle]?.currentPrice;
-      const priceInPuzzle = pool.currentPrice(tokenAssetId, puzzle, coefficient);
-      return priceInPuzzle != null && puzzleRate != null ? priceInPuzzle.times(puzzleRate) : null;
-    }
-    return null;
+    this.poolStatsArr.forEach((item) => {
+      item.tokens.forEach((poolToken) => {
+        if (poolToken.assetId === tokenAssetId) rate = poolToken.minPrice;
+      });
+    });
+
+    return rate;
   };
 
   // get ACTIVE POOL TOKENS without extra STATS for userStats, with contractId
@@ -360,6 +344,7 @@ export default class TokenStore {
         totalAssetBorrow: details.total_borrow,
         totalAssetSupply: details.total_supply,
         currentPrice,
+        minPrice: details.min_price,
         maxPrice: details.max_price,
       };
     });

@@ -10,6 +10,7 @@ import { Text } from '@src/UIKit/Text';
 import { ReactComponent as NotFoundIcon } from '@src/common/assets/icons/notFound.svg';
 import { useStores } from '@src/stores';
 import Skeleton from 'react-loading-skeleton';
+import BN from '@src/common/utils/BN';
 
 type IProps = HTMLAttributes<HTMLDivElement>;
 
@@ -32,17 +33,15 @@ const AssetsBalances: React.FC<IProps> = () => {
     <Root>
       {vm.balances.length !== 0 ? (
         vm.balances.map((b: any) => {
-          const rate = tokenStore.usdnRate(b.assetId)?.toFormat(2);
-          const rateChange = vm.balanceAssetsStats && vm.balanceAssetsStats[b.assetId];
+          const rate = tokenStore.usdnRate(b.assetId);
           return (
             <InvestRow
-              rateChange={rateChange}
+              rate={rate || BN.ZERO}
               key={b.assetId}
+              symbol={b.symbol}
               logo={b.logo}
               topLeftInfo={b.name}
               topRightInfo={b.formatBalance}
-              bottomLeftInfo={rate && `$ ${rate}`}
-              bottomRightInfo={b.formatUsdnEquivalent}
               withClickLogic
               onClick={() => {
                 accountStore.setAssetToSend(b);
