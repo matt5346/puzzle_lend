@@ -79,7 +79,7 @@ const TitleH = styled.h1`
   }
 
   &:last-of-type {
-    margin-bottom: 20px;
+    margin-bottom: 8px;
   }
 
   @media (min-width: 560px) {
@@ -236,11 +236,13 @@ const Dashboard: React.FC = () => {
     <DashboardVMProvider>
       <Container>
         <DashHeader>
-          <TitleH>Lending protocol built on the Waves blockchain</TitleH>
+          <TitleH>
+            Lending protocol built on the <>&nbsp;</> <span>Waves blockchain</span>
+          </TitleH>
         </DashHeader>
 
         <SubTitleWrap>
-          <Text size="medium">Supply and borrow tokens using different pools</Text>
+          <Text size="medium-2">Supply and borrow tokens using different pools</Text>
         </SubTitleWrap>
 
         <Row justifyContent="space-between" style={windowWidth! < 1270 ? { flexWrap: 'wrap' } : { flexWrap: 'unset' }}>
