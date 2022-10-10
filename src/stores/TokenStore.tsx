@@ -321,8 +321,8 @@ export default class TokenStore {
       if (details.self_borrowed.gt(0)) {
         borrowCapacityUsed = BN.formatUnits(details.self_borrowed, details.precision)
           .times(details.max_price)
-          .plus(borrowCapacityUsed)
-          .div(+details.setup_lts / 100);
+          .div(+details.setup_lts / 100)
+          .plus(borrowCapacityUsed);
       }
 
       return {
@@ -356,6 +356,7 @@ export default class TokenStore {
     if (+borrowCapacity !== 0)
       accountHealth = BN.formatUnits(1, 0).minus(borrowCapacityUsed.div(borrowCapacity)).times(100);
 
+    console.log(+borrowCapacityUsed, +borrowCapacity, 'borrowCapacityUsed, borrowCapacity TOKENSTORE');
     const poolData = {
       netAPY,
       userHealth: this.setUserHealth(accountHealth),

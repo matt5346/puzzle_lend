@@ -38,6 +38,7 @@ interface IProps {
   totalBorrow: BN;
   userBalance: BN;
   setupLtv: BN;
+  setupLts: BN;
   setupBorrowAPR: BN;
   selfBorrow: BN;
   rate: BN;

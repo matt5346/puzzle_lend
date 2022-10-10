@@ -250,7 +250,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
 
     if (!isError) setError('');
 
-    return formattedVal.toDecimalPlaces(1);
+    return formattedVal.toDecimalPlaces(0, 2);
   };
 
   const setInputAmountMeasure = (isNativeToken: boolean) => {
@@ -268,7 +268,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
 
     if (!isNative) amountVal = amountVal.div(props.rate);
 
-    props.onSubmit!(formatVal(Math.ceil(+amountVal), 0), props.assetId, lendStore.activePoolContract);
+    props.onSubmit!(amountVal.toSignificant(0), props.assetId, lendStore.activePoolContract);
   };
 
   return (

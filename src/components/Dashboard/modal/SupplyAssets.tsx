@@ -190,7 +190,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
 
     if (!isNative) amountVal = amountVal.div(props.rate);
 
-    props.onSubmit!(amountVal, props.assetId, lendStore.activePoolContract);
+    props.onSubmit!(amountVal.toSignificant(0), props.assetId, lendStore.activePoolContract);
   };
 
   const setInputAmountMeasure = (isNativeToken: boolean) => {
