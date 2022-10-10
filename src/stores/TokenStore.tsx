@@ -310,19 +310,19 @@ export default class TokenStore {
         .times(currentPrice)
         .plus(borrowedAmountCurrent);
 
-      // count USER HEALTH for SAME ASSETS
+      // count USER HEALTH
       if (+details.self_supply > 0) {
         borrowCapacity = BN.formatUnits(details.self_supply, details.precision)
           .times(currentPrice)
-          .times(details.setup_ltv)
-          .div(100)
+          .times(+details.setup_ltv / 100)
           .plus(borrowCapacity);
       }
 
       if (+details.self_borrowed > 0) {
         borrowCapacityUsed = BN.formatUnits(details.self_borrowed, details.precision)
           .times(currentPrice)
-          .plus(borrowCapacityUsed);
+          .plus(borrowCapacityUsed)
+          .div(+details.setup_lts / 100);
       }
 
       return {

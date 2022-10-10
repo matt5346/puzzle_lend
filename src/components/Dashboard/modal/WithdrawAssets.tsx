@@ -391,7 +391,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
         </Text>
         <Row alignItems="center" justifyContent="flex-end">
           <Text size="medium" type="success" fitContent>
-            {props.userHealth.toFixed(2)}
+            {props.userHealth.toFixed(2)} %
           </Text>
           {getDynamicAccountHealth !== 100 ? (
             <>
@@ -405,7 +405,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
               />
               <Text type={getDynamicAccountHealth < +props.userHealth ? 'error' : 'success'} size="medium" fitContent>
                 <>&nbsp;</>
-                {getDynamicAccountHealth && amount ? getDynamicAccountHealth.toFixed(2) : 0}%
+                {getDynamicAccountHealth && amount ? getDynamicAccountHealth.toFixed(2) : 0} %
               </Text>
             </>
           ) : null}
