@@ -109,9 +109,9 @@ const BigNumberInput: React.FC<IBigNumberInputProps> = ({
     value = value.replace(',', '.');
 
     // // Replace leading zeros
-    // if (/^0+[^.]/.test(value)) {
-    //   value = value.replace(/^0+/, '');
-    // }
+    if (/^0+[^.]/.test(value)) {
+      value = value.replace(/^0+/, '');
+    }
 
     // // Limit the number of decimal places to token decimals
     // if (value && !new RegExp(`^\\d+(.\\d{0,${decimals}})?$`).test(value)) {
