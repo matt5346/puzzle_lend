@@ -160,8 +160,8 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     let walletBalance = props.userBalance;
     let forRepay = props.selfBorrow;
     if (!isNative) {
-      walletBalance = BN.parseUnits(walletBalance.times(props.rate), 0);
-      forRepay = BN.parseUnits(forRepay.times(props.rate), 0);
+      walletBalance = formatVal(walletBalance.times(props.rate), 0);
+      forRepay = formatVal(forRepay.times(props.rate), 0);
     }
 
     if (forRepay.times(1.05).isLessThanOrEqualTo(v)) {

@@ -38,6 +38,7 @@ interface IProps {
   totalBorrow: BN;
   userBalance: BN;
   setupLtv: BN;
+  setupLts: BN;
   setupBorrowAPR: BN;
   selfBorrow: BN;
   rate: BN;
@@ -167,23 +168,22 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     tokens.forEach((item: IToken) => {
       const tokenData: TTokenStatistics = tokenStore.poolDataTokensWithStats[item.assetId];
       if (+tokenData.selfSupply > 0) {
-        console.log(+tokenData.selfSupply, tokenData.name, 'tokens---borrowCapacity1');
         borrowCapacity = formatVal(tokenData.selfSupply, tokenData.decimals)
-          .times(tokenData.currentPrice)
+          .times(tokenData.minPrice)
           .times(+tokenData.setupLtv / 100)
           .plus(borrowCapacity);
       }
 
       if (+tokenData.selfBorrow > 0) {
         let localCapacityused = formatVal(tokenData.selfBorrow, tokenData.decimals)
-          .times(props.maxPrice)
+          .times(tokenData.maxPrice)
           .div(+tokenData.setupLts / 100);
 
         if (tokenData.assetId === props.assetId) {
           localCapacityused = formatVal(tokenData.selfBorrow, tokenData.decimals)
-            .times(props.maxPrice)
-            .div(+tokenData.setupLts / 100)
-            .plus(currentBorrowAmount);
+            .plus(currentBorrowAmount)
+            .times(tokenData.maxPrice)
+            .div(+tokenData.setupLts / 100);
         }
 
         borrowCapacityUsed = localCapacityused.plus(borrowCapacityUsed);
@@ -191,10 +191,13 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     });
 
     // case when user did'nt borrow anything
-    if (+borrowCapacityUsed === 0)
-      borrowCapacityUsed = formatVal(currentBorrowAmount, props.decimals).times(props.rate);
+    if (+borrowCapacityUsed === 0 || props.selfBorrow.isEqualTo(0))
+      borrowCapacityUsed = currentBorrowAmount
+        .times(props.maxPrice)
+        .div(+props.setupLts / 100)
+        .plus(borrowCapacityUsed);
 
-    const accountHealth: number = +formatVal(1, 0).minus(borrowCapacityUsed.div(borrowCapacity)).times(100);
+    const accountHealth: number = +BN.formatUnits(1, 0).minus(borrowCapacityUsed.div(borrowCapacity)).times(100);
 
     if (+borrowCapacity < 0 || accountHealth < 0) {
       setAccountHealth(0);
@@ -209,13 +212,13 @@ const BorrowAssets: React.FC<IProps> = (props) => {
   const userMaximumToBorrowBN = (userColatteral: number, rate: BN) => {
     let maximum = BN.ZERO;
     let isError = false;
-    console.log(+rate, userColatteral, '+val1');
 
     // if !isNative, show maximum in dollars, collateral in dollars by default
     maximum = formatVal(userColatteral, 6);
+    maximum = maximum.times(+props.setupLts / 100);
 
     // if isNative, show maximum in crypto AMOUNT
-    if (isNative) maximum = formatVal(userColatteral, 6).div(rate);
+    if (isNative) maximum = maximum.div(rate);
 
     const totalReserves = formatVal(props.totalSupply, props.decimals).minus(
       formatVal(props.totalBorrow, props.decimals)
@@ -237,7 +240,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
 
     if (!isError) setError('');
     // current recommended maximum borrow, no more than 80% of
-    return formatVal(+val.toFixed(0), 0);
+    return val.toSignificant(0);
   };
 
   // counting maximum after USER INPUT
@@ -247,6 +250,8 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     // if isNative, show maximum in crypto AMOUNT
     // else in dollars
     if (isNative) maximum = formatVal(userColatteral, 6).div(rate);
+
+    maximum = maximum.times(+props.setupLts / 100);
 
     const totalReserves = formatVal(props.totalSupply, props.decimals).minus(
       formatVal(props.totalBorrow, props.decimals)
@@ -508,13 +513,8 @@ const BorrowAssets: React.FC<IProps> = (props) => {
         ) : (
           accountStore &&
           accountStore.address && (
-            <Button
-              disabled={!props.isAgree || +amount === 0 || error !== ''}
-              fixed
-              kind={error !== '' ? 'error' : 'primary'}
-              onClick={() => submitForm()}
-              size="large">
-              {error !== '' ? error : 'Borrow'}
+            <Button fixed kind={error !== '' ? 'error' : 'primary'} onClick={() => submitForm()} size="large">
+              Borrow
             </Button>
           )
         )}
