@@ -513,8 +513,13 @@ const BorrowAssets: React.FC<IProps> = (props) => {
         ) : (
           accountStore &&
           accountStore.address && (
-            <Button fixed kind={error !== '' ? 'error' : 'primary'} onClick={() => submitForm()} size="large">
-              Borrow
+            <Button
+              disabled={!props.isAgree || +amount === 0 || error !== ''}
+              fixed
+              kind={error !== '' ? 'error' : 'primary'}
+              onClick={() => submitForm()}
+              size="large">
+              {error !== '' ? error : 'Borrow'}
             </Button>
           )
         )}
