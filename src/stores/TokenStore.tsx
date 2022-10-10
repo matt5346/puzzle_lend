@@ -323,6 +323,7 @@ export default class TokenStore {
           .times(details.max_price)
           .div(+details.setup_lts / 100)
           .plus(borrowCapacityUsed);
+        console.log(+details.self_borrowed, details.name, +borrowCapacityUsed, 'tokens------TOKENSTORE');
       }
 
       return {

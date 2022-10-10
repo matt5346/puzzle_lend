@@ -380,12 +380,6 @@ const wavesNodesService = {
               // because of it 10 ** 16 (Decimal) and / 100 to get integer for use it later
               itemData.borrow_rate = BN.formatUnits(+splittedRates[0], 16);
               itemData.supply_rate = BN.formatUnits(+splittedRates[1], 16);
-              console.log(
-                +itemData.borrow_rate,
-                +itemData.supply_rate,
-                itemData.name,
-                'itemData.borrow_rate, itemData.supply_rate'
-              );
             }
 
             if (penalties && penalties.length) {
