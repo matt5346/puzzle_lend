@@ -132,10 +132,6 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
   const [error, setError] = useState<string>('');
   const { lendStore, accountStore, tokenStore } = useStores();
 
-  const setInputAmountMeasure = (isNativeToken: boolean) => {
-    setConvertToNative(isNativeToken);
-  };
-
   const formatVal = (valArg: BN | number, decimal: number) => {
     return BN.formatUnits(valArg, decimal);
   };
@@ -201,20 +197,6 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
     return accountHealth;
   };
 
-  const maxWithdraw = (val: BN) => {
-    let isError = false;
-    if (!isNative) return val.times(props.rate);
-
-    if (+props.selfBorrow !== 0 && countAccountHealth(val) < 5) {
-      setError(`Account health in risk of liquidation`);
-      isError = true;
-    }
-
-    if (!isError) setError('');
-
-    return val;
-  };
-
   useEffect(() => {
     props.amount && setAmount(props.amount);
   }, [props.amount]);
@@ -253,6 +235,32 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
     if (!isError) setError('');
     setAmount(v);
     debounce(v);
+  };
+
+  const maxWithdraw = (val: BN) => {
+    let isError = false;
+    let formattedVal: BN = val;
+
+    if (!isNative) formattedVal = val.times(props.rate);
+
+    if (+props.selfBorrow !== 0 && countAccountHealth(val) < 5) {
+      setError(`Account health in risk of liquidation`);
+      isError = true;
+    }
+
+    if (!isError) setError('');
+
+    return formattedVal.toDecimalPlaces(1);
+  };
+
+  const setInputAmountMeasure = (isNativeToken: boolean) => {
+    let fixedValue = amount;
+
+    if (isNativeToken && !isNative) fixedValue = fixedValue.div(props.rate);
+
+    setAmount(fixedValue);
+    debounce(fixedValue);
+    setConvertToNative(isNativeToken);
   };
 
   const submitForm = () => {
@@ -348,7 +356,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
           {props.assetName} liquidity
         </Text>
         <Text size="medium" fitContent>
-          {props.totalSupply && props.totalBorrow && getReserves()} {props.assetSymbol}
+          {getReserves()} {props.assetSymbol}
         </Text>
       </Row>
       <SizedBox height={14} />
@@ -373,7 +381,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
             props.onMaxClick && props.onMaxClick(maxWithdraw(props.selfSupply));
           }}
           style={{ cursor: 'pointer' }}>
-          {+formatVal(props.selfSupply, props.decimals)}
+          {(+formatVal(props.selfSupply, props.decimals)).toFixed(4)}
         </Text>
       </Row>
       <SizedBox height={14} />

@@ -41,7 +41,6 @@ const BigNumberInput: React.FC<IBigNumberInputProps> = ({
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const [inputValue, _setInputValue] = React.useState<string>('');
-  const [isInputConverted, inputValueConverted] = React.useState<boolean>(false);
 
   // eslint-disable-next-line @typescript-eslint/no-shadow
   const setInputValue = (value: string): void => {
@@ -65,7 +64,7 @@ const BigNumberInput: React.FC<IBigNumberInputProps> = ({
       const parseInputValue = BN.parseUnits(inputValue || '0', decimals);
 
       if (!parseInputValue || !parseInputValue.eq(value)) {
-        setInputValue(BN.formatUnits(value, decimals).toSignificant(6).toString());
+        setInputValue(BN.formatUnits(value, decimals).toString());
       }
     }
   }, [value, decimals, inputValue]);
@@ -81,8 +80,10 @@ const BigNumberInput: React.FC<IBigNumberInputProps> = ({
   React.useEffect(() => {
     // Replace comma to the dot
     // if showing price in crypto (Waves, pluto...)
+    // nativeValue showing in input
+    // valueEffect passing to higher component
     if (isNative) {
-      const nativeValue = (+value / +rate! / 10 ** decimals).toFixed(6);
+      const nativeValue = BN.formatUnits(value || 0, decimals).toFixed(6);
       const valueEffect = BN.parseUnits(nativeValue.replace(',', '.') || '', decimals);
       setInputValue(+nativeValue === 0 ? '' : nativeValue.replace(',', '.'));
       onChange(+valueEffect === 0 ? BN.ZERO : valueEffect);
@@ -90,7 +91,9 @@ const BigNumberInput: React.FC<IBigNumberInputProps> = ({
     }
 
     if (!isNative) {
-      const dollarValue = ((+value / 10 ** decimals) * +rate!).toFixed(6);
+      const dollarValue = BN.formatUnits(value || 0, decimals)
+        .times(rate)
+        .toFixed(6);
       const valueEffect = BN.parseUnits(dollarValue.replace(',', '.') || '', decimals);
       setInputValue(dollarValue.replace(',', '.').toString());
       onChange(valueEffect);
@@ -105,15 +108,15 @@ const BigNumberInput: React.FC<IBigNumberInputProps> = ({
     // Replace comma to the dot
     value = value.replace(',', '.');
 
-    // Replace leading zeros
-    if (/^0+[^.]/.test(value)) {
-      value = value.replace(/^0+/, '');
-    }
+    // // Replace leading zeros
+    // if (/^0+[^.]/.test(value)) {
+    //   value = value.replace(/^0+/, '');
+    // }
 
-    // Limit the number of decimal places to token decimals
-    if (value && !new RegExp(`^\\d+(.\\d{0,${decimals}})?$`).test(value)) {
-      return;
-    }
+    // // Limit the number of decimal places to token decimals
+    // if (value && !new RegExp(`^\\d+(.\\d{0,${decimals}})?$`).test(value)) {
+    //   return;
+    // }
 
     if (value === '') {
       onChange(BN.ZERO);
@@ -128,18 +131,8 @@ const BigNumberInput: React.FC<IBigNumberInputProps> = ({
       return;
     }
 
-    // if showing price in crypto (Waves, pluto...)
-    if (isNative) {
-      setInputValue(value);
-      onChange(newValue);
-      return;
-    }
-
-    if (!isNative) {
-      const dollarValue = +value * +rate!;
-      setInputValue(dollarValue.toString());
-      onChange(newValue);
-    }
+    setInputValue(value.toString());
+    onChange(newValue);
   };
 
   const inputProps = {

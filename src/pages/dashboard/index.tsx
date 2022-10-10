@@ -306,8 +306,8 @@ const Dashboard: React.FC = () => {
                   </Text>
                   <SizedBox height={14} />
                   <Text size="medium">
-                    You can pick any tokens from the <span>Waves Ecosystem</span> to put them into markets and start
-                    earning Supply rewards.
+                    You can pick any tokens from the <span>Waves Ecosystem</span> to put into markets and start earning
+                    Supply rewards.
                   </Text>
                 </CardText>
               </Card>
@@ -328,12 +328,12 @@ const Dashboard: React.FC = () => {
                 <CardImg src={DashThree} />
                 <CardText>
                   <Text type="primary" weight={500}>
-                    Leverage position
+                    Leverage positions
                   </Text>
                   <SizedBox height={14} />
                   <Text size="medium">
-                    You can use lending protocol <br /> to take long or short positions with an{' '}
-                    <span>upto 3x leverage.</span>
+                    You can use lending protocol <br /> to take long or short positions with{' '}
+                    <span>up to 3x leverage.</span>
                   </Text>
                 </CardText>
               </Card>
@@ -360,7 +360,7 @@ const Dashboard: React.FC = () => {
           <FAQ>
             <TitleH>FAQ</TitleH>
             <Text size="medium" type="secondary">
-              Get answers on the most
+              Answers to the most
             </Text>
             <Text size="medium" type="secondary">
               asked questions
@@ -368,16 +368,16 @@ const Dashboard: React.FC = () => {
           </FAQ>
           <Column>
             <Dropdown isOpened title="What is the idea of Puzzle Lend?">
-              Puzzle Lend uses an experience of existing Lending Protocols to maximise the user experience. Thanks to an
-              isolated market model, Puzzle Lend enables to supply/borrow even small-cap assets presented in the Waves
-              Ecosystem.
+              Puzzle Lend has been created with the best practices of existing Lending Protocols in mind to enhance the
+              user experience. Thanks to an isolated market model, Puzzle Lend enables to supply/borrow even small-cap
+              assets presented in the Waves Ecosystem.
             </Dropdown>
             <SizedBox height={10} />
             <Dropdown title="What are the risks of using Puzzle Lend?">
-              WFor supplying an asset, there are 2 types of risks. The first one is the utilisation ratio: if it reaches
-              100%, you will be temporarily not able to withdraw your deposit. The second one is the smart contract
-              risk: we don’t recommend putting a significant amount of supply before Puzzle Lend smart contracts get
-              official audits.
+              When supplying an asset, there are 2 types of risks. The first one is the utilisation ratio: if it reaches
+              100%, you will be temporarily unable to withdraw your deposit. The second one is the smart contract risk:
+              we don’t recommend putting a significant amount of supply before Puzzle Lend smart contracts get official
+              audits.
             </Dropdown>
             <SizedBox height={10} />
             <Dropdown title="What is Supply and Borrow APY?">

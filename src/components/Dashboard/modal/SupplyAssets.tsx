@@ -135,10 +135,6 @@ const SupplyAssets: React.FC<IProps> = (props) => {
     return BN.formatUnits(valArg, decimal);
   };
 
-  const setInputAmountMeasure = (isNativeToken: boolean) => {
-    setConvertToNative(isNativeToken);
-  };
-
   const getDailyIncome = () => {
     return +props.supplyInterest ? props.supplyInterest.times(formatVal(amount, props.decimals)) : 0;
   };
@@ -162,7 +158,7 @@ const SupplyAssets: React.FC<IProps> = (props) => {
 
     if (!isNative) walletBal = walletBal.times(props.rate);
 
-    if (formattedVal > walletBal) {
+    if (walletBal.lt(formattedVal)) {
       setError('Wallet Balance too low');
       isError = true;
     }
@@ -197,6 +193,16 @@ const SupplyAssets: React.FC<IProps> = (props) => {
     props.onSubmit!(amountVal, props.assetId, lendStore.activePoolContract);
   };
 
+  const setInputAmountMeasure = (isNativeToken: boolean) => {
+    let fixedValue = amount;
+
+    if (isNativeToken && !isNative) fixedValue = fixedValue.div(props.rate);
+
+    setAmount(fixedValue);
+    debounce(fixedValue);
+    setConvertToNative(isNativeToken);
+  };
+
   return (
     <Root>
       <Row>
@@ -215,16 +221,6 @@ const SupplyAssets: React.FC<IProps> = (props) => {
         </Row>
         <Column alignItems="flex-end">
           <Row alignItems="center">
-            <Text size="medium" type="secondary" fitContent>
-              {(+formatVal(amount, props.decimals) || 0).toFixed(4)}
-            </Text>
-            <Back
-              style={{
-                minWidth: '16px',
-                maxWidth: '16px',
-                transform: 'rotate(180deg)',
-              }}
-            />
             <Text
               size="medium"
               fitContent
@@ -236,6 +232,16 @@ const SupplyAssets: React.FC<IProps> = (props) => {
               {+getUserBalance() || 0}
               <>&nbsp;</>
               {isNative ? props.assetSymbol : '$'}
+            </Text>
+            <Back
+              style={{
+                minWidth: '16px',
+                maxWidth: '16px',
+                transform: 'rotate(180deg)',
+              }}
+            />
+            <Text size="medium" type="secondary" fitContent>
+              {(+formatVal(amount, props.decimals) || 0).toFixed(4)}
             </Text>
           </Row>
           <Text size="medium" type="secondary" nowrap>
