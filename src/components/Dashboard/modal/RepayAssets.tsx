@@ -127,10 +127,6 @@ const BorrowAssets: React.FC<IProps> = (props) => {
   const { lendStore, accountStore } = useStores();
   const [error, setError] = useState<string>('');
 
-  const setInputAmountMeasure = (isNativeToken: boolean) => {
-    setConvertToNative(isNativeToken);
-  };
-
   const formatVal = (valArg: BN | number, decimal: number) => {
     return BN.formatUnits(valArg, decimal);
   };
@@ -164,16 +160,16 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     let walletBalance = props.userBalance;
     let forRepay = props.selfBorrow;
     if (!isNative) {
-      walletBalance = BN.parseUnits(+walletBalance * +props.rate?.toFormat(4), 0);
-      forRepay = BN.parseUnits(+forRepay * +props.rate?.toFormat(4), 0);
+      walletBalance = BN.parseUnits(walletBalance.times(props.rate), 0);
+      forRepay = BN.parseUnits(forRepay.times(props.rate), 0);
     }
 
-    if (+forRepay * 1.05 < +v) {
+    if (forRepay.times(1.05).isLessThanOrEqualTo(v)) {
       setError(`Too big value for repaying`);
       isError = true;
     }
 
-    if (+walletBalance < +v) {
+    if (walletBalance.isLessThanOrEqualTo(v)) {
       setError(`Amount of repay bigger than wallet balance`);
       isError = true;
     }
@@ -186,16 +182,27 @@ const BorrowAssets: React.FC<IProps> = (props) => {
   const submitForm = () => {
     let amountVal = props.amount;
 
-    if (!isNative) amountVal = BN.parseUnits(Math.ceil(+amountVal / +props.rate?.toFormat(4)), 0);
+    if (!isNative) amountVal = formatVal(amountVal.div(props.rate), 0);
 
-    props.onSubmit!(amountVal, props.assetId, lendStore.activePoolContract);
+    props.onSubmit!(amountVal.toDecimalPlaces(0, 2), props.assetId, lendStore.activePoolContract);
   };
 
   const getMax = (val: BN) => {
-    if (!isNative) return BN.formatUnits(Math.ceil(+val * +props.rate?.toFormat(4)), 0);
+    let formattedVal = val;
+    if (!isNative) formattedVal = BN.formatUnits(formattedVal.times(props.rate), 0);
 
     // fixing problem of lower repaying number
-    return BN.formatUnits(Math.ceil(+val + 1), 0);
+    return formattedVal.toDecimalPlaces(0, 2);
+  };
+
+  const setInputAmountMeasure = (isNativeToken: boolean) => {
+    let fixedValue = amount;
+
+    if (isNativeToken && !isNative) fixedValue = fixedValue.div(props.rate);
+
+    setAmount(fixedValue);
+    debounce(fixedValue);
+    setConvertToNative(isNativeToken);
   };
 
   return (
@@ -311,7 +318,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
           Borrowed
         </Text>
         <Text size="medium" fitContent>
-          {+props.selfBorrow ? +formatVal(props.selfBorrow, props.decimals) : 0}
+          {+props.selfBorrow ? +formatVal(props.selfBorrow, props.decimals).toFixed(4) : 0}
         </Text>
       </Row>
       <SizedBox height={14} />
