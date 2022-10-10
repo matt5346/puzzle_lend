@@ -311,16 +311,16 @@ export default class TokenStore {
         .plus(borrowedAmountCurrent);
 
       // count USER HEALTH
-      if (+details.self_supply > 0) {
+      if (details.self_supply.gt(0)) {
         borrowCapacity = BN.formatUnits(details.self_supply, details.precision)
-          .times(currentPrice)
+          .times(details.min_price)
           .times(+details.setup_ltv / 100)
           .plus(borrowCapacity);
       }
 
-      if (+details.self_borrowed > 0) {
+      if (details.self_borrowed.gt(0)) {
         borrowCapacityUsed = BN.formatUnits(details.self_borrowed, details.precision)
-          .times(currentPrice)
+          .times(details.max_price)
           .plus(borrowCapacityUsed)
           .div(+details.setup_lts / 100);
       }

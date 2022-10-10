@@ -192,6 +192,8 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     if (!isNative) formattedVal = BN.formatUnits(formattedVal.times(props.rate), 0);
 
     // fixing problem of lower repaying number
+    setAmount(formattedVal.toDecimalPlaces(0, 2));
+    debounce(formattedVal.toDecimalPlaces(0, 2));
     return formattedVal.toDecimalPlaces(0, 2);
   };
 
