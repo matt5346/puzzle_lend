@@ -174,13 +174,16 @@ const BorrowAssets: React.FC<IProps> = (props) => {
       }
 
       if (+tokenData.selfBorrow > 0) {
-        let localCapacityused = formatVal(tokenData.selfBorrow, tokenData.decimals).times(tokenData.currentPrice);
+        let localCapacityused = formatVal(tokenData.selfBorrow, tokenData.decimals)
+          .times(tokenData.currentPrice)
+          .div(+tokenData.setupLts / 100);
 
         if (tokenData.assetId === props.assetId)
           localCapacityused = currentBorrowAmount
             .plus(tokenData.selfBorrow)
             .div(10 ** tokenData.decimals)
-            .times(tokenData.currentPrice);
+            .times(tokenData.currentPrice)
+            .div(+tokenData.setupLts / 100);
 
         borrowCapacityUsed = localCapacityused.plus(borrowCapacityUsed);
       }
@@ -239,7 +242,6 @@ const BorrowAssets: React.FC<IProps> = (props) => {
 
   // counting maximum after USER INPUT
   const userMaximumToBorrow = (userColatteral: number, rate: BN) => {
-    console.log(userColatteral, 'COLATTERAL');
     let maximum = formatVal(userColatteral, 6);
 
     // if isNative, show maximum in crypto AMOUNT
@@ -290,7 +292,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
 
     console.log(+formattedVal, +maxCollateral, '+formattedVal, +maxCollateral');
     if (maxCollateral.isLessThanOrEqualTo(formattedVal)) {
-      setError('Borrow amount too low, please provide more');
+      setError('Borrow amount less than your Collateral');
       isError = true;
     }
 

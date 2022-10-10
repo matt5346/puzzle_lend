@@ -345,7 +345,7 @@ const Dashboard: React.FC = () => {
                   </Text>
                   <SizedBox height={14} />
                   <Text size="medium">
-                    Use an advanced Oracle system based on the TWAP model, which guarantees that the
+                    Use an advanced Oracle system based on the TWAP model, which guarantees that the{' '}
                     <span>market cannot be manipulated</span> to liquidate safe positions.
                   </Text>
                 </CardText>
