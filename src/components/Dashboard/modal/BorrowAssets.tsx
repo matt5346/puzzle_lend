@@ -286,7 +286,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     if (isNative) maxCollateral = formatVal(props.userColatteral, 6).div(props.rate);
     if (!isNative) totalReserves = totalReserves.times(props.rate);
 
-    if (+formattedVal > +maxCollateral) {
+    if (+formattedVal >= +maxCollateral) {
       setError('Borrow amount too low, please provide more');
       isError = true;
     }
