@@ -157,7 +157,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
       return 100;
     }
 
-    let currentBorrowAmount = currentBorrow;
+    let currentBorrowAmount = formatVal(currentBorrow, props.decimals);
     const tokens = tokenStore.poolDataTokens;
     let borrowCapacity = BN.ZERO;
     let borrowCapacityUsed = BN.ZERO;
@@ -167,6 +167,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     tokens.forEach((item: IToken) => {
       const tokenData: TTokenStatistics = tokenStore.poolDataTokensWithStats[item.assetId];
       if (+tokenData.selfSupply > 0) {
+        console.log(+tokenData.selfSupply, tokenData.name, 'tokens---borrowCapacity1');
         borrowCapacity = formatVal(tokenData.selfSupply, tokenData.decimals)
           .times(tokenData.currentPrice)
           .times(+tokenData.setupLtv / 100)
@@ -175,15 +176,15 @@ const BorrowAssets: React.FC<IProps> = (props) => {
 
       if (+tokenData.selfBorrow > 0) {
         let localCapacityused = formatVal(tokenData.selfBorrow, tokenData.decimals)
-          .times(tokenData.currentPrice)
+          .times(props.maxPrice)
           .div(+tokenData.setupLts / 100);
 
-        if (tokenData.assetId === props.assetId)
-          localCapacityused = currentBorrowAmount
-            .plus(tokenData.selfBorrow)
-            .div(10 ** tokenData.decimals)
-            .times(tokenData.currentPrice)
-            .div(+tokenData.setupLts / 100);
+        if (tokenData.assetId === props.assetId) {
+          localCapacityused = formatVal(tokenData.selfBorrow, tokenData.decimals)
+            .times(props.maxPrice)
+            .div(+tokenData.setupLts / 100)
+            .plus(currentBorrowAmount);
+        }
 
         borrowCapacityUsed = localCapacityused.plus(borrowCapacityUsed);
       }
@@ -228,10 +229,9 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     }
 
     const val = maximum.times(10 ** props.decimals).times(0.8);
-    console.log(+val, '+val');
 
-    if (countAccountHealth(val) === 0) {
-      setError(`Account health in risk of liquidation`);
+    if (countAccountHealth(val) < 1) {
+      setError(`Account health less than 1%, risk of liquidation`);
       isError = true;
     }
 
@@ -301,7 +301,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
       isError = true;
     }
 
-    if (countAccountHealth(v) === 0) {
+    if (countAccountHealth(v) < 1) {
       setError(`Account health in risk of liquidation`);
       isError = true;
     }
