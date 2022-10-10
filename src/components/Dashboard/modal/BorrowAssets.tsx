@@ -307,7 +307,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     }
 
     if (countAccountHealth(v) < 1) {
-      setError(`Account health in risk of liquidation`);
+      setError(`Account health less than 1%, risk of liquidation`);
       isError = true;
     }
 
