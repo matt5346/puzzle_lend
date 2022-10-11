@@ -14,7 +14,7 @@ interface IProps {
 
 const ListGroupItem = styled.div`
   position: relative;
-  padding: 24px;
+  padding: 24px 16px;
   border-radius: 12px;
   background-color: #fff;
   cursor: pointer;
@@ -23,7 +23,7 @@ const ListGroupItem = styled.div`
   svg {
     position: absolute;
     top: 20px;
-    right: 20px;
+    right: 15px;
     transition: transform 0.3s ease;
   }
 
@@ -40,19 +40,37 @@ const ListGroupItem = styled.div`
   .card-title {
     color: #363870;
     font-size: 20px;
+    width: 85%;
+
+    @media (min-width: 550px) {
+      width: 100%;
+    }
   }
 
   h2 {
     margin-top: 5px !important;
   }
+
+  @media (min-width: 550px) {
+    padding: 24px;
+
+    svg {
+      right: 20px;
+    }
+  }
 `;
 
 const CollapseBlock = styled.div`
   overflow: hidden;
+  width: 85%;
   transition: height 0.15s ease;
 
   .is-expanded & {
     margin-top: 24px;
+  }
+
+  @media (min-width: 550px) {
+    width: 100%;
   }
 `;
 

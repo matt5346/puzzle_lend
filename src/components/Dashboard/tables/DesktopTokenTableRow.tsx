@@ -49,7 +49,7 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
 }) => {
   const navigate = useNavigate();
   const formatVal = (val: BN, decimal: number) => {
-    return BN.formatUnits(val, decimal).toSignificant(6).toFormat(5);
+    return BN.formatUnits(val, decimal).toSignificant(6);
   };
 
   return (
@@ -75,11 +75,11 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
 
       {selfSupply != null && rate ? (
         <Column crossAxisSize="max">
-          <Text weight={500} textAlign="right" size="medium">
-            {(+formatVal(selfSupply, token.decimals)).toFixed(4)} {token.symbol}
+          <Text weight={500} textAlign="right" size="medium" nowrap>
+            {formatVal(selfSupply, token.decimals).toFormat(2)} {token.symbol}
           </Text>
-          <Text textAlign="right" size="small" type="secondary">
-            $ {(+formatVal(selfSupply, token.decimals) * +rate).toFixed(4)}
+          <Text textAlign="right" size="small" type="secondary" nowrap>
+            $ {formatVal(selfSupply, token.decimals).times(rate).toFormat(2)}
           </Text>
         </Column>
       ) : null}
@@ -92,11 +92,11 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
 
       {totalSupply != null && rate ? (
         <Column crossAxisSize="max">
-          <Text weight={500} textAlign="right" size="medium">
-            {(+formatVal(totalSupply, token.decimals)).toFixed(2)} {token.symbol}
+          <Text weight={500} textAlign="right" size="medium" nowrap>
+            {formatVal(totalSupply, token.decimals).toFormat(2)} {token.symbol}
           </Text>
-          <Text textAlign="right" size="small" type="secondary">
-            $ {(+formatVal(totalSupply, token.decimals) * +rate).toFixed(2)}
+          <Text textAlign="right" size="small" type="secondary" nowrap>
+            $ {formatVal(totalSupply, token.decimals).times(rate).toFormat(2)}
           </Text>
         </Column>
       ) : null}
@@ -125,10 +125,10 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
       {totalBorrow != null && rate ? (
         <Column crossAxisSize="max">
           <Text weight={500} textAlign="right" size="medium">
-            {(+formatVal(totalBorrow, token.decimals)).toFixed(2)} {token.symbol}
+            {formatVal(totalBorrow, token.decimals).toFormat(2)} {token.symbol}
           </Text>
           <Text textAlign="right" size="small" type="secondary">
-            $ {(+formatVal(totalBorrow, token.decimals) * +rate).toFixed(2)}
+            $ {formatVal(totalBorrow, token.decimals).times(rate).toFormat(2)}
           </Text>
         </Column>
       ) : null}
@@ -136,10 +136,10 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
       {selfBorrow != null && rate ? (
         <Column crossAxisSize="max">
           <Text weight={500} textAlign="right" size="medium">
-            {(+formatVal(selfBorrow, token.decimals)).toFixed(4)} {token.symbol}
+            {formatVal(selfBorrow, token.decimals).toFormat(4)} {token.symbol}
           </Text>
           <Text textAlign="right" size="small" type="secondary">
-            $ {(+formatVal(selfBorrow, token.decimals) * +rate).toFixed(4)}
+            $ {formatVal(selfBorrow, token.decimals).times(rate).toFormat(2)}
           </Text>
         </Column>
       ) : null}
