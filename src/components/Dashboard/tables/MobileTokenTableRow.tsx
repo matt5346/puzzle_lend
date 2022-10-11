@@ -70,7 +70,12 @@ const MobileTokenTableRow: React.FC<IProps> = ({
   return (
     <Card className="token-card" justifyContent="space-between">
       <Row alignItems="center">
-        <Row onClick={() => navigate(`/explore/token/${token.assetId}`)} style={{ cursor: 'pointer' }}>
+        <Row
+          onClick={(e) => {
+            e.preventDefault();
+            return navigate(`/dashboard/token/${token.assetId}`);
+          }}
+          style={{ cursor: 'pointer' }}>
           <SquareTokenIcon src={tokenLogos[token.symbol]} size="small" />
           <SizedBox width={18} />
           <Column>
