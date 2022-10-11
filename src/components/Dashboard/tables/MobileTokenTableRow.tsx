@@ -64,7 +64,7 @@ const MobileTokenTableRow: React.FC<IProps> = ({
 }) => {
   const navigate = useNavigate();
   const formatVal = (val: BN, decimal: number) => {
-    return BN.formatUnits(val, decimal).toSignificant(6).toFormat(5);
+    return BN.formatUnits(val, decimal).toSignificant(6);
   };
 
   return (
@@ -89,10 +89,10 @@ const MobileTokenTableRow: React.FC<IProps> = ({
             </Text>
             <Column crossAxisSize="max">
               <Text weight={500} textAlign="right" size="medium">
-                {(+formatVal(selfSupply, token.decimals)).toFixed(4)} {token.symbol}
+                {formatVal(selfSupply, token.decimals).toFormat(2)} {token.symbol}
               </Text>
               <Text textAlign="right" size="small" type="secondary">
-                $ {(+formatVal(selfSupply, token.decimals) * +rate).toFixed(4)}
+                $ {formatVal(selfSupply, token.decimals).times(rate).toFormat(2)}
               </Text>
             </Column>
           </StatsRow>
@@ -105,10 +105,10 @@ const MobileTokenTableRow: React.FC<IProps> = ({
             </Text>
             <Column crossAxisSize="max">
               <Text weight={500} textAlign="right" size="medium">
-                {(+formatVal(selfBorrow, token.decimals)).toFixed(4)} {token.symbol}
+                {formatVal(selfBorrow, token.decimals).toFormat(4)} {token.symbol}
               </Text>
               <Text textAlign="right" size="small" type="secondary">
-                $ {(+formatVal(selfBorrow, token.decimals) * +rate).toFixed(4)}
+                $ {formatVal(selfBorrow, token.decimals).times(rate).toFormat(2)}
               </Text>
             </Column>
           </StatsRow>
@@ -121,10 +121,10 @@ const MobileTokenTableRow: React.FC<IProps> = ({
             </Text>
             <Column crossAxisSize="max">
               <Text weight={500} textAlign="right" size="medium">
-                {(+formatVal(totalSupply, token.decimals)).toFixed(2)} {token.symbol}
+                {formatVal(totalSupply, token.decimals).toFormat(2)} {token.symbol}
               </Text>
               <Text textAlign="right" size="small" type="secondary">
-                $ {(+formatVal(totalSupply, token.decimals) * +rate).toFixed(2)}
+                $ {formatVal(totalSupply, token.decimals).times(rate).toFormat(2)}
               </Text>
             </Column>
           </StatsRow>
@@ -137,10 +137,10 @@ const MobileTokenTableRow: React.FC<IProps> = ({
             </Text>
             <Column>
               <Text weight={500} textAlign="right" size="medium" nowrap>
-                {(+formatVal(totalBorrow, token.decimals)).toFixed(2)} {token.symbol}
+                {formatVal(totalBorrow, token.decimals).toFormat(2)} {token.symbol}
               </Text>
               <Text textAlign="right" size="small" type="secondary">
-                $ {(+formatVal(totalBorrow, token.decimals) * +rate).toFixed(2)}
+                $ {formatVal(totalBorrow, token.decimals).times(rate).toFormat(2)}
               </Text>
             </Column>
           </StatsRow>
@@ -153,10 +153,10 @@ const MobileTokenTableRow: React.FC<IProps> = ({
             </Text>
             <Column crossAxisSize="max">
               <Text weight={500} textAlign="right" size="medium">
-                {(+dailyIncome / +rate).toFixed(6)} {token.symbol}
+                {dailyIncome.div(rate).toFormat(6)} {token.symbol}
               </Text>
               <Text textAlign="right" size="small" type="secondary">
-                $ {Number(dailyIncome).toFixed(8)}
+                $ {dailyIncome.toFormat(8)}
               </Text>
             </Column>
           </StatsRow>
@@ -169,10 +169,10 @@ const MobileTokenTableRow: React.FC<IProps> = ({
             </Text>
             <Column crossAxisSize="max">
               <Text weight={500} textAlign="right" size="medium">
-                {(+selfDailyBorrowInterest / +rate).toFixed(6)} {token.symbol}
+                {selfDailyBorrowInterest.div(rate).toFormat(6)} {token.symbol}
               </Text>
               <Text textAlign="right" size="small" type="secondary">
-                $ {Number(selfDailyBorrowInterest).toFixed(8)}
+                $ {selfDailyBorrowInterest.toFormat(8)}
               </Text>
             </Column>
           </StatsRow>
@@ -184,7 +184,7 @@ const MobileTokenTableRow: React.FC<IProps> = ({
               Supply APY
             </Text>
             <Text size="medium" textAlign="right">
-              {(+setupSupplyAPY).toFixed(2)}%
+              {setupSupplyAPY.toFormat(2)}%
             </Text>
           </StatsRow>
         )}
@@ -195,7 +195,7 @@ const MobileTokenTableRow: React.FC<IProps> = ({
               Borrow APY
             </Text>
             <Text size="medium" textAlign="right">
-              {(+setupBorrowAPR).toFixed(2)}%
+              {setupBorrowAPR.toFormat(2)}%
             </Text>
           </StatsRow>
         ) : null}
