@@ -85,8 +85,8 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
 
         // filtering in $ equivalent
         if (sort === 'totalAssetSupply' || sort === 'totalAssetBorrow') {
-          const val1 = (stats1[key] as BN).times(stats1.minPrice);
-          const val2 = (stats2[key] as BN).times(stats2.minPrice);
+          const val1 = (BN.formatUnits(stats1[key], stats1.decimals) as BN).times(stats1.minPrice).toDecimalPlaces(0);
+          const val2 = (BN.formatUnits(stats2[key], stats2.decimals) as BN).times(stats2.minPrice).toDecimalPlaces(0);
           return sortMode === 'descending' ? (val1.lt(val2) ? 1 : -1) : val1.lt(val2) ? -1 : 1;
         }
 
