@@ -204,7 +204,7 @@ const DashboardToken: React.FC = () => {
                   Total supply
                 </Text>
                 <Text size="medium" type="primary" fitContent>
-                  {+formatVal(tokenFullData.totalAssetSupply, tokenFullData.decimals)} {tokenFullData.symbol}
+                  {formatVal(tokenFullData.totalAssetSupply, tokenFullData.decimals)} {tokenFullData.symbol}
                 </Text>
               </Column>
               <Column>
@@ -212,7 +212,7 @@ const DashboardToken: React.FC = () => {
                   Total borrow
                 </Text>
                 <Text size="medium" type="primary" fitContent>
-                  {+formatVal(tokenFullData.totalAssetBorrow, tokenFullData.decimals)} {tokenFullData.symbol}
+                  {formatVal(tokenFullData.totalAssetBorrow, tokenFullData.decimals)} {tokenFullData.symbol}
                 </Text>
               </Column>
               <Column>
@@ -228,10 +228,10 @@ const DashboardToken: React.FC = () => {
                   Reserves
                 </Text>
                 <Text size="medium" type="primary" fitContent>
-                  {(
-                    +formatVal(tokenFullData.totalAssetSupply, tokenFullData.decimals) -
-                    +formatVal(tokenFullData.totalAssetBorrow, tokenFullData.decimals)
-                  ).toFixed(2)}{' '}
+                  {formatVal(
+                    tokenFullData.totalAssetSupply.minus(tokenFullData.totalAssetBorrow),
+                    tokenFullData.decimals
+                  )}{' '}
                   {tokenFullData.symbol}
                 </Text>
               </Column>
