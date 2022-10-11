@@ -112,10 +112,10 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
       {dailyIncome && rate != null ? (
         <Column crossAxisSize="max">
           <Text weight={500} textAlign="right" size="medium">
-            {(+dailyIncome.div(rate) || 0).toFixed(6)} {token.symbol}
+            {dailyIncome.div(rate).toFormat(6)} {token.symbol}
           </Text>
           <Text textAlign="right" size="small" type="secondary">
-            $ {+dailyIncome.toFixed(8)}
+            $ {dailyIncome.toFormat(8)}
           </Text>
         </Column>
       ) : selfSupply && +selfSupply > 0 ? (
@@ -146,17 +146,17 @@ const DesktopTokenTableRow: React.FC<IProps> = ({
 
       {setupBorrowAPR != null ? (
         <Column crossAxisSize="max">
-          <Text textAlign="right">{(+setupBorrowAPR || 0).toFixed(2)}%</Text>
+          <Text textAlign="right">{(setupBorrowAPR || 0).toFormat(2)}%</Text>
         </Column>
       ) : null}
 
       {selfDailyBorrowInterest && rate != null ? (
         <Column crossAxisSize="max">
           <Text weight={500} textAlign="right" size="medium">
-            {(+(selfDailyBorrowInterest || BN.ZERO).div(rate) || 0).toFixed(6)} {token.symbol}
+            {(selfDailyBorrowInterest.div(rate) || 0).toFormat(6)} {token.symbol}
           </Text>
           <Text textAlign="right" size="small" type="secondary">
-            $ {(+selfDailyBorrowInterest || 0).toFixed(8)}
+            $ {(selfDailyBorrowInterest || 0).toFormat(8)}
           </Text>
         </Column>
       ) : null}
