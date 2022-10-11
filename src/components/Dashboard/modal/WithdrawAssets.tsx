@@ -153,7 +153,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
 
   // todo: BNNNN
   const countAccountHealth = (currentWithdraw: any) => {
-    let currentWithdrawAmount = currentWithdraw.toDecimalPlaces(2);
+    let currentWithdrawAmount = currentWithdraw.toDecimalPlaces(0);
     const tokens = tokenStore.poolDataTokens;
     let borrowCapacity = BN.ZERO;
     let borrowCapacityUsed = BN.ZERO;
@@ -228,8 +228,12 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
     let { selfSupply } = props;
 
     if (!isNative) selfSupply = selfSupply.times(props.rate);
+    console.log(+v.toDecimalPlaces(0, 2), +selfSupply.toDecimalPlaces(0, 2), 'v-self');
 
-    if (v && selfSupply && selfSupply.isLessThanOrEqualTo(v)) {
+    // will be fixed in new app, problem of BigNumber input
+    const formattedVal = v.minus(100);
+
+    if (formattedVal && selfSupply && selfSupply.toDecimalPlaces(0, 2).lt(formattedVal)) {
       setError(`Amount of withdraw bigger than you'r supply`);
       isError = true;
     }
@@ -257,13 +261,13 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
 
     if (!isError) setError('');
 
-    return formattedVal.toDecimalPlaces(0, 2);
+    return formattedVal.toDecimalPlaces(0);
   };
 
   const setInputAmountMeasure = (isNativeToken: boolean) => {
     let fixedValue = amount;
 
-    if (isNativeToken && !isNative) fixedValue = fixedValue.div(props.rate);
+    if (isNativeToken && !isNative) fixedValue = fixedValue.div(props.rate).toDecimalPlaces(0);
 
     setAmount(fixedValue);
     debounce(fixedValue);
@@ -275,7 +279,8 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
 
     if (!isNative) amountVal = amountVal.div(props.rate);
 
-    props.onSubmit!(amountVal.toSignificant(0), props.assetId, lendStore.activePoolContract);
+    // will be fixed in new app, problem of BigNumber input
+    props.onSubmit!(amountVal.toDecimalPlaces(0, 2), props.assetId, lendStore.activePoolContract);
   };
 
   return (

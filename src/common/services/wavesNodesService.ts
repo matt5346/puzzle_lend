@@ -181,7 +181,6 @@ const wavesNodesService = {
           expr: `getUserCollateral(false, "${userId}", true, "")`,
         },
       });
-      console.log(response, 'getUserExtraStats');
 
       // eslint-disable-next-line no-underscore-dangle
       userCollateral = response?.data?.result?.value?._2?.value;
