@@ -170,7 +170,7 @@ const BorrowAssets: React.FC<IProps> = (props) => {
       isError = true;
     }
 
-    if (walletBalance.isLessThanOrEqualTo(v)) {
+    if (walletBalance && walletBalance.isLessThanOrEqualTo(v)) {
       setError(`Amount of repay bigger than wallet balance`);
       isError = true;
     }
