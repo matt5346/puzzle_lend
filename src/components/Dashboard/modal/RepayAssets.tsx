@@ -159,12 +159,13 @@ const BorrowAssets: React.FC<IProps> = (props) => {
     let isError = false;
     let walletBalance = props.userBalance;
     let forRepay = props.selfBorrow;
+
     if (!isNative) {
       walletBalance = formatVal(walletBalance.times(props.rate), 0);
       forRepay = formatVal(forRepay.times(props.rate), 0);
     }
 
-    if (forRepay.times(1.05).isLessThanOrEqualTo(v)) {
+    if (forRepay && forRepay.times(1.05).isLessThanOrEqualTo(v)) {
       setError(`Too big value for repaying`);
       isError = true;
     }

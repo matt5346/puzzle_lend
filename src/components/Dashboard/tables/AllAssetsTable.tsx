@@ -80,11 +80,14 @@ const AllAssetsTable: React.FC<IProps> = ({ filteredTokens, handleSupplyAssetCli
         if (key == null) return 0;
 
         if (stats1 == null || stats2 == null) return 0;
-        if (stats1[key] == null && stats2[key] != null) {
-          return sortMode === 'descending' ? 1 : -1;
-        }
-        if (stats1[key] == null && stats2[key] == null) {
-          return sortMode === 'descending' ? -1 : 1;
+        if (stats1[key] == null && stats2[key] != null) return sortMode === 'descending' ? 1 : -1;
+        if (stats1[key] == null && stats2[key] == null) return sortMode === 'descending' ? -1 : 1;
+
+        // filtering in $ equivalent
+        if (sort === 'totalAssetSupply' || sort === 'totalAssetBorrow') {
+          const val1 = (stats1[key] as BN).times(stats1.minPrice);
+          const val2 = (stats2[key] as BN).times(stats2.minPrice);
+          return sortMode === 'descending' ? (val1.lt(val2) ? 1 : -1) : val1.lt(val2) ? -1 : 1;
         }
 
         return sortMode === 'descending'
