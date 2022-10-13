@@ -199,7 +199,6 @@ const Dashboard: React.FC = () => {
   const [_, forceUpdate] = useReducer((x) => x + 1, 0);
 
   useEffect(() => {
-    console.log('> Router', history.pathname);
     forceUpdate();
     const poolsData = tokenStore.poolDataTokens;
 

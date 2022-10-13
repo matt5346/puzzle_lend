@@ -62,7 +62,6 @@ class AccountStore {
       if (initState.loginType === LOGIN_TYPE.KEEPER) {
         this.setupSynchronizationWithKeeper();
       }
-      console.log(initState, 'initState');
       this.setAddress(initState.address);
     }
     Promise.all([this.checkScriptedAccount(), this.updateAccountAssets()]);

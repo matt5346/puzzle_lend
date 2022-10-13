@@ -357,7 +357,6 @@ export default class TokenStore {
     if (+borrowCapacity !== 0)
       accountHealth = BN.formatUnits(1, 0).minus(borrowCapacityUsed.div(borrowCapacity)).times(100);
 
-    console.log(+borrowCapacityUsed, +borrowCapacity, 'borrowCapacityUsed, borrowCapacity TOKENSTORE');
     const poolData = {
       netAPY,
       userHealth: this.setUserHealth(accountHealth),
