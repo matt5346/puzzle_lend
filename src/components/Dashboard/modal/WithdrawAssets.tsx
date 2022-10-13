@@ -228,7 +228,6 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
     let { selfSupply } = props;
 
     if (!isNative) selfSupply = selfSupply.times(props.rate);
-    console.log(+v.toDecimalPlaces(0, 2), +selfSupply.toDecimalPlaces(0, 2), 'v-self');
 
     // will be fixed in new app, problem of BigNumber input
     const formattedVal = v.minus(100);
@@ -251,7 +250,6 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
   const maxWithdraw = (val: BN) => {
     let isError = false;
     let formattedVal: BN = val;
-    console.log(+val, 'VAL');
 
     if (!isNative) formattedVal = val.times(props.rate);
 

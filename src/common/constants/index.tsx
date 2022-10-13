@@ -6,7 +6,6 @@ import tokensPuzzleList from '@src/common/constants/tokens_puzzlePool.json';
 import tokensMainList from '@src/common/constants/tokens_mainPool.json';
 import tokensFullList from '@src/common/constants/tokens_full.json';
 
-console.log(process.env, '---ENV')
 const tokensList = {
   mainPool: tokensMainList,
   puzzlePool: tokensPuzzleList,
