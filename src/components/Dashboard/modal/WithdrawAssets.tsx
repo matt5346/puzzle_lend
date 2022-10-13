@@ -41,7 +41,7 @@ interface IProps {
   setupLtv: BN;
   setupLts: BN;
   setAmount?: (amount: BN) => void;
-  onMaxClick?: (amount?: BN) => void;
+  onMaxClick?: (amount: BN) => void;
   onClose?: () => void;
   onSubmit?: (amount: BN, assetId: string, contractAddress: string) => void;
   usdnEquivalent?: string;
@@ -251,6 +251,7 @@ const WithdrawAssets: React.FC<IProps> = (props) => {
   const maxWithdraw = (val: BN) => {
     let isError = false;
     let formattedVal: BN = val;
+    console.log(+val, 'VAL');
 
     if (!isNative) formattedVal = val.times(props.rate);
 

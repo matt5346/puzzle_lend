@@ -55,10 +55,8 @@ const WalletModalBody: React.FC<IProps> = ({ filteredTokens }) => {
     if (getAssetData) vm.setSupplyAmount(amount || getAssetData.balance!);
   };
 
-  const withdrawMaxClickFunc = (amount?: BN) => {
-    const getAssetData = vm.balances.find((tokenData) => tokenData.assetId === lendStore.choosenToken?.assetId);
-
-    if (getAssetData) vm.setWithdrawAmount(amount || getAssetData.balance!);
+  const withdrawMaxClickFunc = (amount: BN) => {
+    vm.setWithdrawAmount(amount);
   };
 
   const borrowMaxClickFunc = (amount: BN) => {

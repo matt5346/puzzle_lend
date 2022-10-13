@@ -255,7 +255,7 @@ const Dashboard: React.FC = () => {
                 {lendStore && lendStore.activePoolTitle ? lendStore.activePoolTitle : ''} liquidity: <>&nbsp;</>
               </Text>
               <Text style={{ fontSize: '18px' }} type="light" fitContent>
-                ${currentPoolData?.poolTotal.toFixed(2)}
+                ${currentPoolData?.poolTotal.toFormat(2)}
               </Text>
             </SubTitleLiquidity>
             <DashboardTable
