@@ -351,7 +351,7 @@ export default class TokenStore {
     });
 
     let netAPY = BN.ZERO;
-    let accountHealth = BN.ZERO;
+    let accountHealth = new BN(100);
 
     if (+baseAmount !== 0) netAPY = supplyAmountApy.minus(borrowedAmountApr).div(baseAmount);
     if (+borrowCapacity !== 0)
