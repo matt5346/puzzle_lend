@@ -2,17 +2,13 @@
 import tokenLogos from '@src/common/constants/tokenLogos';
 import BN from '@src/common/utils/BN';
 
-import tokensPuzzleList from '@src/common/constants/tokens_puzzlePool.json';
 import tokensMainList from '@src/common/constants/tokens_mainPool.json';
 import tokensFullList from '@src/common/constants/tokens_full.json';
 
 const tokensList = {
   mainPool: tokensMainList,
-  puzzlePool: tokensPuzzleList,
-  allTokens: [
-    ...tokensMainList,
-    ...tokensPuzzleList,
-  ],
+  puzzlePool: tokensMainList,
+  allTokens: tokensMainList,
 };
 
 export const poolsTitles = {
