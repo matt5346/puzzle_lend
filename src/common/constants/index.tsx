@@ -1,7 +1,6 @@
 /* eslint-disable prettier/prettier */
 import tokenLogos from '@src/common/constants/tokenLogos';
 import BN from '@src/common/utils/BN';
-
 import tokensMainList from '@src/common/constants/tokens_mainPool.json';
 import tokensFullList from '@src/common/constants/tokens_full.json';
 
