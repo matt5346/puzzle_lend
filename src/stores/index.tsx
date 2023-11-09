@@ -1,6 +1,6 @@
-import { storesContext, useStores } from '@src/stores/useStores';
+import { storesContext, useStores } from "@stores/useStores";
 
-import RootStore from './RootStore';
-import LendStore from './LendStore';
+import RootStore from "./RootStore";
+import AccountStore from "./AccountStore";
 
-export { RootStore, LendStore, storesContext, useStores };
+export { RootStore, AccountStore, storesContext, useStores };

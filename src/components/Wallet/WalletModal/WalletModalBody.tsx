@@ -1,22 +1,21 @@
-import styled from '@emotion/styled';
-import React, { useState } from 'react';
-import { Column, Row } from '@src/common/styles/Flex';
-import { observer } from 'mobx-react-lite';
-import { Scrollbar } from '@src/UIKit/Scrollbar';
-import { SizedBox } from '@src/UIKit/SizedBox';
-import { useWalletVM } from '@components/Wallet/WalletModal/WalletVM';
-import { Tabs } from '@src/UIKit/Tabs';
-import AssetsBalances from '@components/Wallet/WalletModal/AssetsBalances';
-import Borrow from '@src/components/Wallet/WalletModal/Borrow';
-import Supply from '@src/components/Wallet/WalletModal/Supply';
+import styled from "@emotion/styled";
+import React, { useState } from "react";
+import { Column, Row } from "@components/Flex";
+import { observer } from "mobx-react-lite";
+import Scrollbar from "@components/Scrollbar";
+import { useWalletVM } from "@components/Wallet/WalletModal/WalletVM";
+import SizedBox from "@components/SizedBox";
+import Tabs from "@components/Tabs";
+import AssetsBalances from "@components/Wallet/WalletModal/AssetsBalances";
+import Supply from "@components/Wallet/WalletModal/Supply";
+import Borrow from "@components/Wallet/WalletModal/Borrow";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IProps {}
 
 const Root = styled(Column)`
   width: 100%;
   box-sizing: border-box;
-  background: #fff;
+  background: ${({ theme }) => theme.colors.white};
 
   & > * {
     width: 100%;
@@ -25,7 +24,7 @@ const Root = styled(Column)`
 
 const TabsWrapper = styled(Row)`
   border-radius: 16px 16px 0px 0px;
-  background: #fff;
+  background: ${({ theme }) => theme.colors.white};
   height: 56px;
   margin-top: -56px;
 `;
@@ -35,10 +34,12 @@ const ListWrapper = styled.div<{ headerExpanded: boolean }>`
   display: flex;
   flex-direction: column;
   transition: 0.4s;
-  height: ${({ headerExpanded }) => (headerExpanded ? 'calc(100vh - 212px)' : 'calc(100vh - 96px)')};
+  height: ${({ headerExpanded }) =>
+    headerExpanded ? "calc(100vh - 212px)" : "calc(100vh - 96px)"};
 
   @media (min-width: 560px) {
-    height: ${({ headerExpanded }) => (headerExpanded ? 'calc(560px - 212px)' : 'calc(560px - 96px)')};
+    height: ${({ headerExpanded }) =>
+      headerExpanded ? "calc(560px - 212px)" : "calc(560px - 96px)"};
   }
 `;
 
@@ -52,10 +53,10 @@ const WalletModalBody: React.FC<IProps> = () => {
     <Root>
       <TabsWrapper>
         <Tabs
-          tabs={[{ name: 'Assets' }, { name: 'Supply' }, { name: 'Borrow' }]}
+          tabs={[{ name: "Assets" }, { name: "Supply" }, { name: "Borrow" }]}
           activeTab={activeTab}
           setActive={(v) => setActiveTab(v)}
-          style={{ justifyContent: 'space-evenly', paddingTop: 16 }}
+          style={{ justifyContent: "space-evenly", paddingTop: 16 }}
           tabStyle={{ flex: 1, marginRight: 0 }}
         />
       </TabsWrapper>

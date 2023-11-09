@@ -1,55 +1,84 @@
-import React, { useMemo } from 'react';
-import { observer } from 'mobx-react-lite';
-// import InvestRow, { InvestRowSkeleton } from "@src/components/InvestRow";
-import { useWalletVM } from '@components/Wallet/WalletModal/WalletVM';
-import styled from '@emotion/styled';
-import { SizedBox } from '@src/UIKit/SizedBox';
-import { Button } from '@src/UIKit/Button';
-import { Text } from '@src/UIKit/Text';
-import { Column, Row } from '@src/common/styles/Flex';
-import { useStores } from '@src/stores';
-import { ReactComponent as NotFoundIcon } from '@src/common/assets/icons/notFound.svg';
-import SupplyTokensRow from '@src/components/Wallet/WalletModal/SupplyTokensRow';
+import React, { HTMLAttributes } from "react";
+import { observer } from "mobx-react-lite";
+import styled from "@emotion/styled";
+import { useStores } from "@stores";
+import InvestRow from "@components/InvestRow";
+import { Column } from "@components/Flex";
+import SizedBox from "@components/SizedBox";
+import Text from "@components/Text";
+import Button from "@components/Button";
+import Skeleton from "react-loading-skeleton";
+import BN from "@src/utils/BN";
+import { useWalletVM } from "@components/Wallet/WalletModal/WalletVM";
+import { ReactComponent as NotFoundIcon } from "@src/assets/notFound.svg";
+import { Anchor } from "@components/Anchor";
+
+interface IProps extends HTMLAttributes<HTMLDivElement> {}
 
 const Root = styled.div`
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   min-height: 400px;
 `;
 
-const Supply: React.FC = () => {
-  const { tokenStore } = useStores();
+const Borrow: React.FC<IProps> = () => {
+  const { accountStore } = useStores();
   const vm = useWalletVM();
 
+  if (accountStore.assetBalances === null)
+    return (
+      <Root style={{ padding: "0 24px" }}>
+        <Skeleton height={56} style={{ marginBottom: 8 }} count={4} />
+      </Root>
+    );
+  //fixme remove buy waves tokens
   return (
     <Root>
-      <Column justifyContent="center" alignItems="center" crossAxisSize="max">
-        {vm.assetsStats.length === 0 && (
-          <Column alignItems="center">
-            <SizedBox height={24} />
-            <NotFoundIcon style={{ marginBottom: 24 }} />
-            <Text type="primary" className="text" textAlign="center">
-              Unfortunately, there are no tokens that fit your filters.
-            </Text>
-            <SizedBox height={24} />
-          </Column>
-        )}
-        {vm.assetsStats.map((t) => {
-          const stats = tokenStore.poolDataTokensWithStats[t.assetId];
+      {vm.userAssets.length !== 0 ? (
+        vm.userAssets.map((b) => {
+          const stats = vm.tokenStats(b.assetId);
+          const supply = BN.formatUnits(
+            stats?.selfSupply || BN.ZERO,
+            stats?.decimals
+          )
+            .times(stats?.prices.min || BN.ZERO)
+            .toFormat(2);
+
           return (
-            <SupplyTokensRow
-              token={t}
-              key={t.assetId}
-              rate={stats.currentPrice}
-              setupSupplyAPY={stats.setupSupplyAPY}
-              selfSupply={stats.selfSupply}
-              setupLtv={stats.setupLtv}
-              supplyRate={stats.selfSupplyRate}
+            <InvestRow
+              rateChange={BN.ZERO}
+              key={b.assetId}
+              logo={b.logo}
+              topLeftInfo="My supply"
+              topRightInfo={supply}
+              bottomLeftInfo="Supply APY"
+              bottomRightInfo={`${stats?.supplyAPY.toFormat(2)}%` ?? "0"}
+              withClickLogic
+              onClick={() => {
+                accountStore.setAssetToSend(b);
+                accountStore.setSendAssetModalOpened(true);
+              }}
             />
           );
-        })}
-      </Column>
+        })
+      ) : (
+        <Column justifyContent="center" alignItems="center" crossAxisSize="max">
+          <SizedBox height={16} />
+          <NotFoundIcon />
+          <Text type="secondary" size="medium" textAlign="center">
+            You don’t have any assets on your wallet.
+            <br />
+            Buy WAVES on Waves Exchange to start trading.
+          </Text>
+          <SizedBox height={16} />
+          <Anchor href="https://waves.exchange/trading/spot/WAVES_USDN">
+            <Button size="medium">Buy WAVES</Button>
+          </Anchor>
+          <SizedBox height={100} />
+        </Column>
+      )}
     </Root>
   );
 };
-export default observer(Supply);
+
+export default observer(Borrow);

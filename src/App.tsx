@@ -1,71 +1,67 @@
-import React from 'react';
-import styled from '@emotion/styled';
-import { Route, Routes, Navigate } from 'react-router-dom';
-import { observer } from 'mobx-react-lite';
-import { ROUTES } from '@src/common/constants';
-
-import { useStores } from '@src/stores';
-import useWindowSize from '@src/hooks/useWindowSize';
-
-// components
-import Header from '@components/Header';
-import MobileFooterMenu from '@components/MobileFooter';
-import WalletModal from '@components/Wallet/WalletModal';
-
-// pages
-import Dashboard from '@src/pages/dashboard';
-import DashboardToken from '@src/pages/dashboardToken';
-import UserStats from '@src/pages/userStats';
-import UsersList from '@src/pages/usersList';
-import NotFoundPage from '@src/pages/notFound';
-
-// css
-import { Column } from '@src/common/styles/Flex';
-import 'react-perfect-scrollbar/dist/css/styles.css';
-import 'rc-notification/assets/index.css';
-import 'react-loading-skeleton/dist/skeleton.css';
-import 'rc-dialog/assets/index.css';
-import './App.css';
+import React from "react";
+import { Route, Routes } from "react-router-dom";
+import styled from "@emotion/styled";
+import { observer } from "mobx-react-lite";
+import Header from "@components/Header";
+import { Column } from "@components/Flex";
+import { useStores } from "@stores";
+import WalletModal from "@components/Wallet/WalletModal";
+import MobileNavBar from "./components/MobileNavBar";
+import { ROUTES, OPERATIONS_TYPE } from "@src/constants";
+import Dashboard from "@screens/Dashboard";
+import ExploreToken from "@screens/ExploreToken";
+import NotFound from "@screens/NotFound";
+import DashboardModal from "@screens/Dashboard/DashboardModals";
+import AnalyticsScreen from "@screens/AnalyticsScreen";
 
 const Root = styled(Column)`
   width: 100%;
   align-items: center;
-  background: #f8f8ff;
+  background: ${({ theme }) => theme.colors.primary50};
   min-height: 100vh;
-  color: #000;
+`;
+
+const MobileSpace = styled.div`
+  height: 56px;
+  @media (min-width: 880px) {
+    display: none;
+  }
 `;
 
 const App: React.FC = () => {
-  const { accountStore, tokenStore, usersStore } = useStores();
-  const { windowWidth } = useWindowSize();
-
+  const { accountStore } = useStores();
   return (
     <Root>
       <Header />
-
       <Routes>
-        {/* Base */}
-        <Route path={ROUTES.HOME} element={<Navigate to="/dashboard" />} />
-        {windowWidth! < 560 ? (
-          <Route path={ROUTES.DASHBOARD_MOBILE} element={<Dashboard />} key={window.location.pathname} />
-        ) : null}
-        {/* for main pool with default route */}
-        <Route path={ROUTES.DASHBOARD} element={<Dashboard />} key="dashboard_main" />
-        {/* for other pools with ids routes */}
-        <Route path={ROUTES.DASHBOARD_POOl} element={<Dashboard />} />
-        {/* specific USER STATS */}
-        <Route path={ROUTES.USER_STATS} element={<UserStats />} />
-        <Route path={ROUTES.USERS_LIST} element={<UsersList />} />
-        <Route path={ROUTES.DASHBOARD_TOKEN} element={<DashboardToken />} />
-        {/* // {tokenStore.poolDataTokensWithStats && />} */}
-        {/* 404 */}
-        <Route path={ROUTES.NOT_FOUND} element={<NotFoundPage />} />
+        {/*Account*/}
+        <Route path={ROUTES.ANALYTICS} element={<AnalyticsScreen />} />
 
-        <Route path="*" element={<NotFoundPage />} />
+        {/* Dashboard */}
+        <Route path={ROUTES.DASHBOARD} element={<Dashboard />}>
+          {[...Object.entries(ROUTES.DASHBOARD_MODALS)].map(([type, path]) => (
+            <Route
+              path={path}
+              key={path}
+              element={
+                <DashboardModal operationName={type as OPERATIONS_TYPE} />
+              }
+            />
+          ))}
+        </Route>
+        <Route path={ROUTES.DASHBOARD_POOL} element={<Dashboard />} />
+        <Route
+          path={ROUTES.DASHBOARD_TOKEN_DETAILS}
+          element={<ExploreToken />}
+        />
+        <Route path="*" element={<NotFound />} />
       </Routes>
-
-      <WalletModal onClose={() => accountStore.setWalletModalOpened(false)} visible={accountStore.walletModalOpened} />
-      {windowWidth! < 560 && accountStore.address ? <MobileFooterMenu /> : null}
+      <WalletModal
+        onClose={() => accountStore.setWalletModalOpened(false)}
+        visible={accountStore.walletModalOpened}
+      />
+      <MobileSpace />
+      <MobileNavBar />
     </Root>
   );
 };

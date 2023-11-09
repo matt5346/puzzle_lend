@@ -27,6 +27,10 @@
       "@src/*": ["src/*"],
       "@components": ["src/components"],
       "@components/*": ["src/components/*"],
+      "@stores": ["src/stores"],
+      "@stores/*": ["src/stores/*"],
+      "@screens": ["src/screens"],
+      "@screens/*": ["src/screens/*"]
     }
   },
   "include": [

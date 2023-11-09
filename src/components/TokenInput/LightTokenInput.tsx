@@ -1,23 +1,17 @@
-/* eslint-disable @typescript-eslint/no-shadow */
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable no-nested-ternary */
-/* eslint-disable react/require-default-props */
-import styled from '@emotion/styled';
-import React, { useState } from 'react';
-import { Text } from '@src/UIKit/Text';
-import { SizedBox } from '@src/UIKit/SizedBox';
-import { BigNumberInput } from '@src/UIKit/BigNumberInput';
-import { AmountInput } from '@src/UIKit/AmountInput';
-import { observer } from 'mobx-react-lite';
-import BN from '@src/common/utils/BN';
-import { Row } from '@src/common/styles/Flex';
+import styled from "@emotion/styled";
+import React, { useState } from "react";
+import Text from "@components/Text";
+import { observer } from "mobx-react-lite";
+import BN from "@src/utils/BN";
+import BigNumberInput from "@components/BigNumberInput";
+import AmountInput from "@components/AmountInput";
+import { Row } from "../Flex";
+import SizedBox from "@components/SizedBox";
 
 interface IProps {
   assetId: string;
   decimals: number;
   amount: BN;
-  rate: BN;
   setAmount?: (amount: BN) => void;
   onMaxClick?: () => void;
   usdnEquivalent?: string;
@@ -36,7 +30,8 @@ const InputContainer = styled.div<{
   invalid?: boolean;
   readOnly?: boolean;
 }>`
-  background: ${({ focused, error }) => (focused ? '#fffff' : '#f1f2fe')};
+  background: ${({ focused, theme }) =>
+    focused ? "#fffff" : theme.colors.primary100};
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -46,20 +41,29 @@ const InputContainer = styled.div<{
   border-radius: 12px;
   width: 100%;
   position: relative;
-  cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'unset')};
+  cursor: ${({ readOnly }) => (readOnly ? "not-allowed" : "unset")};
 
   box-sizing: border-box;
 
   input {
-    cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'unset')};
+    cursor: ${({ readOnly }) => (readOnly ? "not-allowed" : "unset")};
   }
 
   border: 1px solid
-    ${({ focused, readOnly, error }) => (error ? '#ED827E' : focused && !readOnly ? '#7075E9' : '#f1f2fe')};
+    ${({ focused, readOnly, error, theme }) =>
+      error
+        ? theme.colors.error500
+        : focused && !readOnly
+        ? theme.colors.blue500
+        : theme.colors.primary100};
 
   :hover {
-    border-color: ${({ readOnly, focused, error }) =>
-      error ? '#ED827E' : !readOnly && !focused ? '#C6C9F4' : focused ?? '#7075E9'};
+    border-color: ${({ readOnly, focused, error, theme }) =>
+      error
+        ? theme.colors.error500
+        : !readOnly && !focused
+        ? theme.colors.primary300
+        : focused ?? theme.colors.blue500};
   }
 `;
 const LightTokenInput: React.FC<IProps> = (props) => {
@@ -71,12 +75,22 @@ const LightTokenInput: React.FC<IProps> = (props) => {
         <Text type="secondary" size="medium">
           Amount
         </Text>
-        <Text type="secondary" textAlign="right" style={{ cursor: 'pointer' }} onClick={props.onMaxClick} size="medium">
+        <Text
+          type="secondary"
+          textAlign="right"
+          style={{ cursor: "pointer" }}
+          onClick={props.onMaxClick}
+          size="medium"
+        >
           MAX
         </Text>
       </Row>
       <SizedBox height={4} />
-      <InputContainer focused={focused} readOnly={!props.setAmount} error={props.error}>
+      <InputContainer
+        focused={focused}
+        readOnly={!props.setAmount}
+        error={props.error}
+      >
         <BigNumberInput
           renderInput={(props, ref) => (
             <AmountInput
@@ -92,8 +106,6 @@ const LightTokenInput: React.FC<IProps> = (props) => {
               ref={ref}
             />
           )}
-          isNative
-          rate={props.rate}
           autofocus={focused}
           decimals={props.decimals}
           value={props.amount}
@@ -101,7 +113,12 @@ const LightTokenInput: React.FC<IProps> = (props) => {
           placeholder="0.00"
           readOnly={!props.setAmount}
         />
-        <Text style={{ whiteSpace: 'nowrap' }} type="secondary" size="small" fitContent>
+        <Text
+          style={{ whiteSpace: "nowrap" }}
+          type="secondary"
+          size="small"
+          fitContent
+        >
           {props.usdnEquivalent}
         </Text>
       </InputContainer>

@@ -1,18 +1,19 @@
-import React, { HTMLAttributes } from 'react';
-import { observer } from 'mobx-react-lite';
-import { useWalletVM } from '@components/Wallet/WalletModal/WalletVM';
-import styled from '@emotion/styled';
-import InvestRow from '@src/components/Wallet/WalletModal/InvestRow';
-import { Column } from '@src/common/styles/Flex';
-import { SizedBox } from '@src/UIKit/SizedBox';
-import { Button } from '@src/UIKit/Button';
-import { Text } from '@src/UIKit/Text';
-import { ReactComponent as NotFoundIcon } from '@src/common/assets/icons/notFound.svg';
-import { useStores } from '@src/stores';
-import Skeleton from 'react-loading-skeleton';
-import BN from '@src/common/utils/BN';
+import React, { HTMLAttributes } from "react";
+import { observer } from "mobx-react-lite";
+import { useWalletVM } from "@components/Wallet/WalletModal/WalletVM";
+import InvestRow from "@components/InvestRow";
+import { Column } from "@components/Flex";
+import SizedBox from "@components/SizedBox";
+import Text from "@components/Text";
+import Button from "@components/Button";
+import { ReactComponent as NotFoundIcon } from "@src/assets/notFound.svg";
+import styled from "@emotion/styled";
+import { useStores } from "@stores";
+import Skeleton from "react-loading-skeleton";
+import BN from "@src/utils/BN";
+import { Anchor } from "@components/Anchor";
 
-type IProps = HTMLAttributes<HTMLDivElement>;
+interface IProps extends HTMLAttributes<HTMLDivElement> {}
 
 const Root = styled.div`
   display: flex;
@@ -22,26 +23,32 @@ const Root = styled.div`
 
 const AssetsBalances: React.FC<IProps> = () => {
   const vm = useWalletVM();
-  const { accountStore, tokenStore } = useStores();
+  const { accountStore } = useStores();
   if (accountStore.assetBalances === null)
     return (
-      <Root style={{ padding: '0 24px' }}>
-        <Skeleton height={56} style={{ marginBottom: 8 }} count={3} />
+      <Root style={{ padding: "0 24px" }}>
+        <Skeleton height={56} style={{ marginBottom: 8 }} count={4} />
       </Root>
     );
+
   return (
     <Root>
-      {vm.balances.length !== 0 ? (
-        vm.balances.map((b: any) => {
-          const rate = tokenStore.usdnRate(b.assetId);
+      {vm.userAssets.length !== 0 ? (
+        vm.userAssets.map((b) => {
+          const stats = vm.tokenStats(b.assetId);
+          const dollarEquivalent = new BN(b.formatBalance ?? 0)
+            .times(stats?.prices?.min ?? BN.ZERO)
+            .toFormat(2);
+
           return (
             <InvestRow
-              rate={rate || BN.ZERO}
+              rateChange={BN.ZERO}
               key={b.assetId}
-              symbol={b.symbol}
               logo={b.logo}
               topLeftInfo={b.name}
               topRightInfo={b.formatBalance}
+              bottomLeftInfo={`$ ${stats?.prices.min}`}
+              bottomRightInfo={dollarEquivalent}
               withClickLogic
               onClick={() => {
                 accountStore.setAssetToSend(b);
@@ -54,13 +61,15 @@ const AssetsBalances: React.FC<IProps> = () => {
         <Column justifyContent="center" alignItems="center" crossAxisSize="max">
           <SizedBox height={16} />
           <NotFoundIcon />
-          <Text type="primary" size="medium" textAlign="center">
+          <Text type="secondary" size="medium" textAlign="center">
             You don’t have any assets on your wallet.
             <br />
             Buy WAVES on Waves Exchange to start trading.
           </Text>
           <SizedBox height={16} />
-          <Button size="medium">Buy WAVES</Button>
+          <Anchor href="https://waves.exchange/trading/spot/WAVES_USDN">
+            <Button size="medium">Buy WAVES</Button>
+          </Anchor>
           <SizedBox height={100} />
         </Column>
       )}

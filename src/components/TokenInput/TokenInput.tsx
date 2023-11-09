@@ -1,20 +1,16 @@
-/* eslint-disable @typescript-eslint/no-shadow */
-/* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable react/require-default-props */
-import styled from '@emotion/styled';
-import React, { useCallback, useEffect, useState } from 'react';
-import { MaxButton } from '@src/UIKit/MaxButton';
-import { Text } from '@src/UIKit/Text';
-import { BigNumberInput } from '@src/UIKit/BigNumberInput';
-import { AmountInput } from '@src/UIKit/AmountInput';
-import Balance from '@src/common/entities/Balance';
-import BN from '@src/common/utils/BN';
-import _ from 'lodash';
-import TokenSelect from '@components/TokenInput/TokenSelect';
-import { observer } from 'mobx-react-lite';
-// import TokenSelectModal from "../TokensSelectModal";
+import styled from "@emotion/styled";
+import React, { useCallback, useEffect, useState } from "react";
+import MaxButton from "@components/MaxButton";
+import Text from "@components/Text";
+import { observer } from "mobx-react-lite";
+import Balance from "@src/entities/Balance";
+import BN from "@src/utils/BN";
+import BigNumberInput from "@components/BigNumberInput";
+import AmountInput from "@components/AmountInput";
+import _ from "lodash";
+import TokenSelect from "@components/TokenInput/TokenSelect";
+import TokenSelectModal from "../TokensSelectModal";
+
 interface IProps {
   balances: Balance[];
 
@@ -22,7 +18,6 @@ interface IProps {
   setAssetId?: (assetId: string) => void;
 
   decimals: number;
-  rate: BN;
 
   amount: BN;
   setAmount?: (amount: BN) => void;
@@ -55,7 +50,8 @@ const InputContainer = styled.div<{
   invalid?: boolean;
   readOnly?: boolean;
 }>`
-  background: ${({ focused }) => (focused ? '#fffff' : '#f1f2fe')};
+  background: ${({ focused, theme }) =>
+    focused ? theme.colors.white : theme.colors.primary100};
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -65,24 +61,31 @@ const InputContainer = styled.div<{
   border-radius: 12px;
   width: 100%;
   position: relative;
-  cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'unset')};
+  cursor: ${({ readOnly }) => (readOnly ? "not-allowed" : "unset")};
 
   box-sizing: border-box;
 
   input {
-    cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'unset')};
+    cursor: ${({ readOnly }) => (readOnly ? "not-allowed" : "unset")};
   }
 
-  border: 1px solid ${({ focused, readOnly }) => (focused && !readOnly ? '#7075E9' : '#b7bcf8')};
+  border: 1px solid
+    ${({ focused, readOnly, theme }) =>
+      focused && !readOnly ? theme.colors.blue500 : theme.colors.primary100};
 
   :hover {
-    border-color: ${({ readOnly, focused }) => (!readOnly && !focused ? '#C6C9F4' : focused ?? '#7075E9')};
+    border-color: ${({ readOnly, focused, theme }) =>
+      !readOnly && !focused
+        ? theme.colors.primary650
+        : focused ?? theme.colors.blue500};
   }
 `;
 const TokenInput: React.FC<IProps> = (props) => {
   const [focused, setFocused] = useState(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const selectedAssetBalance = props.balances?.find(({ assetId }) => assetId === props.assetId);
+  const selectedAssetBalance = props.balances?.find(
+    ({ assetId }) => assetId === props.assetId
+  );
   const [amount, setAmount] = useState<BN>(props.amount);
 
   useEffect(() => {
@@ -93,7 +96,7 @@ const TokenInput: React.FC<IProps> = (props) => {
     setAmount(v);
     debounce(v);
   };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  //eslint-disable-next-line react-hooks/exhaustive-deps
   const debounce = useCallback(
     _.debounce((value: BN) => {
       props.setAmount && props.setAmount(value);
@@ -133,8 +136,6 @@ const TokenInput: React.FC<IProps> = (props) => {
               ref={ref}
             />
           )}
-          isNative
-          rate={props.rate}
           autofocus={focused}
           decimals={props.decimals}
           value={amount}
@@ -142,10 +143,24 @@ const TokenInput: React.FC<IProps> = (props) => {
           placeholder="0.00"
           readOnly={!props.setAmount}
         />
-        <Text style={{ whiteSpace: 'nowrap' }} type="secondary" size="small" fitContent>
+        <Text
+          style={{ whiteSpace: "nowrap" }}
+          type="secondary"
+          size="small"
+          fitContent
+        >
           {props.usdnEquivalent}
         </Text>
       </InputContainer>
+      {props.setAssetId && (
+        <TokenSelectModal
+          selectedTokenId={props.assetId}
+          visible={openModal}
+          onSelect={props.setAssetId}
+          balances={props.balances}
+          onClose={() => setOpenModal(!openModal)}
+        />
+      )}
     </Root>
   );
 };

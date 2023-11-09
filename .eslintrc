@@ -1,8 +1,6 @@
 {
     "extends": [
         "react-app",
-        "airbnb-typescript",
-        "airbnb/hooks",
         "plugin:@typescript-eslint/recommended",
         "prettier",
         "prettier/react",
@@ -42,13 +40,21 @@
             {
                 "endOfLine": "auto"
             }
-        ]
+        ],
+        "@typescript-eslint/no-empty-interface": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "off"
     },
     "overrides": [
         {
           "files": ["*.ts", "*.tsx"],
           "rules": {
-            "@typescript-eslint/explicit-module-boundary-types": "warn"
+            "@typescript-eslint/explicit-module-boundary-types": "off",
+            "@typescript-eslint/explicit-function-return-type": "off",
+            "@typescript-eslint/no-non-null-assertion": "off",
+            "@typescript-eslint/no-explicit-any": "off",
+            "@typescript-eslint/triple-slash-reference": "off",
+            "prefer-const": "off",
+            "import/no-anonymous-default-export": "off"
           }
         }
     ]

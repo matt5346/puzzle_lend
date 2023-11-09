@@ -1,28 +1,21 @@
-/* eslint-disable @typescript-eslint/no-shadow */
-/* eslint-disable no-nested-ternary */
-/* eslint-disable no-case-declarations */
-/* eslint-disable class-methods-use-this */
-/* eslint-disable no-return-assign */
-/* eslint-disable @typescript-eslint/naming-convention */
-import RootStore from '@src/stores/RootStore';
-import { Signer } from '@waves/signer';
-import { ProviderWeb } from '@waves.exchange/provider-web';
-import { ProviderCloud } from '@waves.exchange/provider-cloud';
-import { ProviderKeeper } from '@waves/provider-keeper';
-import { NODE_URL, TOKENS_LIST_FULL, LENDS_CONTRACTS } from '@src/common/constants';
-import { action, autorun, makeAutoObservable, reaction } from 'mobx';
-import Balance from '@src/common/entities/Balance';
-import { getCurrentBrowser } from '@src/common/utils/getCurrentBrowser';
-import BN from '@src/common/utils/BN';
-import { nodeInteraction, waitForTx } from '@waves/waves-transactions';
-import nodeService from '@src/common/services/nodeService';
-
-// import nodeService from "@src/services/nodeService";
+import RootStore from "@stores/RootStore";
+import { Signer } from "@waves/signer";
+import { ProviderWeb } from "@waves.exchange/provider-web";
+import { ProviderCloud } from "@waves.exchange/provider-cloud";
+import { ProviderKeeper } from "@waves/provider-keeper";
+import { NODE_URL, TOKENS_LIST } from "@src/constants";
+import { action, autorun, makeAutoObservable, reaction } from "mobx";
+import Balance from "@src/entities/Balance";
+import { getCurrentBrowser } from "@src/utils/getCurrentBrowser";
+import BN from "@src/utils/BN";
+import { nodeInteraction, waitForTx } from "@waves/waves-transactions";
+import nodeService from "@src/services/nodeService";
+import { THEME_TYPE } from "@src/themes/ThemeProvider";
 
 export enum LOGIN_TYPE {
-  SIGNER_SEED = 'SIGNER_SEED',
-  SIGNER_EMAIL = 'SIGNER_EMAIL',
-  KEEPER = 'KEEPER',
+  SIGNER_SEED = "SIGNER_SEED",
+  SIGNER_EMAIL = "SIGNER_EMAIL",
+  KEEPER = "KEEPER"
 }
 
 export interface IInvokeTxParams {
@@ -31,7 +24,7 @@ export interface IInvokeTxParams {
   payment: Array<{ assetId: string; amount: string }>;
   call: {
     function: string;
-    args: Array<{ type: 'integer' | 'string'; value: string }>;
+    args: Array<{ type: "integer" | "string"; value: string }>;
   };
 }
 
@@ -44,6 +37,7 @@ export interface ITransferParams {
 }
 
 export interface ISerializedAccountStore {
+  selectedTheme: THEME_TYPE | null;
   address: string | null;
   loginType: LOGIN_TYPE | null;
 }
@@ -58,74 +52,86 @@ class AccountStore {
       this.setupWavesKeeper();
     }
     if (initState) {
+      initState.selectedTheme != null &&
+        (this.selectedTheme = initState.selectedTheme);
       this.setLoginType(initState.loginType);
       if (initState.loginType === LOGIN_TYPE.KEEPER) {
         this.setupSynchronizationWithKeeper();
       }
       this.setAddress(initState.address);
     }
+    //todo добавить состояние логаут когда все сбрасывается
     Promise.all([this.checkScriptedAccount(), this.updateAccountAssets()]);
-    // setInterval(this.updateAccountAssets, 1000000 * 1000);
+    setInterval(this.updateAccountAssets, 10 * 1000);
     reaction(
       () => this.address,
-      () => Promise.all([this.checkScriptedAccount(), this.updateAccountAssets()])
+      () =>
+        Promise.all([this.checkScriptedAccount(), this.updateAccountAssets()])
     );
   }
 
-  isAccScripted = false;
+  selectedTheme: THEME_TYPE = THEME_TYPE.DARK_THEME;
 
+  toggleTheme = (): void => {
+    this.selectedTheme =
+      this.selectedTheme === THEME_TYPE.LIGHT_THEME
+        ? THEME_TYPE.DARK_THEME
+        : THEME_TYPE.LIGHT_THEME;
+  };
+
+  isAccScripted = false;
   setIsAccScripted = (v: boolean) => (this.isAccScripted = v);
 
   isWavesKeeperInstalled = false;
-
-  @action.bound setWavesKeeperInstalled = (state: boolean) => (this.isWavesKeeperInstalled = state);
+  @action.bound setWavesKeeperInstalled = (state: boolean) =>
+    (this.isWavesKeeperInstalled = state);
 
   assetsBalancesLoading = false;
-
-  @action.bound setAssetsBalancesLoading = (state: boolean) => (this.assetsBalancesLoading = state);
+  @action.bound setAssetsBalancesLoading = (state: boolean) =>
+    (this.assetsBalancesLoading = state);
 
   loginModalOpened = false;
-
-  @action.bound setLoginModalOpened = (state: boolean) => (this.loginModalOpened = state);
+  @action.bound setLoginModalOpened = (state: boolean) =>
+    (this.loginModalOpened = state);
 
   walletModalOpened = false;
-
-  @action.bound setWalletModalOpened = (state: boolean) => (this.walletModalOpened = state);
+  @action.bound setWalletModalOpened = (state: boolean) =>
+    (this.walletModalOpened = state);
 
   sendAssetModalOpened = false;
-
-  @action.bound setSendAssetModalOpened = (state: boolean) => (this.sendAssetModalOpened = state);
+  @action.bound setSendAssetModalOpened = (state: boolean) =>
+    (this.sendAssetModalOpened = state);
 
   assetToSend: Balance | null = null;
-
-  @action.bound setAssetToSend = (state: Balance | null) => (this.assetToSend = state);
+  @action.bound setAssetToSend = (state: Balance | null) =>
+    (this.assetToSend = state);
 
   changePoolModalOpened = false;
-
-  @action.bound setChangePoolModalOpened = (state: boolean) => (this.changePoolModalOpened = state);
+  @action.bound setChangePoolModalOpened = (state: boolean) =>
+    (this.changePoolModalOpened = state);
 
   public assetBalances: Balance[] | null = null;
-
-  @action.bound setAssetBalances = (assetBalances: Balance[] | null) => (this.assetBalances = assetBalances);
+  @action.bound setAssetBalances = (assetBalances: Balance[] | null) =>
+    (this.assetBalances = assetBalances);
 
   findBalanceByAssetId = (assetId: string) =>
-    this.assetBalances && this.assetBalances.find((balance) => balance.assetId === assetId);
+    this.assetBalances &&
+    this.assetBalances.find((balance) => balance.assetId === assetId);
 
   public address: string | null = null;
-
-  @action.bound setAddress = (address: string | null) => (this.address = address);
+  @action.bound setAddress = (address: string | null) =>
+    (this.address = address);
 
   public loginType: LOGIN_TYPE | null = null;
-
-  @action.bound setLoginType = (loginType: LOGIN_TYPE | null) => (this.loginType = loginType);
+  @action.bound setLoginType = (loginType: LOGIN_TYPE | null) =>
+    (this.loginType = loginType);
 
   public signer: Signer | null = null;
-
   @action.bound setSigner = (signer: Signer | null) => (this.signer = signer);
 
   get isBrowserSupportsWavesKeeper(): boolean {
     const browser = getCurrentBrowser();
-    return ['chrome', 'firefox', 'opera', 'edge'].includes(browser);
+    return ["chrome", "firefox", "opera", "edge"].includes(browser);
   }
 
   setupSynchronizationWithKeeper = () =>
@@ -133,11 +139,10 @@ class AccountStore {
       let attemptsCount = 0;
       const interval = setInterval(async () => {
         if ((window as any).WavesKeeper == null) {
-          attemptsCount += 1;
+          attemptsCount = attemptsCount + 1;
           if (attemptsCount > 10) {
             clearInterval(interval);
-            // eslint-disable-next-line prefer-promise-reject-errors
-            reject('❌ There is no waves keeper');
+            reject("❌ There is no waves keeper");
           }
         } else {
           clearInterval(interval);
@@ -146,7 +151,10 @@ class AccountStore {
         const result = await (window as any).WavesKeeper.initialPromise
           .then((keeperApi: any) => keeperApi.publicState())
           .then(() => this.subscribeToKeeperUpdate())
-          .catch(({ code }: { code: string }) => code === '14' && this.subscribeToKeeperUpdate());
+          .catch(
+            ({ code }: { code: string }) =>
+              code === "14" && this.subscribeToKeeperUpdate()
+          );
         resolve(result);
       }, 500);
     });
@@ -160,7 +168,6 @@ class AccountStore {
 
   login = async (loginType: LOGIN_TYPE) => {
     this.setLoginType(loginType);
-    const { tokenStore } = this.rootStore;
     switch (loginType) {
       case LOGIN_TYPE.KEEPER:
         this.setSigner(new Signer());
@@ -174,8 +181,8 @@ class AccountStore {
         await this.signer?.setProvider(new ProviderCloud());
         break;
       case LOGIN_TYPE.SIGNER_SEED:
-        this.setSigner(new Signer({ NODE_URL }));
-        const provider = new ProviderWeb('https://waves.exchange/signer/');
+        this.setSigner(new Signer({ NODE_URL: NODE_URL }));
+        const provider = new ProviderWeb("https://waves.exchange/signer/");
         await this.signer?.setProvider(provider);
         break;
       default:
@@ -183,9 +190,7 @@ class AccountStore {
     }
     const loginData = await this.signer?.login();
     this.setAddress(loginData?.address ?? null);
-    Object.values(LENDS_CONTRACTS).map((item) =>
-      tokenStore.syncTokenStatistics(item, this.rootStore.accountStore.address!)
-    );
+    this.rootStore.lendStore.syncPoolsStats();
   };
 
   logout() {
@@ -212,13 +217,14 @@ class AccountStore {
   };
 
   subscribeToKeeperUpdate = () =>
-    (window as any).WavesKeeper.on('update', (publicState: any) =>
+    (window as any).WavesKeeper.on("update", (publicState: any) =>
       this.setAddress(publicState.account?.address ?? null)
     );
 
   serialize = (): ISerializedAccountStore => ({
+    selectedTheme: this.selectedTheme,
     address: this.address,
-    loginType: this.loginType,
+    loginType: this.loginType
   });
 
   updateAccountAssets = async (force = false) => {
@@ -229,13 +235,12 @@ class AccountStore {
     if (!force && this.assetsBalancesLoading) return;
     this.setAssetsBalancesLoading(true);
 
-    const { address } = this;
+    const address = this.address;
     const data = await nodeService.getAddressBalances(address);
-    const assetBalances = TOKENS_LIST_FULL.map((asset) => {
+    const assetBalances = TOKENS_LIST.map((asset) => {
       const t = data.find(({ assetId }) => asset.assetId === assetId);
       const balance = new BN(t != null ? t.balance : 0);
-      const rate = this.rootStore.tokenStore.usdnRate(asset.assetId) ?? BN.ZERO;
-      const usdnEquivalent = rate ? rate.times(BN.formatUnits(balance, asset.decimals)) : BN.ZERO;
+      const usdnEquivalent = BN.ZERO;
       return new Balance({ balance, usdnEquivalent, ...asset });
     });
     const newAddress = this.address;
@@ -243,116 +248,154 @@ class AccountStore {
 
     this.setAssetBalances(assetBalances);
     this.setAssetsBalancesLoading(false);
+    this.rootStore.lendStore.syncPoolsStats();
   };
 
-  /// ------------------transfer
+  ///------------------transfer
   public transfer = async (trParams: ITransferParams) =>
-    this.loginType === LOGIN_TYPE.KEEPER ? this.transferWithKeeper(trParams) : this.transferWithSigner(trParams);
+    this.loginType === LOGIN_TYPE.KEEPER
+      ? this.transferWithKeeper(trParams)
+      : this.transferWithSigner(trParams);
 
-  private transferWithSigner = async (data: ITransferParams): Promise<string | null> => {
+  private transferWithSigner = async (
+    data: ITransferParams
+  ): Promise<string | null> => {
     if (this.signer == null) {
       await this.login(this.loginType ?? LOGIN_TYPE.SIGNER_EMAIL);
     }
     if (this.signer == null) {
-      // this.rootStore.notificationStore.notify("You need to login firstly", {
-      //   title: "Error",
-      //   type: "error",
-      // });
+      this.rootStore.notificationStore.notify("You need to login firstly", {
+        title: "Error",
+        type: "error"
+      });
       return null;
     }
     try {
       const ttx = this.signer.transfer({
         ...data,
-        fee: this.isAccScripted ? 500000 : 100000,
+        fee: this.isAccScripted ? 500000 : 100000
       });
       const txId = await ttx.broadcast().then((tx: any) => tx.id);
       await waitForTx(txId, {
-        apiBase: NODE_URL,
+        apiBase: NODE_URL
       });
       return txId;
     } catch (e: any) {
       console.warn(e);
-      // this.rootStore.notificationStore.notify(e.toString(), {
-      //   type: "error",
-      //   title: "Transaction is not completed",
-      // });
+      this.rootStore.notificationStore.notify(e.toString(), {
+        type: "error",
+        title: "Transaction is not completed"
+      });
       return null;
     }
   };
 
-  private transferWithKeeper = async (data: ITransferParams): Promise<string | null> => {
-    const tokenAmount = BN.formatUnits(data.amount, this.assetToSend?.decimals).toString();
+  private transferWithKeeper = async (
+    data: ITransferParams
+  ): Promise<string | null> => {
+    const tokenAmount = BN.formatUnits(
+      data.amount,
+      this.assetToSend?.decimals
+    ).toString();
     const tx = await (window as any).WavesKeeper.signAndPublishTransaction({
       type: 4,
       data: {
         amount: { tokens: tokenAmount, assetId: data.assetId },
         fee: {
-          tokens: this.isAccScripted ? '0.005' : '0.001',
-          assetId: 'WAVES',
+          tokens: this.isAccScripted ? "0.005" : "0.001",
+          assetId: "WAVES"
         },
-        recipient: data.recipient,
-      },
+        recipient: data.recipient
+      }
     } as any);
 
     const txId = JSON.parse(tx).id;
     await waitForTx(txId, {
-      apiBase: NODE_URL,
+      apiBase: NODE_URL
     });
     return txId;
   };
 
-  /// ////////------------invoke
+  ///////////------------invoke
 
   public invoke = async (txParams: IInvokeTxParams) =>
-    this.loginType === LOGIN_TYPE.KEEPER ? this.invokeWithKeeper(txParams) : this.invokeWithSigner(txParams);
+    this.loginType === LOGIN_TYPE.KEEPER
+      ? this.invokeWithKeeper(txParams)
+      : this.invokeWithSigner(txParams);
 
-  private invokeWithSigner = async (txParams: IInvokeTxParams): Promise<string | null> => {
+  private invokeWithSigner = async (
+    txParams: IInvokeTxParams
+  ): Promise<string | null> => {
     if (this.signer == null) {
       await this.login(this.loginType ?? LOGIN_TYPE.SIGNER_EMAIL);
     }
     if (this.signer == null) {
-      this.rootStore.notificationStore.notify('You need to login firstly', {
-        title: 'Error',
-        type: 'error',
+      this.rootStore.notificationStore.notify("You need to login firstly", {
+        title: "Error",
+        type: "error"
       });
       return null;
     }
-    console.log(txParams, 'SIGNER');
     const ttx = this.signer.invoke({
       dApp: txParams.dApp,
-      fee: txParams.fee != null ? txParams.fee : this.isAccScripted ? 900000 : 500000,
+      fee:
+        txParams.fee != null
+          ? txParams.fee
+          : this.isAccScripted
+          ? 900000
+          : 500000,
       payment: txParams.payment,
-      call: txParams.call,
+      call: txParams.call
     });
 
     const txId = await ttx.broadcast().then((tx: any) => tx.id);
     await waitForTx(txId, {
-      apiBase: NODE_URL,
+      apiBase: NODE_URL
     });
     return txId;
   };
 
-  private invokeWithKeeper = async (txParams: IInvokeTxParams): Promise<string | null> => {
+  private invokeWithKeeper = async (
+    txParams: IInvokeTxParams
+  ): Promise<string | null> => {
     const data = {
       fee: {
-        assetId: 'WAVES',
-        amount: txParams.fee != null ? txParams.fee : this.isAccScripted ? 900000 : 500000,
+        assetId: "WAVES",
+        amount:
+          txParams.fee != null
+            ? txParams.fee
+            : this.isAccScripted
+            ? 900000
+            : 500000
       },
       dApp: txParams.dApp,
       call: txParams.call,
-      payment: txParams.payment,
+      payment: txParams.payment
     };
     const tx = await (window as any).WavesKeeper.signAndPublishTransaction({
       type: 16,
-      data,
+      data
     } as any);
 
     const txId = JSON.parse(tx).id;
     await waitForTx(txId, {
-      apiBase: NODE_URL,
+      apiBase: NODE_URL
     });
     return txId;
   };
+
+  get balances() {
+    const { accountStore } = this.rootStore;
+    return TOKENS_LIST.map((t) => {
+      const balance = accountStore.findBalanceByAssetId(t.assetId);
+      return balance ?? new Balance(t);
+    }).sort((a, b) => {
+      if (a.usdnEquivalent == null && b.usdnEquivalent == null) return 0;
+      if (a.usdnEquivalent == null && b.usdnEquivalent != null) return 1;
+      if (a.usdnEquivalent == null && b.usdnEquivalent == null) return -1;
+      return a.usdnEquivalent!.lt(b.usdnEquivalent!) ? 1 : -1;
+    });
+  }
 }
 
 export default AccountStore;
